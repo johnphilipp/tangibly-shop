@@ -207,7 +207,7 @@ function flattenActivity(activity: Activity): FlattenedActivity {
     total_elevation_gain: activity.total_elevation_gain,
     type: activity.type,
     sport_type: activity.sport_type,
-    workout_type: activity.workout_type, // Optional field
+    workout_type: activity.workout_type,
     id: activity.id,
     start_date: activity.start_date,
     start_date_local: activity.start_date_local,
@@ -221,11 +221,8 @@ function flattenActivity(activity: Activity): FlattenedActivity {
     comment_count: activity.comment_count,
     athlete_count: activity.athlete_count,
     photo_count: activity.photo_count,
-    // ... all other flat properties
-    mapId: activity.map.id, // Extracting properties from the nested map object
+    mapId: activity.map.id,
     summaryPolyline: activity.map.summary_polyline,
-    mapResourceState: activity.map.resource_state,
-    // ... all other properties from the map object and any remaining fields
     trainer: activity.trainer,
     commute: activity.commute,
     manual: activity.manual,
@@ -237,14 +234,14 @@ function flattenActivity(activity: Activity): FlattenedActivity {
     end_latlng: activity.end_latlng,
     average_speed: activity.average_speed,
     max_speed: activity.max_speed,
-    average_cadence: activity.average_cadence, // Optional field
+    average_cadence: activity.average_cadence,
     has_heartrate: activity.has_heartrate,
     average_heartrate: activity.average_heartrate,
     max_heartrate: activity.max_heartrate,
     heartrate_opt_out: activity.heartrate_opt_out,
     display_hide_heartrate_option: activity.display_hide_heartrate_option,
-    elev_high: activity.elev_high, // Optional field
-    elev_low: activity.elev_low, // Optional field
+    elev_high: activity.elev_high,
+    elev_low: activity.elev_low,
     upload_id: activity.upload_id,
     upload_id_str: activity.upload_id_str,
     external_id: activity.external_id,
