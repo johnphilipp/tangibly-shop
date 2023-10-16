@@ -129,6 +129,13 @@ const GetActivitiesInput = z.object({
   perPage: z.number().optional(),
 });
 
+// TODO:
+// Add Activity to Prisma model
+// Check if user has activites
+// If yes, get latest timestamp from db --> Fetch api with after=timestamp --> save to db
+// If no, fetch api --> save to db
+// Return allactivities from db
+
 export const activitiesRouter = createTRPCRouter({
   fetchActivities: protectedProcedure
     .input(GetActivitiesInput)
