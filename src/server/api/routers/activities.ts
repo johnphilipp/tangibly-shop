@@ -140,6 +140,9 @@ export const activitiesRouter = createTRPCRouter({
   fetchActivities: protectedProcedure
     .input(GetActivitiesInput)
     .query(async ({ ctx, input }) => {
+      console.log(input);
+      console.log(ctx.session?.user);
+
       try {
         // Build url
         let url;
