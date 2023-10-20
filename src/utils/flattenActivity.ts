@@ -47,8 +47,8 @@ export interface Activity {
   max_speed: number;
   average_cadence?: number;
   has_heartrate: boolean;
-  average_heartrate: number;
-  max_heartrate: number;
+  average_heartrate?: number;
+  max_heartrate?: number;
   heartrate_opt_out: boolean;
   display_hide_heartrate_option: boolean;
   elev_high?: number;
@@ -100,8 +100,8 @@ export interface FlattenedActivity {
   max_speed: number;
   average_cadence?: number;
   has_heartrate: boolean;
-  average_heartrate: number;
-  max_heartrate: number;
+  average_heartrate?: number;
+  max_heartrate?: number;
   heartrate_opt_out: boolean;
   display_hide_heartrate_option: boolean;
   elev_high?: number;
