@@ -3,6 +3,7 @@ import { z, ZodError } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"; // Adjust the import based on your project structure
 import axios from "axios";
 import { TRPCError } from "@trpc/server";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 interface Athlete {
   id: number;
@@ -121,83 +122,75 @@ interface FlattenedActivity {
   has_kudoed: boolean;
 }
 
-type ActivitiesResponse = Activity[];
-
-const GetActivitiesInput = z.object({
-  accessToken: z.string(),
-  after: z.number().optional(),
-  perPage: z.number().optional(),
-});
-
 // TODO:
+// Fetch activities until all are fetched by using after=timestamp (unix) from last activity in every response until response length is 0
 // Add Activity to Prisma model
 // Check if user has activites
 // If yes, get latest timestamp from db --> Fetch api with after=timestamp --> save to db
 // If no, fetch api --> save to db
 // Return allactivities from db
 
+const getAccessToken = async (userId: string) => {
+  const prisma = new PrismaClient();
+  const response = await prisma.account.findFirst({
+    where: { userId },
+    select: { access_token: true },
+  });
+  return response?.access_token;
+};
+
 export const activitiesRouter = createTRPCRouter({
-  fetchActivities: protectedProcedure
-    .input(GetActivitiesInput)
-    .query(async ({ ctx, input }) => {
-      console.log(input);
-      console.log(ctx.session?.user);
+  fetchActivities: protectedProcedure.query(async ({ ctx }) => {
+    const accessToken = await getAccessToken(ctx.session.user.id);
+    const after: number | null = null;
+    const perPage = 200;
 
-      try {
-        // Build url
-        let url;
-        if (input.after && input.perPage) {
-          url = `https://www.strava.com/api/v3/athlete/activities?after=${input.after}&per_page=${input.perPage}`;
-        } else if (input.after) {
-          url = `https://www.strava.com/api/v3/athlete/activities?after=${input.after}&per_page=200`;
-        } else if (input.perPage) {
-          url = `https://www.strava.com/api/v3/athlete/activities?per_page=${input.perPage}`;
-        } else {
-          url = `https://www.strava.com/api/v3/athlete/activities?per_page=200`;
-        }
+    let url = `https://www.strava.com/api/v3/athlete/activities?`;
+    if (after) {
+      url += `after=${after}&per_page=${perPage}`;
+    } else {
+      url += `per_page=${perPage}`;
+    }
 
-        // Prepare the axios configuration
-        const config = {
-          method: "get",
-          url: url,
-          headers: {
-            Authorization: `Bearer ${input.accessToken}`, // it's more secure to use the 'Authorization' header
-          },
-        };
+    const config = {
+      method: "get",
+      url: url,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
 
-        // Make the request to the Strava API
-        const response = await axios(config);
-        const activities: ActivitiesResponse =
-          response.data as ActivitiesResponse;
+    try {
+      const response = await axios(config);
+      const activities = response.data as Activity[];
 
-        // Return the data from the response
-        if (!activities) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "No activities found",
-          });
-        }
-
-        return activities.map((activity) => flattenActivity(activity));
-      } catch (error) {
-        // If there's an HTTP error, throw a TRPCError with the message from the error
-        if (axios.isAxiosError(error)) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: error.message,
-          });
-        } else if (error instanceof ZodError) {
-          // If there's a validation error, throw a TRPCError with details
-          throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
-        } else {
-          // For any other errors, throw a generic server error
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Something went wrong",
-          });
-        }
+      if (!activities) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No activities found",
+        });
       }
-    }),
+
+      return activities.map((activity) => flattenActivity(activity));
+    } catch (error) {
+      // If there's an HTTP error, throw a TRPCError with the message from the error
+      if (axios.isAxiosError(error)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: error.message,
+        });
+      } else if (error instanceof ZodError) {
+        // If there's a validation error, throw a TRPCError with details
+        throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
+      } else {
+        // For any other errors, throw a generic server error
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
+    }
+  }),
 });
 
 function flattenActivity(activity: Activity): FlattenedActivity {
