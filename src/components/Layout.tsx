@@ -21,36 +21,33 @@ const currencies = ["EUR"];
 const navigation = {
   categories: [
     {
-      name: "Women",
+      name: "Products",
       featured: [
-        { name: "Sleep", href: "#" },
-        { name: "Swimwear", href: "#" },
-        { name: "Underwear", href: "#" },
+        { name: "Coffee Cup", href: "#" },
+        { name: "Poster", href: "#" },
+        // { name: "Underwear", href: "#" },
       ],
-      categories: [
-        { name: "Basic Tees", href: "#" },
-        { name: "Artwork Tees", href: "#" },
-        { name: "Bottoms", href: "#" },
-      ],
+      // categories: [
+      //   { name: "Basic Tees", href: "#" },
+      //   { name: "Artwork Tees", href: "#" },
+      //   { name: "Bottoms", href: "#" },
+      // ],
     },
-    {
-      name: "Men",
-      featured: [
-        { name: "Casual", href: "#" },
-        { name: "Boxers", href: "#" },
-        { name: "Outdoor", href: "#" },
-      ],
-      categories: [
-        { name: "Artwork Tees", href: "#" },
-        { name: "Pants", href: "#" },
-        { name: "Accessories", href: "#" },
-      ],
-    },
+    // {
+    //   name: "Men",
+    //   featured: [
+    //     { name: "Casual", href: "#" },
+    //     { name: "Boxers", href: "#" },
+    //     { name: "Outdoor", href: "#" },
+    //   ],
+    //   categories: [
+    //     { name: "Artwork Tees", href: "#" },
+    //     { name: "Pants", href: "#" },
+    //     { name: "Accessories", href: "#" },
+    //   ],
+    // },
   ],
-  pages: [
-    { name: "Company", href: "#" },
-    { name: "Stores", href: "#" },
-  ],
+  pages: [{ name: "Editor", href: "/editor" }],
 };
 
 function classNames(...classes: string[] | undefined[]) {
@@ -156,7 +153,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                 ))}
                               </ul>
                             </div>
-                            <div>
+                            {/* <div>
                               <p
                                 id="mobile-categories-heading"
                                 className="font-medium text-gray-900"
@@ -179,7 +176,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                   </li>
                                 ))}
                               </ul>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </Tab.Panel>
@@ -391,7 +388,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                                 )}
                                               </ul>
                                             </div>
-                                            <div>
+                                            {/* <div>
                                               <p
                                                 id="desktop-categories-heading"
                                                 className="font-medium text-gray-900"
@@ -419,7 +416,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                                   ),
                                                 )}
                                               </ul>
-                                            </div>
+                                            </div> */}
                                           </div>
                                         </div>
                                       </div>

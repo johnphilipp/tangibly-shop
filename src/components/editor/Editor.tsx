@@ -9,6 +9,7 @@ import { AddActivityModal } from "./AddActivityModal";
 import { convertToSVGPath } from "./utils/convertToSVGPath";
 import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
 import { handleDownload } from "./utils/handleDownload";
+import Alert from "./Alert";
 
 export interface AspectRatio {
   rows: number;
@@ -206,7 +207,7 @@ export default function Editor({
                 currentAspectRatio.cols === ratio.cols;
 
               const className = isActive
-                ? "bg-indigo-600 text-white hover:text-gray-900"
+                ? "bg-gray-900 text-white hover:text-gray-900"
                 : "";
 
               return (
@@ -295,6 +296,8 @@ export default function Editor({
           </div>
         </div>
       </div>
+
+      <Alert />
     </div>
   );
 }
