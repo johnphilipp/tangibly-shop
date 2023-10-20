@@ -51,14 +51,12 @@ export default function EditorPage() {
   //   );
   // }
 
-  console.log(activityData);
-
   // Render editor
   return (
     <Layout>
       <div className="relative isolate">
         <Background />
-        <div className="overflow-hidden">
+        <div className="mx-auto max-w-4xl overflow-hidden">
           <Editor activities={activityData} />
         </div>
       </div>

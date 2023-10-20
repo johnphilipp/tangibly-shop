@@ -1,20 +1,31 @@
-import { SVG_HEIGHT, SVG_WIDTH } from "../Editor";
+import type { AspectRatio } from "../Editor";
 import { decodePolyline } from "./decodePolyline";
 
 export function getQuadrantCoordinates(
   polylineData: string,
   index: number,
   padding: number,
+  aspectRatio: AspectRatio,
+  SVG_WIDTH: number,
+  SVG_HEIGHT: number,
 ): [number, number][] {
   const coordinates = decodePolyline(polylineData);
-  const scaledCoordinates = scaleCoordinates(coordinates, padding);
+  const scaledCoordinates = scaleCoordinates(
+    coordinates,
+    padding,
+    aspectRatio,
+    SVG_WIDTH,
+    SVG_HEIGHT,
+  );
   const [minX, maxX, minY, maxY] = findBoundingBox(scaledCoordinates);
 
-  const row = Math.floor(index / 10);
-  const col = index % 10;
+  const row = Math.floor(index / aspectRatio.cols);
+  const col = index % aspectRatio.cols;
 
-  const quadrantWidth = (SVG_WIDTH - padding * 11) / 10;
-  const quadrantHeight = (SVG_HEIGHT - padding * 6) / 5;
+  const quadrantWidth =
+    (SVG_WIDTH - padding * (aspectRatio.cols + 1)) / aspectRatio.cols;
+  const quadrantHeight =
+    (SVG_HEIGHT - padding * (aspectRatio.rows + 1)) / aspectRatio.rows;
 
   const offsetX = col * (quadrantWidth + padding) + padding;
   const offsetY = row * (quadrantHeight + padding) + padding;
@@ -37,6 +48,9 @@ export function getQuadrantCoordinates(
 function scaleCoordinates(
   coordinates: [number, number][],
   padding: number,
+  aspectRatio: AspectRatio,
+  SVG_WIDTH: number,
+  SVG_HEIGHT: number,
 ): [number, number][] {
   let minX = Infinity,
     minY = Infinity,
@@ -52,8 +66,10 @@ function scaleCoordinates(
     if (latitude > maxY) maxY = latitude;
   }
 
-  const quadrantWidth = (SVG_WIDTH - padding * 11) / 10;
-  const quadrantHeight = (SVG_HEIGHT - padding * 6) / 5;
+  const quadrantWidth =
+    (SVG_WIDTH - padding * (aspectRatio.cols + 1)) / aspectRatio.cols;
+  const quadrantHeight =
+    (SVG_HEIGHT - padding * (aspectRatio.rows + 1)) / aspectRatio.rows;
 
   const avgLat = sumLat / coordinates.length;
   const latCorrection = Math.cos((avgLat * Math.PI) / 180);
