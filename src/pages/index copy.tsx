@@ -193,7 +193,7 @@ const footerNavigation = {
   ],
 };
 
-function classNames(...classes) {
+function classNames(...classes: string[] | undefined[]) {
   return classes.filter(Boolean).join(" ");
 }
 

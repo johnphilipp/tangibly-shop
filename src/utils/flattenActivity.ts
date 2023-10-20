@@ -100,8 +100,8 @@ export interface FlattenedActivity {
   max_speed: number;
   average_cadence?: number;
   has_heartrate: boolean;
-  average_heartrate?: number;
-  max_heartrate?: number;
+  average_heartrate: number;
+  max_heartrate: number;
   heartrate_opt_out: boolean;
   display_hide_heartrate_option: boolean;
   elev_high?: number;
@@ -154,8 +154,8 @@ export function flattenActivity(activity: Activity): FlattenedActivity {
     max_speed: activity.max_speed,
     average_cadence: activity.average_cadence,
     has_heartrate: activity.has_heartrate,
-    average_heartrate: activity.average_heartrate,
-    max_heartrate: activity.max_heartrate,
+    average_heartrate: activity.average_heartrate ?? 0,
+    max_heartrate: activity.max_heartrate ?? 0,
     heartrate_opt_out: activity.heartrate_opt_out,
     display_hide_heartrate_option: activity.display_hide_heartrate_option,
     elev_high: activity.elev_high,

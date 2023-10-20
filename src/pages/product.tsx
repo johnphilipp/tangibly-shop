@@ -357,7 +357,7 @@ const footerNavigation = {
   ],
 };
 
-function classNames(...classes) {
+function classNames(...classes: string[] | undefined[]) {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -436,7 +436,7 @@ export default function Example() {
                           {category.featured.map((item, itemIdx) => (
                             <div
                               key={itemIdx}
-                              className="aspect-h-1 aspect-w-1 group relative overflow-hidden rounded-md bg-gray-100"
+                              className="group aspect-h-1 aspect-w-1 relative overflow-hidden rounded-md bg-gray-100"
                             >
                               <img
                                 src={item.imageSrc}
@@ -614,7 +614,7 @@ export default function Example() {
                                               itemIdx === 0
                                                 ? "aspect-w-2 col-span-2"
                                                 : "",
-                                              "aspect-w-1 aspect-h-1 group relative overflow-hidden rounded-md bg-gray-100",
+                                              "group aspect-h-1 aspect-w-1 relative overflow-hidden rounded-md bg-gray-100",
                                             )}
                                           >
                                             <img
@@ -1070,7 +1070,7 @@ export default function Example() {
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
             {relatedProducts.map((relatedProduct) => (
               <div key={relatedProduct.id} className="group relative">
-                <div className="aspect-h-1 aspect-w-1 lg:aspect-none w-full overflow-hidden rounded-md group-hover:opacity-75 lg:h-80">
+                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none group-hover:opacity-75 lg:h-80">
                   <img
                     src={relatedProduct.imageSrc}
                     alt={relatedProduct.imageAlt}
