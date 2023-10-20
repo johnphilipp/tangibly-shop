@@ -140,64 +140,69 @@ const getAccessToken = async (userId: string) => {
 };
 
 export const activitiesRouter = createTRPCRouter({
-  fetchActivities: protectedProcedure.query(async ({ ctx }) => {
-    const accessToken = await getAccessToken(ctx.session.user.id);
-    if (!accessToken) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "No access token found",
-      });
-    }
-
-    const after: number | null = null;
-    const perPage = 200;
-
-    let url = `https://www.strava.com/api/v3/athlete/activities?`;
-    if (after) {
-      url += `after=${after}&per_page=${perPage}`;
-    } else {
-      url += `per_page=${perPage}`;
-    }
-
-    const config = {
-      method: "get",
-      url: url,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-
-    try {
-      const response = await axios(config);
-      const activities = response.data as Activity[];
-
-      if (!activities) {
+  fetchActivities: protectedProcedure
+    .input(z.object({ accessToken: z.string() }))
+    .query(async ({ ctx, input }) => {
+      // const accessToken = await getAccessToken(ctx.session.user.id);
+      const accessToken = input.accessToken;
+      if (!accessToken) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "No activities found",
+          message: "No access token found",
         });
       }
 
-      return activities.map((activity) => flattenActivity(activity));
-    } catch (error) {
-      // If there's an HTTP error, throw a TRPCError with the message from the error
-      if (axios.isAxiosError(error)) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: error.message,
-        });
-      } else if (error instanceof ZodError) {
-        // If there's a validation error, throw a TRPCError with details
-        throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
+      // btw, this is how yo add to DB: ctx.db.user.create({});
+
+      const after: number | null = null;
+      const perPage = 200;
+
+      let url = `https://www.strava.com/api/v3/athlete/activities?`;
+      if (after) {
+        url += `after=${after}&per_page=${perPage}`;
       } else {
-        // For any other errors, throw a generic server error
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong",
-        });
+        url += `per_page=${perPage}`;
       }
-    }
-  }),
+
+      const config = {
+        method: "get",
+        url: url,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      try {
+        const response = await axios(config);
+        const activities = response.data as Activity[];
+
+        if (!activities) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No activities found",
+          });
+        }
+
+        return activities.map((activity) => flattenActivity(activity));
+      } catch (error) {
+        // If there's an HTTP error, throw a TRPCError with the message from the error
+        if (axios.isAxiosError(error)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: error.message,
+          });
+        } else if (error instanceof ZodError) {
+          // If there's a validation error, throw a TRPCError with details
+          throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
+        } else {
+          // For any other errors, throw a generic server error
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong",
+          });
+        }
+      }
+    }),
 });
 
 function flattenActivity(activity: Activity): FlattenedActivity {

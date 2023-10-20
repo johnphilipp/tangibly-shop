@@ -25,7 +25,14 @@ export default function Home() {
   );
 
   const { data: activityData, isLoading: activityDataLoading } =
-    api.activities.fetchActivities.useQuery();
+    api.activities.fetchActivities.useQuery(
+      {
+        accessToken: accountData?.access_token ?? "",
+      },
+      {
+        enabled: accountData !== undefined,
+      },
+    );
 
   console.log("accessToken", accountData?.access_token);
 
