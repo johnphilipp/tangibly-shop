@@ -7,6 +7,9 @@ import { AddActivityModal } from "./AddActivityModal";
 import { ActivityModal } from "./ActivityModal";
 import type { FlattenedActivity } from "~/server/api/routers/activities";
 import Button from "../Button";
+import { AiOutlineDownload } from "react-icons/ai";
+import { BiShuffle } from "react-icons/bi";
+import { BsEyeFill } from "react-icons/bs";
 
 export const SVG_WIDTH = 1000;
 export const SVG_HEIGHT = 500;
@@ -74,8 +77,9 @@ export default function Editor({
   };
 
   return (
-    <>
-      <div className="min-w-[300px] text-center sm:min-w-[800px]">
+    <div className="m-4">
+      {/* CANVAS */}
+      <div className="min-w-[300px] border text-center shadow-lg sm:min-w-[800px]">
         <svg
           ref={svgRef}
           width="100%"
@@ -84,6 +88,7 @@ export default function Editor({
           preserveAspectRatio="xMidYMid meet"
         >
           <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill="white" />
+
           {Array.from({ length: MAX_ACTIVITIES }).map((_, index) => {
             const row = Math.floor(index / 10);
             const col = index % 10;
@@ -104,6 +109,7 @@ export default function Editor({
                   className="hoverable-rect"
                   style={{ cursor: "pointer" }}
                 />
+
                 {/* Check if the activity is null and render a plus sign */}
                 {selectedActivities[index] === null && (
                   <text
@@ -121,6 +127,7 @@ export default function Editor({
               </g>
             );
           })}
+
           {/* Render the paths last so they are on top of the transparent rectangles */}
           {pathDataArray.map((pathData, index) => (
             <path
@@ -135,71 +142,75 @@ export default function Editor({
             />
           ))}
         </svg>
-        {isModalVisible &&
-          selectedActivityIndex !== null &&
-          selectedActivities[selectedActivityIndex] && (
-            <ActivityModal
-              activity={selectedActivities[selectedActivityIndex]!}
-              onClose={() => setIsModalVisible(false)}
-              onDelete={() => deleteActivity(selectedActivityIndex)}
-            />
-          )}
+      </div>
 
-        {isAddModalVisible && (
-          <AddActivityModal
-            activities={activitiesWithGPS}
-            onAdd={(activity) => {
-              typeof selectedActivityIndex === "number" &&
-                addActivity(selectedActivityIndex, activity);
-            }}
-            onClose={() => setIsAddModalVisible(false)}
+      {/* MODALS */}
+      {isModalVisible &&
+        selectedActivityIndex !== null &&
+        selectedActivities[selectedActivityIndex] && (
+          <ActivityModal
+            activity={selectedActivities[selectedActivityIndex]!}
+            onClose={() => setIsModalVisible(false)}
+            onDelete={() => deleteActivity(selectedActivityIndex)}
           />
         )}
 
-        <div className="mt-4 grid grid-cols-3 items-center gap-4">
-          <div className="col-span-1">
-            <p className="text-left font-semibold ">Stroke Width</p>
-          </div>
-          <div className="col-span-2">
-            <input
-              className="w-full rounded-full bg-white/10 px-4 py-3 text-center font-semibold "
-              type="number"
-              value={strokeWidth}
-              onChange={(e) => setStrokeWidth(Number(e.target.value))}
-              min="3"
-              max="10"
-            />
-          </div>
+      {isAddModalVisible && (
+        <AddActivityModal
+          activities={activitiesWithGPS}
+          onAdd={(activity) => {
+            typeof selectedActivityIndex === "number" &&
+              addActivity(selectedActivityIndex, activity);
+          }}
+          onClose={() => setIsAddModalVisible(false)}
+        />
+      )}
 
-          <div className="col-span-1">
-            <p className="text-left font-semibold ">Padding</p>
+      {/* ACTIONS */}
+      <div className="mt-4 flex-col space-y-4 border bg-white p-4 shadow-lg sm:p-6">
+        <div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Button onClick={shuffleActivities} className="w-full">
+              <BiShuffle className="mr-2 inline-block h-8 w-8" />
+            </Button>
+            <Button className="w-full">
+              <BsEyeFill className="mr-2 inline-block h-8 w-8" />
+            </Button>
+            <Button onClick={() => handleDownload(svgRef)} className="w-full">
+              <AiOutlineDownload className="mr-2 inline-block h-8 w-8" />
+            </Button>
           </div>
-          <div className="col-span-2">
-            <input
-              className="w-full rounded-full bg-white/10 px-4 py-3 text-center font-semibold "
-              type="number"
-              value={padding}
-              onChange={(e) => setPadding(Number(e.target.value))}
-              min="5"
-              max="50"
-            />
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          <Button onClick={shuffleActivities} className="w-full">
-            shuffle
-          </Button>
-          <Button className="w-full">
-            {/* ideally as a popup, which spins nicely, maybe with option to zoom */}
-            visualize
-          </Button>
-          <Button onClick={() => handleDownload(svgRef)} className="w-full">
-            {/* maybe remove this once visualization is done */}
-            download
-          </Button>
         </div>
       </div>
-    </>
+
+      {/* CONTROLS */}
+      <div className="mt-4 grid grid-cols-2 flex-col gap-4 border bg-white p-4 shadow-lg sm:p-6">
+        {/* Stroke Width */}
+        <div className="flex-col space-y-1">
+          <p className="text-left font-semibold ">Stroke Width</p>
+          <input
+            className="w-full rounded-md border border-gray-200 px-4 py-2 text-center font-semibold"
+            type="number"
+            value={strokeWidth}
+            onChange={(e) => setStrokeWidth(Number(e.target.value))}
+            min="3"
+            max="10"
+          />
+        </div>
+
+        {/* Padding */}
+        <div className="flex-col space-y-1">
+          <p className="text-left font-semibold ">Padding</p>
+          <input
+            className="w-full rounded-md border border-gray-200 px-4 py-2 text-center font-semibold"
+            type="number"
+            value={padding}
+            onChange={(e) => setPadding(Number(e.target.value))}
+            min="5"
+            max="50"
+          />
+        </div>
+      </div>
+    </div>
   );
 }

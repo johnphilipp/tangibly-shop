@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.hoverable-rect:hover {
+    fill: rgba(0, 0, 0, 0.05);
+}
+  
+.non-interactive-path {
+    pointer-events: none;
+}

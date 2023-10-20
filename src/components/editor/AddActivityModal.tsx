@@ -21,12 +21,12 @@ export function AddActivityModal({
 }) {
   return (
     <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
-      <div className="max-h-80 overflow-y-scroll rounded-2xl bg-gray-700 p-4">
+      <div className="max-h-80 overflow-y-scroll rounded-lg border bg-white p-4">
         <Button onClick={onClose}>Close</Button>
         <div className="mt-4" />
         {activities.map((activity, index) => (
           <div
-            className="mb-2 cursor-pointer rounded-lg bg-gray-800 p-4"
+            className="mb-2 cursor-pointer rounded-md border bg-gray-100 p-4 hover:bg-gray-200"
             key={index}
             onClick={() => onAdd(activity)}
           >
