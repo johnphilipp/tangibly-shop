@@ -19,7 +19,7 @@ export interface Activity {
   total_elevation_gain: number;
   type: string;
   sport_type: string;
-  workout_type?: number;
+  workout_type?: number | null;
   id: number;
   start_date: string;
   start_date_local: string;
