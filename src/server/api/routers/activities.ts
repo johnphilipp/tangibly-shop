@@ -142,6 +142,13 @@ const getAccessToken = async (userId: string) => {
 export const activitiesRouter = createTRPCRouter({
   fetchActivities: protectedProcedure.query(async ({ ctx }) => {
     const accessToken = await getAccessToken(ctx.session.user.id);
+    if (!accessToken) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No access token found",
+      });
+    }
+
     const after: number | null = null;
     const perPage = 200;
 
