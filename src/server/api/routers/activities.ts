@@ -3,7 +3,7 @@ import { z, ZodError } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"; // Adjust the import based on your project structure
 import axios from "axios";
 import { TRPCError } from "@trpc/server";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 interface Athlete {
   id: number;
@@ -134,20 +134,10 @@ export interface FlattenedActivity {
 // If no, fetch api --> save to db
 // Return allactivities from db
 
-const getAccessToken = async (userId: string) => {
-  const prisma = new PrismaClient();
-  const response = await prisma.account.findFirst({
-    where: { userId },
-    select: { access_token: true },
-  });
-  return response?.access_token;
-};
-
 export const activitiesRouter = createTRPCRouter({
   fetchActivities: protectedProcedure
     .input(z.object({ accessToken: z.string() }))
-    .query(async ({ ctx, input }) => {
-      // const accessToken = await getAccessToken(ctx.session.user.id);
+    .query(async ({ input }) => {
       const accessToken = input.accessToken;
       if (!accessToken) {
         throw new TRPCError({
@@ -158,15 +148,10 @@ export const activitiesRouter = createTRPCRouter({
 
       // btw, this is how yo add to DB: ctx.db.user.create({});
 
-      const after: number | null = null;
       const perPage = 200;
 
       let url = `https://www.strava.com/api/v3/athlete/activities?`;
-      if (after) {
-        url += `after=${after}&per_page=${perPage}`;
-      } else {
-        url += `per_page=${perPage}`;
-      }
+      url += `per_page=${perPage}`;
 
       const config = {
         method: "get",
