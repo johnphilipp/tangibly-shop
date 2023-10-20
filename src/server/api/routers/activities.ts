@@ -52,6 +52,7 @@ export interface Activity {
   end_latlng: number[];
   average_speed: number;
   max_speed: number;
+  average_watts?: number;
   average_cadence?: number;
   has_heartrate: boolean;
   average_heartrate: number;
