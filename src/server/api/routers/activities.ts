@@ -26,6 +26,7 @@ export interface Activity {
   total_elevation_gain: number;
   type: string;
   sport_type: string;
+  average_temp?: number;
   workout_type?: number | null;
   id: number;
   start_date: string;
