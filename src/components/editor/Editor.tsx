@@ -20,6 +20,9 @@ export default function Editor({
 }: {
   activities: FlattenedActivity[];
 }) {
+  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF"); // default white
+  const [strokeColor, setStrokeColor] = useState("#000000"); // default black
+
   const aspectRatios: AspectRatio[] = [
     { rows: 5, cols: 10 },
     { rows: 10, cols: 10 },
@@ -107,7 +110,7 @@ export default function Editor({
           viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           preserveAspectRatio="xMidYMid meet"
         >
-          <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill="white" />
+          <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
 
           {Array.from({ length: MAX_ACTIVITIES }).map((_, index) => {
             const row = Math.floor(index / currentAspectRatio.cols);
@@ -158,7 +161,7 @@ export default function Editor({
               key={index}
               d={pathData}
               fill="none"
-              stroke="black"
+              stroke={strokeColor}
               strokeWidth={strokeWidth}
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -191,7 +194,7 @@ export default function Editor({
       )}
 
       {/* CONTROLS */}
-      <div className="space-y-1 border bg-white shadow-lg">
+      <div className="border bg-white shadow-lg">
         {/* ASPECT RATIOS */}
         <div className="flex-col space-y-1 p-4 sm:p-6">
           <p className="text-left font-semibold ">Aspect Ratios</p>
@@ -246,6 +249,28 @@ export default function Editor({
               onChange={(e) => setPadding(Number(e.target.value))}
               min="5"
               max="50"
+            />
+          </div>
+
+          {/* Background Color */}
+          <div className="flex-col space-y-1">
+            <p className="text-left font-semibold">Background Color</p>
+            <input
+              type="color"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              className="h-12 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-center font-semibold"
+            />
+          </div>
+
+          {/* Stroke Color */}
+          <div className="flex-col space-y-1">
+            <p className="text-left font-semibold">Stroke Color</p>
+            <input
+              type="color"
+              value={strokeColor}
+              onChange={(e) => setStrokeColor(e.target.value)}
+              className="h-12 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-center font-semibold"
             />
           </div>
         </div>

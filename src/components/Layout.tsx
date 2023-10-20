@@ -8,7 +8,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { Fragment, useState } from "react";
 import { ImMagicWand } from "react-icons/im";
 
@@ -53,7 +53,7 @@ const navigation = {
   ],
 };
 
-function classNames(...classes) {
+function classNames(...classes: string[] | undefined[]) {
   return classes.filter(Boolean).join(" ");
 }
 
