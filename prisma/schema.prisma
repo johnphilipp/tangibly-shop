@@ -2,73 +2,135 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-    provider     = "mysql"
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
 
-    @@index([name])
-    @@index([createdById])
+  @@index([name])
+  @@index([createdById])
 }
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
+  @@index([userId])
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  posts         Post[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+model Activity {
+  id                            Int          @id @default(autoincrement())
+  athlete                       Int
+  name                          String
+  distance                      Float
+  moving_time                   Int
+  elapsed_time                  Int
+  total_elevation_gain          Float
+  type                          String
+  sport_type                    String
+  workout_type                  Int? // '?' means it's optional in Prisma
+  start_date                    String
+  start_date_local              String
+  timezone                      String
+  utc_offset                    Float
+  location_city                 String? // 'null | type' becomes 'type?' in Prisma
+  location_state                String? // 'null | type' becomes 'type?' in Prisma
+  location_country              String
+  achievement_count             Int
+  kudos_count                   Int
+  comment_count                 Int
+  athlete_count                 Int
+  photo_count                   Int
+  mapId                         String
+  summaryPolyline               String
+  trainer                       Boolean
+  commute                       Boolean
+  manual                        Boolean
+  private                       Boolean
+  visibility                    String
+  flagged                       Boolean
+  gear_id                       String?
+  coordinates                   Coordinates? @relation(fields: [coordinatesId], references: [id])
+  coordinatesId                 Int?         @unique
+  average_speed                 Float
+  max_speed                     Float
+  average_cadence               Float?
+  has_heartrate                 Boolean
+  average_heartrate             Float
+  max_heartrate                 Float
+  heartrate_opt_out             Boolean
+  display_hide_heartrate_option Boolean
+  elev_high                     Float?
+  elev_low                      Float?
+  upload_id                     Int
+  upload_id_str                 String
+  external_id                   String
+  from_accepted_tag             Boolean
+  pr_count                      Int
+  total_photo_count             Int
+  has_kudoed                    Boolean
+}
+
+model Coordinates {
+  id        Int       @id @default(autoincrement())
+  lat_start Float
+  lng_start Float
+  lat_end   Float
+  lng_end   Float
+  activity  Activity?
 }

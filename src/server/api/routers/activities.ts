@@ -129,6 +129,8 @@ interface FlattenedActivity {
 // If yes, get latest timestamp from db --> Fetch api with after=timestamp --> save to db
 // If no, fetch api --> save to db
 // Return allactivities from db
+// Look into conditional query stuff
+
 
 const getAccessToken = async (userId: string) => {
   const prisma = new PrismaClient();
@@ -204,6 +206,48 @@ export const activitiesRouter = createTRPCRouter({
       }
     }),
 });
+
+interface Coordinates {
+    id: number;
+    lat_start: number;
+    lng_start: number;
+    lat_end: number;
+    lng_end: number;
+}
+
+async function saveActivity(activity: FlattenedActivity) {
+  // First, save the coordinates
+  const coordinates: Coordinates = await Prisma.coordinates.create({
+    data: {
+      lat_start: activity.start_latlng[0],
+      lng_start: activity.start_latlng[1],
+      lat_end: activity.end_latlng[0],
+      lng_end: activity.end_latlng[1]
+    }
+  });
+
+  // Then, save the activity referencing the saved coordinates
+  const savedActivity = await prisma.flattenedActivity.create({
+    data: {
+      athlete: activity.athlete,
+      name: activity.name,
+      distance: activity.distance,
+      // ... all other fields except for start_latlng and end_latlng
+      coordinatesId: coordinates.id, // Reference saved coordinates
+      // ...
+    }
+  });
+
+  return savedActivity;
+}
+
+// Usage:
+const activityData: FlattenedActivity = {
+  // your activity data here...
+};
+saveActivity(activityData);
+
+
 
 function flattenActivity(activity: Activity): FlattenedActivity {
   return {
