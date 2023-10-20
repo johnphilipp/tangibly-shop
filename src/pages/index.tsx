@@ -3,7 +3,7 @@ import { BsGiftFill, BsStrava } from "react-icons/bs";
 import Layout from "~/components/Layout";
 import Image from "next/image";
 
-export default function Example() {
+export default function LandingPage() {
   return (
     <Layout>
       <div className="relative isolate">
