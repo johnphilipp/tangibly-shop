@@ -26,7 +26,7 @@ export interface Activity {
   total_elevation_gain: number;
   type: string;
   sport_type: string;
-  workout_type?: number;
+  workout_type?: number | null;
   id: number;
   start_date: string;
   start_date_local: string;
@@ -53,10 +53,12 @@ export interface Activity {
   average_speed: number;
   max_speed: number;
   average_watts?: number;
+  kilojoules?: number;
+  device_watts?: boolean;
   average_cadence?: number;
   has_heartrate: boolean;
-  average_heartrate: number;
-  max_heartrate: number;
+  average_heartrate?: number;
+  max_heartrate?: number;
   heartrate_opt_out: boolean;
   display_hide_heartrate_option: boolean;
   elev_high?: number;
@@ -79,7 +81,7 @@ export interface FlattenedActivity {
   total_elevation_gain: number;
   type: string;
   sport_type: string;
-  workout_type?: number;
+  workout_type?: number | null;
   id: number;
   start_date: string;
   start_date_local: string;
