@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AiOutlineDownload } from "react-icons/ai";
+import { AiFillEdit, AiOutlineDownload } from "react-icons/ai";
 import { BiShuffle } from "react-icons/bi";
 import { BsEyeFill } from "react-icons/bs";
 import type { FlattenedActivity } from "~/server/api/routers/activities";
@@ -10,6 +10,7 @@ import { convertToSVGPath } from "./utils/convertToSVGPath";
 import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
 import { handleDownload } from "./utils/handleDownload";
 import Alert from "./Alert";
+import { useRouter } from "next/router";
 
 export interface AspectRatio {
   rows: number;
@@ -21,6 +22,8 @@ export default function Editor({
 }: {
   activities: FlattenedActivity[];
 }) {
+  const router = useRouter();
+
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF"); // default white
   const [strokeColor, setStrokeColor] = useState("#000000"); // default black
 
@@ -94,6 +97,47 @@ export default function Editor({
     newActivities[index] = activity;
     setSelectedActivities(newActivities);
     setIsAddModalVisible(false);
+  };
+
+  const getSVGDataURL = () => {
+    const svgNode = svgRef.current;
+    if (!svgNode) return;
+
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgNode);
+
+    // Create a Blob from the SVG data
+    const svgBlob = new Blob([svgString], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+
+    // Create and return the object URL
+    return URL.createObjectURL(svgBlob);
+  };
+
+  const navigateToFabric = async () => {
+    try {
+      // assuming getSVGDataURL is synchronous, if it's not, you might need to await it
+      const svgUrl = getSVGDataURL();
+
+      if (!svgUrl) {
+        throw new Error("No SVG data available for navigation.");
+      }
+
+      // Await the router.push and check if it was successful.
+      // If this is Next.js, the push method resolves to 'true' if the navigation happened, 'false' otherwise.
+      const navigationResult = await router.push({
+        pathname: "/fabric",
+        query: { svg: svgUrl },
+      });
+
+      if (!navigationResult) {
+        throw new Error("Navigation to /fabric was not successful.");
+      }
+    } catch (error) {
+      // Handle any errors that occur during the process
+      console.error("An error occurred while navigating to /fabric:", error);
+    }
   };
 
   useEffect(() => {
@@ -280,18 +324,22 @@ export default function Editor({
 
         {/* ACTIONS */}
         <div className="flex-col space-y-1 p-4 sm:p-6">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             <Button onClick={shuffleActivities} className="w-full">
               <BiShuffle className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
-              Shuffle
+              <span className="hidden sm:block">Shuffle</span>
             </Button>
-            <Button className="w-full">
+            <Button className="w-full" onClick={navigateToFabric}>
+              <AiFillEdit className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
+              <span className="hidden sm:block">Fabric</span>
+            </Button>
+            <Button className="w-full" onClick={() => void 0}>
               <BsEyeFill className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
-              Preview
+              <span className="hidden sm:block">Preview</span>
             </Button>
             <Button onClick={() => handleDownload(svgRef)} className="w-full">
               <AiOutlineDownload className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
-              Download
+              <span className="hidden sm:block">Download</span>
             </Button>
           </div>
         </div>
