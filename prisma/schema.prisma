@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider     = "mysql"
+  provider     = "sqlite"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -26,19 +26,20 @@ model Post {
 
 // Necessary for Next auth
 model Account {
-  id                String  @id @default(cuid())
+  id                String     @id @default(cuid())
   userId            String
   type              String
   provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  providerAccountId String     @unique
+  refresh_token     String? //@db.Text
+  access_token      String? //@db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String? //@db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Activity          Activity[]
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -74,8 +75,8 @@ model VerificationToken {
 }
 
 model Activity {
-  id                            Int          @id @default(autoincrement())
-  athlete                       Int
+  userId                        Account      @relation(fields: [athlete], references: [id])
+  athlete                       String
   name                          String
   distance                      Float
   moving_time                   Int
@@ -111,19 +112,22 @@ model Activity {
   max_speed                     Float
   average_cadence               Float?
   has_heartrate                 Boolean
-  average_heartrate             Float
-  max_heartrate                 Float
+  average_heartrate             Float?
+  max_heartrate                 Float?
   heartrate_opt_out             Boolean
   display_hide_heartrate_option Boolean
   elev_high                     Float?
   elev_low                      Float?
-  upload_id                     Int
+  upload_id                     BigInt
+  id                            BigInt       @id
   upload_id_str                 String
   external_id                   String
   from_accepted_tag             Boolean
   pr_count                      Int
   total_photo_count             Int
   has_kudoed                    Boolean
+
+  @@index([athlete])
 }
 
 model Coordinates {
