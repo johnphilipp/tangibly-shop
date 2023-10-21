@@ -1,10 +1,3 @@
-// other imports
-import { z, ZodError } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"; // Adjust the import based on your project structure
-import axios from "axios";
-import { TRPCError } from "@trpc/server";
-import { PrismaClient } from "@prisma/client";
-
 interface Athlete {
   id: number;
   resource_state: number;
@@ -26,7 +19,6 @@ export interface Activity {
   total_elevation_gain: number;
   type: string;
   sport_type: string;
-  average_temp?: number;
   workout_type?: number | null;
   id: number;
   start_date: string;
@@ -53,9 +45,6 @@ export interface Activity {
   end_latlng: number[];
   average_speed: number;
   max_speed: number;
-  average_watts?: number;
-  kilojoules?: number;
-  device_watts?: boolean;
   average_cadence?: number;
   has_heartrate: boolean;
   average_heartrate?: number;
@@ -126,75 +115,7 @@ export interface FlattenedActivity {
   has_kudoed: boolean;
 }
 
-// TODO:
-// Fetch activities until all are fetched by using after=timestamp (unix) from last activity in every response until response length is 0
-// Add Activity to Prisma model
-// Check if user has activites
-// If yes, get latest timestamp from db --> Fetch api with after=timestamp --> save to db
-// If no, fetch api --> save to db
-// Return allactivities from db
-
-export const activitiesRouter = createTRPCRouter({
-  fetchActivities: protectedProcedure
-    .input(z.object({ accessToken: z.string() }))
-    .query(async ({ input }) => {
-      const accessToken = input.accessToken;
-      if (!accessToken) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "No access token found",
-        });
-      }
-
-      // btw, this is how yo add to DB: ctx.db.user.create({});
-
-      const perPage = 200;
-
-      let url = `https://www.strava.com/api/v3/athlete/activities?`;
-      url += `per_page=${perPage}`;
-
-      const config = {
-        method: "get",
-        url: url,
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      };
-
-      try {
-        const response = await axios(config);
-        const activities = response.data as Activity[];
-
-        if (!activities) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "No activities found",
-          });
-        }
-
-        return activities.map((activity) => flattenActivity(activity));
-      } catch (error) {
-        // If there's an HTTP error, throw a TRPCError with the message from the error
-        if (axios.isAxiosError(error)) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: error.message,
-          });
-        } else if (error instanceof ZodError) {
-          // If there's a validation error, throw a TRPCError with details
-          throw new TRPCError({ code: "BAD_REQUEST", message: error.message });
-        } else {
-          // For any other errors, throw a generic server error
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Something went wrong",
-          });
-        }
-      }
-    }),
-});
-
-function flattenActivity(activity: Activity): FlattenedActivity {
+export function flattenActivity(activity: Activity): FlattenedActivity {
   return {
     athlete: activity.athlete.id,
     name: activity.name,

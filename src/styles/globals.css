@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Canvas hover */
+.hoverable-rect:hover {
+    fill: rgba(0, 0, 0, 0.05);
+}
+  
+/* Canvas prevent line from blocking hover */
+.non-interactive-path {
+    pointer-events: none;
+}
+
+/* Alert fade in */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s forwards;
+}
