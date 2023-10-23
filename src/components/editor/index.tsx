@@ -9,7 +9,6 @@ import { AddActivityModal } from "./AddActivityModal";
 import { convertToSVGPath } from "./utils/convertToSVGPath";
 import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
 import { handleDownload } from "./utils/handleDownload";
-import Alert from "./Alert";
 import { useRouter } from "next/router";
 
 export interface AspectRatio {
@@ -340,8 +339,6 @@ export default function Editor({ activities }: { activities: Activity[] }) {
           </div>
         </div>
       </div>
-
-      <Alert />
     </div>
   );
 }
