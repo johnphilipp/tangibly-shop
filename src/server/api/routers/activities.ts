@@ -42,68 +42,77 @@ const getAllSavedActivities = async (userId: string) => {
                 }
 
                 // btw, this is how yo add to DB: ctx.db.user.create({});
-
-                const perPage = 1;
+                let foundActivities = 0;
+                let after = 0;
+                const perPage = 20;
 
                 console.log(ctx.session.user.id)
 
                 const savedActivities = await getAllSavedActivities(ctx.session.user.id);
 
-                console.log('savedActivities', savedActivities)
-                let url = `https://www.strava.com/api/v3/athlete/activities?`;
+                after = new Date(savedActivities[0]?.start_date ?? new Date(0)).getTime() / 1000;
 
-                if (savedActivities[0]?.start_date) {
-                    const after = new Date(savedActivities[0].start_date).getTime() / 1000;
-                    url += `after=${after + 1}&per_page=${perPage}`;
-                } else {
-                    url += `per_page=${perPage}`;
-                }
+                while (foundActivities < perPage) {
+                    console.log('savedActivities', savedActivities)
 
-                console.log('url', url)
+                    let url = `https://www.strava.com/api/v3/athlete/activities?`;
 
-                const config = {
-                    method: "get",
-                    url: url,
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                };
-
-                try {
-                    const response = await axios(config);
-                    const activities = response.data as StravaActivity[];
-
-                    if (!activities) {
-                        throw new TRPCError({
-                            code: "BAD_REQUEST",
-                            message: "No activities found",
-                        });
-                    }
-
-                    const fa = activities.map(value => fromStravaActivity(value));
-                    for (const value of fa) {
-                        await saveActivity(value, ctx.session.user.id);
-                    }
-
-                    return await getAllSavedActivities(ctx.session.user.id);
-
-                } catch (error) {
-                    // If there's an HTTP error, throw a TRPCError with the message from the error
-                    if (axios.isAxiosError(error)) {
-                        throw new TRPCError({
-                            code: "BAD_REQUEST",
-                            message: error.message,
-                        });
-                    } else if (error instanceof ZodError) {
-                        // If there's a validation error, throw a TRPCError with details
-                        throw new TRPCError({code: "BAD_REQUEST", message: error.message});
+                    if (after > 0) {
+                        url += `after=${after + 1}&per_page=${perPage}`;
                     } else {
-                        // For any other errors, throw a generic server error
-                        throw new TRPCError({
-                            code: "INTERNAL_SERVER_ERROR",
-                        });
+                        url += `per_page=${perPage}`;
+                    }
+
+                    console.log('url', url)
+
+                    const config = {
+                        method: "get",
+                        url: url,
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    };
+
+                    try {
+                        const response = await axios(config);
+                        const activities = response.data as StravaActivity[];
+
+                        if (!activities) {
+                            throw new TRPCError({
+                                code: "BAD_REQUEST",
+                                message: "No activities found",
+                            });
+                        }
+
+                        foundActivities = activities.length;
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        after = new Date(activities[foundActivities - 1]?.start_date ?? new Date(0)).getTime() / 1000;
+
+                        const fa = activities.map(value => fromStravaActivity(value));
+                        for (const value of fa) {
+                            await saveActivity(value, ctx.session.user.id);
+                        }
+
+                    } catch (error) {
+                        // If there's an HTTP error, throw a TRPCError with the message from the error
+                        if (axios.isAxiosError(error)) {
+                            throw new TRPCError({
+                                code: "BAD_REQUEST",
+                                message: error.message,
+                            });
+                        } else if (error instanceof ZodError) {
+                            // If there's a validation error, throw a TRPCError with details
+                            throw new TRPCError({code: "BAD_REQUEST", message: error.message});
+                        } else {
+                            // For any other errors, throw a generic server error
+                            throw new TRPCError({
+                                code: "INTERNAL_SERVER_ERROR",
+                            });
+                        }
                     }
                 }
+
+                return getAllSavedActivities(ctx.session.user.id);
             }),
     });
 
