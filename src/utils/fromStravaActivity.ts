@@ -1,3 +1,5 @@
+import { Activity, Prisma } from '@prisma/client';
+
 interface Athlete {
   id: number;
   resource_state: number;
@@ -9,7 +11,7 @@ interface Map {
   resource_state: number;
 }
 
-export interface Activity {
+export interface StravaActivity {
   resource_state: number;
   athlete: Athlete;
   name: string;
@@ -62,62 +64,10 @@ export interface Activity {
   has_kudoed: boolean;
 }
 
-export interface FlattenedActivity {
-  athlete: number;
-  name: string;
-  distance: number;
-  moving_time: number;
-  elapsed_time: number;
-  total_elevation_gain: number;
-  type: string;
-  sport_type: string;
-  workout_type?: number | null;
-  id: number;
-  start_date: string;
-  start_date_local: string;
-  timezone: string;
-  utc_offset: number;
-  location_city: null | string;
-  location_state: null | string;
-  location_country: string;
-  achievement_count: number;
-  kudos_count: number;
-  comment_count: number;
-  athlete_count: number;
-  photo_count: number;
-  mapId: string;
-  summaryPolyline: string;
-  trainer: boolean;
-  commute: boolean;
-  manual: boolean;
-  private: boolean;
-  visibility: string;
-  flagged: boolean;
-  gear_id: null | string;
-  start_latlng: number[];
-  end_latlng: number[];
-  average_speed: number;
-  max_speed: number;
-  average_cadence?: number;
-  has_heartrate: boolean;
-  average_heartrate: number;
-  max_heartrate: number;
-  heartrate_opt_out: boolean;
-  display_hide_heartrate_option: boolean;
-  elev_high?: number;
-  elev_low?: number;
-  upload_id: number;
-  upload_id_str: string;
-  external_id: string;
-  from_accepted_tag: boolean;
-  pr_count: number;
-  total_photo_count: number;
-  has_kudoed: boolean;
-}
 
-export function flattenActivity(activity: Activity): FlattenedActivity {
+export function fromStravaActivity(activity: StravaActivity): Activity {
   return {
-    athlete: activity.athlete.id,
+    athlete: activity.athlete.id.toString(),
     name: activity.name,
     distance: activity.distance,
     moving_time: activity.moving_time,
@@ -125,8 +75,8 @@ export function flattenActivity(activity: Activity): FlattenedActivity {
     total_elevation_gain: activity.total_elevation_gain,
     type: activity.type,
     sport_type: activity.sport_type,
-    workout_type: activity.workout_type,
-    id: activity.id,
+    workout_type: activity.workout_type ?? null,
+    id: BigInt(activity.id),
     start_date: activity.start_date,
     start_date_local: activity.start_date_local,
     timezone: activity.timezone,
@@ -148,19 +98,21 @@ export function flattenActivity(activity: Activity): FlattenedActivity {
     visibility: activity.visibility,
     flagged: activity.flagged,
     gear_id: activity.gear_id,
-    start_latlng: activity.start_latlng,
-    end_latlng: activity.end_latlng,
+    lat_start: activity.start_latlng[0] ?? 0,
+    lng_start: activity.start_latlng[1] ?? 0,
+    lat_end: activity.end_latlng[0] ?? 0,
+    lng_end: activity.end_latlng[1] ?? 0,
     average_speed: activity.average_speed,
     max_speed: activity.max_speed,
-    average_cadence: activity.average_cadence,
+    average_cadence: activity.average_cadence ?? null,
     has_heartrate: activity.has_heartrate,
     average_heartrate: activity.average_heartrate ?? 0,
     max_heartrate: activity.max_heartrate ?? 0,
     heartrate_opt_out: activity.heartrate_opt_out,
     display_hide_heartrate_option: activity.display_hide_heartrate_option,
-    elev_high: activity.elev_high,
-    elev_low: activity.elev_low,
-    upload_id: activity.upload_id,
+    elev_high: activity.elev_high ?? null,
+    elev_low: activity.elev_low ?? null,
+    upload_id: BigInt(activity.upload_id),
     upload_id_str: activity.upload_id_str,
     external_id: activity.external_id,
     from_accepted_tag: activity.from_accepted_tag,

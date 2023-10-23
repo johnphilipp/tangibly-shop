@@ -75,7 +75,7 @@ model VerificationToken {
 }
 
 model Activity {
-  userId                        Account      @relation(fields: [athlete], references: [id])
+  userId                        Account @relation(fields: [athlete], references: [id])
   athlete                       String
   name                          String
   distance                      Float
@@ -85,6 +85,7 @@ model Activity {
   type                          String
   sport_type                    String
   workout_type                  Int? // '?' means it's optional in Prisma
+  id                            BigInt  @id
   start_date                    String
   start_date_local              String
   timezone                      String
@@ -106,8 +107,10 @@ model Activity {
   visibility                    String
   flagged                       Boolean
   gear_id                       String?
-  coordinates                   Coordinates? @relation(fields: [coordinatesId], references: [id])
-  coordinatesId                 Int?         @unique
+  lat_start                     Float
+  lng_start                     Float
+  lat_end                       Float
+  lng_end                       Float
   average_speed                 Float
   max_speed                     Float
   average_cadence               Float?
@@ -119,7 +122,6 @@ model Activity {
   elev_high                     Float?
   elev_low                      Float?
   upload_id                     BigInt
-  id                            BigInt       @id
   upload_id_str                 String
   external_id                   String
   from_accepted_tag             Boolean
@@ -128,13 +130,4 @@ model Activity {
   has_kudoed                    Boolean
 
   @@index([athlete])
-}
-
-model Coordinates {
-  id        Int       @id @default(autoincrement())
-  lat_start Float
-  lng_start Float
-  lat_end   Float
-  lng_end   Float
-  activity  Activity?
 }

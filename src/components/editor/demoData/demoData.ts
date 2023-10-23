@@ -1,6 +1,6 @@
-import type { Activity } from "~/server/api/routers/activities";
+import { StravaActivity } from "~/utils/fromStravaActivity";
 
-export const activityDataDemo: Activity[] = [
+export const activityDataDemo: StravaActivity[] = [
   {
     resource_state: 2,
     athlete: {

@@ -1,11 +1,10 @@
 import { useSession } from "next-auth/react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
-import { LoadingPage } from "~/components/Loading";
 import Editor from "~/components/editor/Editor";
 import { activityDataDemo } from "~/components/editor/demoData/demoData";
 import { api } from "~/utils/api";
-import { flattenActivity } from "~/utils/flattenActivity";
+import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
 export default function EditorPage() {
   let activityData;
@@ -36,7 +35,7 @@ export default function EditorPage() {
   if (!user || activityDataFetched === undefined) {
     // Use demo data if user is not logged in
     activityData = activityDataDemo.map((activity) =>
-      flattenActivity(activity),
+      fromStravaActivity(activity),
     );
   } else {
     activityData = activityDataFetched;
