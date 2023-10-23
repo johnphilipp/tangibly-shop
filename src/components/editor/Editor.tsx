@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AiFillEdit, AiOutlineDownload } from "react-icons/ai";
 import { BiShuffle } from "react-icons/bi";
 import { BsEyeFill } from "react-icons/bs";
-import type { FlattenedActivity } from "~/server/api/routers/activities";
+import type { Activity } from "@prisma/client";
 import Button from "../Button";
 import { ActivityModal } from "./ActivityModal";
 import { AddActivityModal } from "./AddActivityModal";
@@ -20,7 +20,7 @@ export interface AspectRatio {
 export default function Editor({
   activities,
 }: {
-  activities: FlattenedActivity[];
+  activities: Activity[];
 }) {
   const router = useRouter();
 
@@ -53,7 +53,7 @@ export default function Editor({
     (activity) => activity.summaryPolyline,
   );
   const [selectedActivities, setSelectedActivities] = useState<
-    (FlattenedActivity | null)[]
+    (Activity | null)[]
   >(activitiesWithGPS.slice(0, MAX_ACTIVITIES));
 
   const shuffleActivities = () => {
@@ -92,7 +92,7 @@ export default function Editor({
     setIsModalVisible(false);
   };
 
-  const addActivity = (index: number, activity: FlattenedActivity) => {
+  const addActivity = (index: number, activity: Activity) => {
     const newActivities = [...selectedActivities];
     newActivities[index] = activity;
     setSelectedActivities(newActivities);

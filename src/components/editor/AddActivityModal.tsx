@@ -1,6 +1,6 @@
 import humanFormat from "human-format";
 import Button from "../Button";
-import type { FlattenedActivity } from "~/server/api/routers/activities";
+import type { Activity } from "@prisma/client"
 
 export const timeScale = new humanFormat.Scale({
   seconds: 1,
@@ -15,8 +15,8 @@ export function AddActivityModal({
   onAdd,
   onClose,
 }: {
-  activities: FlattenedActivity[];
-  onAdd: (activity: FlattenedActivity) => void;
+  activities: Activity[];
+  onAdd: (activity: Activity) => void;
   onClose: () => void;
 }) {
   return (

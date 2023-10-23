@@ -1,14 +1,14 @@
 import humanFormat from "human-format";
 import Button from "../Button";
 import { timeScale } from "./AddActivityModal";
-import type { FlattenedActivity } from "~/server/api/routers/activities";
+import type { Activity } from "@prisma/client"
 
 export function ActivityModal({
   activity,
   onClose,
   onDelete,
 }: {
-  activity: FlattenedActivity;
+  activity: Activity;
   onClose: () => void;
   onDelete: () => void;
 }) {
