@@ -1,4 +1,4 @@
-import { Activity, Prisma } from '@prisma/client';
+import { type Activity } from '@prisma/client';
 
 interface Athlete {
   id: number;
@@ -47,6 +47,10 @@ export interface StravaActivity {
   end_latlng: number[];
   average_speed: number;
   max_speed: number;
+  average_temp?: null | number;
+  average_watts?: null | number;
+  kilojoules?: null | number;
+  device_watts?: false,
   average_cadence?: number;
   has_heartrate: boolean;
   average_heartrate?: number;

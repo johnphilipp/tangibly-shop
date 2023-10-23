@@ -4,18 +4,8 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"; // Adj
 import axios from "axios";
 import {TRPCError} from "@trpc/server";
 import { PrismaClient } from "@prisma/client";
-import { Activity } from "@prisma/client";
-
-interface Athlete {
-    id: number;
-    resource_state: number;
-}
-
-interface Map {
-    id: string;
-    summary_polyline: string;
-    resource_state: number;
-}
+import { type Activity } from "@prisma/client";
+import {fromStravaActivity, type StravaActivity} from "~/utils/fromStravaActivity";
 
 
 // TODO:
@@ -28,25 +18,11 @@ interface Map {
 // Look into conditional query stuff
 
 
-const getAccessToken = async (userId: string) => {
-    const prisma = new PrismaClient();
-    const response = await prisma.account.findFirst({
-        where: {userId},
-        select: {access_token: true},
-    });
-    return response?.access_token;
-};
-
-
 const getAllSavedActivities = async (userId: string) => {
     const prisma = new PrismaClient();
     const response = prisma.activity.findMany({
         where: {athlete: userId},
         orderBy: {start_date: "desc"},
-        include: {
-            coordinates: true, // Include the coordinates relation
-            //userId: true, // Include the athlete relation
-        },
     });
 
     return response;
@@ -95,7 +71,7 @@ const getAllSavedActivities = async (userId: string) => {
 
                 try {
                     const response = await axios(config);
-                    const activities = response.data as Activity[];
+                    const activities = response.data as StravaActivity[];
 
                     if (!activities) {
                         throw new TRPCError({
@@ -104,7 +80,7 @@ const getAllSavedActivities = async (userId: string) => {
                         });
                     }
 
-                    const fa = activities.map(value => flattenActivity(value));
+                    const fa = activities.map(value => fromStravaActivity(value));
                     for (const value of fa) {
                         await saveActivity(value, ctx.session.user.id);
                     }
@@ -125,7 +101,6 @@ const getAllSavedActivities = async (userId: string) => {
                         // For any other errors, throw a generic server error
                         throw new TRPCError({
                             code: "INTERNAL_SERVER_ERROR",
-                            message: error.message,
                         });
                     }
                 }
@@ -136,16 +111,15 @@ const getAllSavedActivities = async (userId: string) => {
 
         const prisma = new PrismaClient();
 
-        await prisma.activity.findFirst({where: {id: activity.id}}).then(async (lookup) => {
+        await prisma.activity.findFirst({where: {athlete: id}}).then(async (lookup) => {
             if (lookup) {
                 console.log('activity already exists')
                 return;
             }
 
-
             // Then, save the activity referencing the saved coordinates
             await prisma.activity.create({
-                data:
+                data: activity
             });
         });
 
