@@ -121,8 +121,8 @@ model Activity {
   display_hide_heartrate_option Boolean
   elev_high                     Float?
   elev_low                      Float?
-  upload_id                     BigInt
-  upload_id_str                 String
+  upload_id                     BigInt?
+  upload_id_str                 String?
   external_id                   String
   from_accepted_tag             Boolean
   pr_count                      Int

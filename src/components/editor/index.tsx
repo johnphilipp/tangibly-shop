@@ -10,13 +10,16 @@ import { convertToSVGPath } from "./utils/convertToSVGPath";
 import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
 import { handleDownload } from "./utils/handleDownload";
 import { useRouter } from "next/router";
+import {useData} from "~/contexts/DataContext";
 
 export interface AspectRatio {
   rows: number;
   cols: number;
 }
 
-export default function Editor({ activities }: { activities: Activity[] }) {
+export default function Editor() {
+  const { activities } = useData();
+
   const router = useRouter();
 
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF"); // default white
@@ -137,7 +140,7 @@ export default function Editor({ activities }: { activities: Activity[] }) {
 
   useEffect(() => {
     setSelectedActivities(activitiesWithGPS.slice(0, MAX_ACTIVITIES));
-  }, [currentAspectRatio, activitiesWithGPS, MAX_ACTIVITIES]);
+  }, [currentAspectRatio, MAX_ACTIVITIES]);
 
   return (
     <div className="m-4 space-y-4">

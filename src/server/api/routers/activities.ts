@@ -10,14 +10,6 @@ import {
   type StravaActivity,
 } from "~/utils/fromStravaActivity";
 
-// TODO:
-// Fetch activities until all are fetched by using after=timestamp (unix) from last activity in every response until response length is 0
-// Add Activity to Prisma model
-// Check if user has activites
-// If yes, get latest timestamp from db --> Fetch api with after=timestamp --> save to db
-// If no, fetch api --> save to db
-// Return allactivities from db
-// Look into conditional query stuff
 
 const getAllSavedActivities = async (userId: string) => {
   const prisma = new PrismaClient();
@@ -45,7 +37,7 @@ export const activitiesRouter = createTRPCRouter({
       // btw, this is how yo add to DB: ctx.db.user.create({});
       let foundActivities = 0;
       let after = 0;
-      const perPage = 20;
+      const perPage = 200;
 
       console.log(ctx.session.user.id);
 
@@ -55,15 +47,17 @@ export const activitiesRouter = createTRPCRouter({
         new Date(savedActivities[0]?.start_date ?? new Date(0)).getTime() /
         1000;
 
+      let before = Date.now() / 1000;
+
       do {
-        console.log("savedActivities", savedActivities);
+        //console.log("savedActivities", savedActivities);
 
         let url = `https://www.strava.com/api/v3/athlete/activities?`;
 
         if (after > 0) {
-          url += `after=${after + 1}&per_page=${perPage}`;
+          url += `before=${before}&after=${after + 1}&per_page=${perPage}`;
         } else {
-          url += `per_page=${perPage}`;
+          url += `before=${before}&per_page=${perPage}`;
         }
 
         console.log("url", url);
@@ -88,11 +82,12 @@ export const activitiesRouter = createTRPCRouter({
           }
 
           foundActivities = activities.length;
+          //console.log("foundActivities", foundActivities);
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          after =
+          before =
             new Date(
-              activities[0]?.start_date ?? new Date(0),
-            ).getTime() / 1000 + (activities[0]?.elapsed_time ?? 0);
+              activities[activities.length-1]?.start_date ?? Date.now(),
+            ).getTime() / 1000
 
           const fa = activities.map((value) => fromStravaActivity(value));
           for (const value of fa) {
@@ -114,6 +109,7 @@ export const activitiesRouter = createTRPCRouter({
           } else {
             // For any other errors, throw a generic server error
             console.log(error);
+            console.log()
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
             });
@@ -129,7 +125,8 @@ async function saveActivity(activity: Activity, id: string) {
   const prisma = new PrismaClient();
   activity.athlete = id;
 
-  await prisma.activity
+  try {
+      await prisma.activity
     .findFirst({ where: { id: activity.id } })
     .then(async (lookup) => {
       if (lookup) {
@@ -142,4 +139,9 @@ async function saveActivity(activity: Activity, id: string) {
         data: activity,
       });
     });
+  } catch (PrismaClientValidationError) {
+    console.log("Could not save activity", activity.id);
+  }
+
+
 }

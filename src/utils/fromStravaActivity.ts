@@ -70,6 +70,7 @@ export interface StravaActivity {
 
 
 export function fromStravaActivity(activity: StravaActivity): Activity {
+  console.log(activity);
   return {
     athlete: activity.athlete.id.toString(),
     name: activity.name,
@@ -116,7 +117,7 @@ export function fromStravaActivity(activity: StravaActivity): Activity {
     display_hide_heartrate_option: activity.display_hide_heartrate_option,
     elev_high: activity.elev_high ?? null,
     elev_low: activity.elev_low ?? null,
-    upload_id: BigInt(activity.upload_id),
+    upload_id: BigInt(activity.upload_id ?? 0),
     upload_id_str: activity.upload_id_str,
     external_id: activity.external_id,
     from_accepted_tag: activity.from_accepted_tag,
