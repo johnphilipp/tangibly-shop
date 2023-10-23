@@ -38,8 +38,7 @@ export default function EditorPage() {
       accessToken: accountData?.access_token ?? "",
     },
     {
-      enabled: accountData !== undefined,
-      staleTime: Infinity
+      enabled: (accountData !== undefined && activities.length == 0),
     },
   );
 

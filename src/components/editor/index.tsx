@@ -140,7 +140,7 @@ export default function Editor() {
 
   useEffect(() => {
     setSelectedActivities(activitiesWithGPS.slice(0, MAX_ACTIVITIES));
-  }, [currentAspectRatio, MAX_ACTIVITIES]);
+  }, [activities, currentAspectRatio, MAX_ACTIVITIES]);
 
   return (
     <div className="m-4 space-y-4">
