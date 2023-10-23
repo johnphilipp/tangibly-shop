@@ -7,6 +7,7 @@ import {
   UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
 import { Fragment, useState } from "react";
@@ -55,6 +56,8 @@ function classNames(...classes: string[] | undefined[]) {
 }
 
 export const Layout: FC<LayoutProps> = ({ children }) => {
+  const { status } = useSession();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -207,12 +210,21 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                     </Link>
                   </div>
                   <div className="flow-root">
-                    <Link
-                      href="#"
-                      className="-m-2 block p-2 font-medium text-gray-900"
-                    >
-                      Sign in
-                    </Link>
+                    {status === "authenticated" ? (
+                      <Link
+                        href="/api/auth/signout"
+                        className="-m-2 block p-2 font-medium text-gray-900"
+                      >
+                        Sign out
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/api/auth/signin"
+                        className="-m-2 block p-2 font-medium text-gray-900"
+                      >
+                        Sign in
+                      </Link>
+                    )}
                   </div>
                 </div>
 
@@ -292,12 +304,22 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                   Create an account
                 </Link>
                 <span className="h-6 w-px bg-gray-600" aria-hidden="true" />
-                <Link
-                  href="#"
-                  className="text-sm font-medium text-white hover:text-gray-100"
-                >
-                  Sign in
-                </Link>
+
+                {status === "authenticated" ? (
+                  <Link
+                    href="/api/auth/signout"
+                    className="text-sm font-medium text-white hover:text-gray-100"
+                  >
+                    Sign out
+                  </Link>
+                ) : (
+                  <Link
+                    href="/api/auth/signin"
+                    className="text-sm font-medium text-white hover:text-gray-100"
+                  >
+                    Sign in
+                  </Link>
+                )}
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
-import Editor from "~/components/editor/Editor";
+import Editor from "~/components/editor";
 import { activityDataDemo } from "~/components/editor/demoData/demoData";
 import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";

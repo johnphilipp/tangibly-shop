@@ -17,11 +17,7 @@ export interface AspectRatio {
   cols: number;
 }
 
-export default function Editor({
-  activities,
-}: {
-  activities: Activity[];
-}) {
+export default function Editor({ activities }: { activities: Activity[] }) {
   const router = useRouter();
 
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF"); // default white
