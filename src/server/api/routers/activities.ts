@@ -55,7 +55,7 @@ export const activitiesRouter = createTRPCRouter({
         new Date(savedActivities[0]?.start_date ?? new Date(0)).getTime() /
         1000;
 
-      while (foundActivities < perPage) {
+      do {
         console.log("savedActivities", savedActivities);
 
         let url = `https://www.strava.com/api/v3/athlete/activities?`;
@@ -91,8 +91,8 @@ export const activitiesRouter = createTRPCRouter({
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           after =
             new Date(
-              activities[foundActivities - 1]?.start_date ?? new Date(0),
-            ).getTime() / 1000;
+              activities[0]?.start_date ?? new Date(0),
+            ).getTime() / 1000 + (activities[0]?.elapsed_time ?? 0);
 
           const fa = activities.map((value) => fromStravaActivity(value));
           for (const value of fa) {
@@ -119,7 +119,7 @@ export const activitiesRouter = createTRPCRouter({
             });
           }
         }
-      }
+      } while (foundActivities === perPage);
 
       return getAllSavedActivities(ctx.session.user.id);
     }),
@@ -127,9 +127,10 @@ export const activitiesRouter = createTRPCRouter({
 
 async function saveActivity(activity: Activity, id: string) {
   const prisma = new PrismaClient();
+  activity.athlete = id;
 
   await prisma.activity
-    .findFirst({ where: { athlete: id } })
+    .findFirst({ where: { id: activity.id } })
     .then(async (lookup) => {
       if (lookup) {
         console.log("activity already exists");
