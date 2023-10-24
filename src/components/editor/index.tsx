@@ -11,6 +11,7 @@ import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
 import { handleDownload } from "./utils/handleDownload";
 import { useRouter } from "next/router";
 import {useData} from "~/contexts/DataContext";
+import Overlay from "~/components/3d/Overlay";
 
 export interface AspectRatio {
   rows: number;
@@ -24,6 +25,7 @@ export default function Editor() {
 
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF"); // default white
   const [strokeColor, setStrokeColor] = useState("#000000"); // default black
+  const [isOverlayOpen, setOverlayOpen] = useState(false);
 
   const aspectRatios: AspectRatio[] = [
     { rows: 5, cols: 10 },
@@ -331,7 +333,7 @@ export default function Editor() {
               <AiFillEdit className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">Fabric</span>
             </Button>
-            <Button className="w-full" onClick={() => void 0}>
+            <Button className="w-full" onClick={() => setOverlayOpen(true)}>
               <BsEyeFill className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">Preview</span>
             </Button>
@@ -342,6 +344,7 @@ export default function Editor() {
           </div>
         </div>
       </div>
+      <Overlay svgDataURL={getSVGDataURL() ?? ""} isOpen={isOverlayOpen} onClose={() => setOverlayOpen(false)} />
     </div>
   );
 }

@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: P3REYr0cyh5ImV5V1PlD  # Change this to your desired password
+      MYSQL_DATABASE: tangibly              # Name of the database to be created on image startup
+      MYSQL_USER: tangibly                  # Username for the created database
+      MYSQL_PASSWORD: P3REYr0cyh5ImV5V1PlD          # Password for the created database
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
