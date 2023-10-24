@@ -21,19 +21,19 @@ interface LayoutProps {
 const currencies = ["EUR"];
 const navigation = {
   categories: [
-    {
-      name: "Products",
-      featured: [
-        { name: "Coffee Cup", href: "#" },
-        { name: "Poster", href: "#" },
-        // { name: "Underwear", href: "#" },
-      ],
-      // categories: [
-      //   { name: "Basic Tees", href: "#" },
-      //   { name: "Artwork Tees", href: "#" },
-      //   { name: "Bottoms", href: "#" },
-      // ],
-    },
+    // {
+    //   name: "Products",
+    //   featured: [
+    //     { name: "Coffee Cup", href: "#" },
+    //     { name: "Poster", href: "#" },
+    //     // { name: "Underwear", href: "#" },
+    //   ],
+    //   // categories: [
+    //   //   { name: "Basic Tees", href: "#" },
+    //   //   { name: "Artwork Tees", href: "#" },
+    //   //   { name: "Bottoms", href: "#" },
+    //   // ],
+    // },
     // {
     //   name: "Men",
     //   featured: [
@@ -293,12 +293,12 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
               </form>
 
               <p className="flex-1 text-center text-sm font-medium text-white lg:flex-none">
-                Get free delivery on orders over $100
+                {/* Get free delivery on orders over $100 */}
               </p>
 
               <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
                 <Link
-                  href="#"
+                  href="/api/auth/signin"
                   className="text-sm font-medium text-white hover:text-gray-100"
                 >
                   Create an account
