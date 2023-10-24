@@ -34,12 +34,14 @@ export default function Alert({
             for your active friends & family.
           </p>
           <div className="mt-4 flex items-center gap-x-5">
-            <button
+            <Link
               type="button"
               className="rounded-md bg-gray-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+              href="https://forms.gle/Ta16eF5WdmATjXXs6"
+              target="_blank"
             >
-              Make someone happy
-            </button>
+              Request this feature :)
+            </Link>
             <button
               type="button"
               className="text-sm font-semibold leading-6 text-gray-900"
