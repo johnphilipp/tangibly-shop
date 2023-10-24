@@ -3,7 +3,7 @@ import {z, ZodError} from "zod";
 import {createTRPCRouter, protectedProcedure} from "~/server/api/trpc"; // Adjust the import based on your project structure
 import axios from "axios";
 import {TRPCError} from "@trpc/server";
-import {type Activity} from "@prisma/client";
+import {type Activity, PrismaClient} from "@prisma/client";
 import {fromStravaActivity, type StravaActivity,} from "~/utils/fromStravaActivity";
 import {db as prisma} from "~/server/db";
 
@@ -85,9 +85,8 @@ export const activitiesRouter = createTRPCRouter({
             ).getTime() / 1000
 
           const fa = activities.map((value) => fromStravaActivity(value));
-          for (const value of fa) {
-            await saveActivity(value, ctx.session.user.id);
-          }
+          await saveActivities(fa, ctx.db, ctx.session.user.id);
+
         } catch (error) {
           // If there's an HTTP error, throw a TRPCError with the message from the error
           if (axios.isAxiosError(error)) {
@@ -116,25 +115,21 @@ export const activitiesRouter = createTRPCRouter({
     }),
 });
 
-async function saveActivity(activity: Activity, id: string) {
-  activity.athlete = id;
+async function saveActivities(activities: Activity[], db: PrismaClient, id: string) {
+    for (const activity of activities) {
+        activity.athlete = id;
+        if (activity.id.toString().endsWith("n")) {
+            activity.id = BigInt(activity.id.toString().replace("n", "0"));
+        }
+    }
+    try {
+        await db.activity.createMany({
+            data: activities,
+            skipDuplicates: true,
+        });
 
-  try {
-      await prisma.activity
-    .findFirst({ where: { id: activity.id } })
-    .then(async (lookup) => {
-      if (lookup) {
-        console.log("activity already exists");
-        return;
-      }
-
-      // Then, save the activity referencing the saved coordinates
-      await prisma.activity.create({
-        data: activity,
-      });
-    });
-  } catch (PrismaClientValidationError) {
-    console.log("Could not save activity", activity.id);
+    } catch (PrismaClientValidationError) {
+    console.log("Could not save activity", activities);
   }
 
 
