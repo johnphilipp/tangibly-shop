@@ -39,7 +39,7 @@ export const activitiesRouter = createTRPCRouter({
       console.log("User id: ", ctx.session.user.id);
 
       const savedActivities = await getAllSavedActivities(ctx.session.user.id);
-
+      console.log("Saved activities: ", savedActivities.length)
       after =
         new Date(savedActivities[0]?.start_date ?? new Date(0)).getTime() /
         1000;
@@ -87,6 +87,7 @@ export const activitiesRouter = createTRPCRouter({
 
           // check if activity id ends with "n", if so, replace n with 0
           flattenedActivity.forEach((activity) => {
+            activity.athlete = ctx.session.user.id;
             if (activity.id.toString().endsWith("n")) {
               activity.id = BigInt(activity.id.toString().replace("n", "0"));
             }
