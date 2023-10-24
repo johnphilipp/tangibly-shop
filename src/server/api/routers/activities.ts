@@ -59,7 +59,6 @@ export const activitiesRouter = createTRPCRouter({
         } else {
           url += `before=${before}&per_page=${perPage}`;
         }
-
         console.log("url", url);
 
         const config = {
