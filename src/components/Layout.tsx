@@ -18,22 +18,28 @@ interface LayoutProps {
   title?: string;
 }
 
+interface Category {
+  name: string;
+  featured: { name: string; href: string }[];
+  categories: { name: string; href: string }[];
+}
+
 const currencies = ["EUR"];
 const navigation = {
   categories: [
-    {
-      name: "Products",
-      featured: [
-        { name: "Coffee Cup", href: "#" },
-        { name: "Poster", href: "#" },
-        // { name: "Underwear", href: "#" },
-      ],
-      // categories: [
-      //   { name: "Basic Tees", href: "#" },
-      //   { name: "Artwork Tees", href: "#" },
-      //   { name: "Bottoms", href: "#" },
-      // ],
-    },
+    // {
+    //   name: "Products",
+    //   featured: [
+    //     { name: "Coffee Cup", href: "#" },
+    //     { name: "Poster", href: "#" },
+    //     // { name: "Underwear", href: "#" },
+    //   ],
+    //   // categories: [
+    //   //   { name: "Basic Tees", href: "#" },
+    //   //   { name: "Artwork Tees", href: "#" },
+    //   //   { name: "Bottoms", href: "#" },
+    //   // ],
+    // },
     // {
     //   name: "Men",
     //   featured: [
@@ -107,7 +113,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                 <Tab.Group as="div" className="mt-2">
                   <div className="border-b border-gray-200">
                     <Tab.List className="-mb-px flex space-x-8 px-4">
-                      {navigation.categories.map((category) => (
+                      {navigation.categories.map((category: Category) => (
                         <Tab
                           key={category.name}
                           className={({ selected }) =>
@@ -125,38 +131,39 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                     </Tab.List>
                   </div>
                   <Tab.Panels as={Fragment}>
-                    {navigation.categories.map((category, categoryIdx) => (
-                      <Tab.Panel
-                        key={category.name}
-                        className="space-y-12 px-4 pb-6 pt-10"
-                      >
-                        <div className="grid grid-cols-1 items-start gap-x-6 gap-y-10">
-                          <div className="grid grid-cols-1 gap-x-6 gap-y-10">
-                            <div>
-                              <p
-                                id={`mobile-featured-heading-${categoryIdx}`}
-                                className="font-medium text-gray-900"
-                              >
-                                Featured
-                              </p>
-                              <ul
-                                role="list"
-                                aria-labelledby={`mobile-featured-heading-${categoryIdx}`}
-                                className="mt-6 space-y-6"
-                              >
-                                {category.featured.map((item) => (
-                                  <li key={item.name} className="flex">
-                                    <Link
-                                      href={item.href}
-                                      className="text-gray-500"
-                                    >
-                                      {item.name}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            {/* <div>
+                    {navigation.categories.map(
+                      (category: Category, categoryIdx) => (
+                        <Tab.Panel
+                          key={category.name}
+                          className="space-y-12 px-4 pb-6 pt-10"
+                        >
+                          <div className="grid grid-cols-1 items-start gap-x-6 gap-y-10">
+                            <div className="grid grid-cols-1 gap-x-6 gap-y-10">
+                              <div>
+                                <p
+                                  id={`mobile-featured-heading-${categoryIdx}`}
+                                  className="font-medium text-gray-900"
+                                >
+                                  Featured
+                                </p>
+                                <ul
+                                  role="list"
+                                  aria-labelledby={`mobile-featured-heading-${categoryIdx}`}
+                                  className="mt-6 space-y-6"
+                                >
+                                  {category.featured.map((item) => (
+                                    <li key={item.name} className="flex">
+                                      <Link
+                                        href={item.href}
+                                        className="text-gray-500"
+                                      >
+                                        {item.name}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                              {/* <div>
                               <p
                                 id="mobile-categories-heading"
                                 className="font-medium text-gray-900"
@@ -180,10 +187,11 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                 ))}
                               </ul>
                             </div> */}
+                            </div>
                           </div>
-                        </div>
-                      </Tab.Panel>
-                    ))}
+                        </Tab.Panel>
+                      ),
+                    )}
                   </Tab.Panels>
                 </Tab.Group>
 
@@ -293,12 +301,12 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
               </form>
 
               <p className="flex-1 text-center text-sm font-medium text-white lg:flex-none">
-                Get free delivery on orders over $100
+                {/* Get free delivery on orders over $100 */}
               </p>
 
               <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
                 <Link
-                  href="#"
+                  href="/api/auth/signin"
                   className="text-sm font-medium text-white hover:text-gray-100"
                 >
                   Create an account
@@ -344,73 +352,74 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                     {/* Mega menus */}
                     <Popover.Group className="ml-8">
                       <div className="flex h-full justify-center space-x-8">
-                        {navigation.categories.map((category, categoryIdx) => (
-                          <Popover key={category.name} className="flex">
-                            {({ open }) => (
-                              <>
-                                <div className="relative flex">
-                                  <Popover.Button
-                                    className={classNames(
-                                      open
-                                        ? "border-indigo-600 text-indigo-600"
-                                        : "border-transparent text-gray-700 hover:text-gray-800",
-                                      "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out",
-                                    )}
+                        {navigation.categories.map(
+                          (category: Category, categoryIdx) => (
+                            <Popover key={category.name} className="flex">
+                              {({ open }) => (
+                                <>
+                                  <div className="relative flex">
+                                    <Popover.Button
+                                      className={classNames(
+                                        open
+                                          ? "border-indigo-600 text-indigo-600"
+                                          : "border-transparent text-gray-700 hover:text-gray-800",
+                                        "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out",
+                                      )}
+                                    >
+                                      {category.name}
+                                    </Popover.Button>
+                                  </div>
+
+                                  <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-200"
+                                    enterFrom="opacity-0"
+                                    enterTo="opacity-100"
+                                    leave="transition ease-in duration-150"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
                                   >
-                                    {category.name}
-                                  </Popover.Button>
-                                </div>
+                                    <Popover.Panel className="absolute inset-x-0 top-full text-gray-500 sm:text-sm">
+                                      {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
+                                      <div
+                                        className="absolute inset-0 top-1/2 bg-white shadow"
+                                        aria-hidden="true"
+                                      />
 
-                                <Transition
-                                  as={Fragment}
-                                  enter="transition ease-out duration-200"
-                                  enterFrom="opacity-0"
-                                  enterTo="opacity-100"
-                                  leave="transition ease-in duration-150"
-                                  leaveFrom="opacity-100"
-                                  leaveTo="opacity-0"
-                                >
-                                  <Popover.Panel className="absolute inset-x-0 top-full text-gray-500 sm:text-sm">
-                                    {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
-                                    <div
-                                      className="absolute inset-0 top-1/2 bg-white shadow"
-                                      aria-hidden="true"
-                                    />
-
-                                    <div className="relative bg-white">
-                                      <div className="mx-auto max-w-7xl px-8">
-                                        <div className="grid grid-cols-2 items-start gap-x-8 gap-y-10 pb-12 pt-10">
-                                          <div className="grid grid-cols-2 gap-x-8 gap-y-10">
-                                            <div>
-                                              <p
-                                                id={`desktop-featured-heading-${categoryIdx}`}
-                                                className="font-medium text-gray-900"
-                                              >
-                                                Featured
-                                              </p>
-                                              <ul
-                                                role="list"
-                                                aria-labelledby={`desktop-featured-heading-${categoryIdx}`}
-                                                className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
-                                              >
-                                                {category.featured.map(
-                                                  (item) => (
-                                                    <li
-                                                      key={item.name}
-                                                      className="flex"
-                                                    >
-                                                      <Link
-                                                        href={item.href}
-                                                        className="hover:text-gray-800"
+                                      <div className="relative bg-white">
+                                        <div className="mx-auto max-w-7xl px-8">
+                                          <div className="grid grid-cols-2 items-start gap-x-8 gap-y-10 pb-12 pt-10">
+                                            <div className="grid grid-cols-2 gap-x-8 gap-y-10">
+                                              <div>
+                                                <p
+                                                  id={`desktop-featured-heading-${categoryIdx}`}
+                                                  className="font-medium text-gray-900"
+                                                >
+                                                  Featured
+                                                </p>
+                                                <ul
+                                                  role="list"
+                                                  aria-labelledby={`desktop-featured-heading-${categoryIdx}`}
+                                                  className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
+                                                >
+                                                  {category.featured.map(
+                                                    (item) => (
+                                                      <li
+                                                        key={item.name}
+                                                        className="flex"
                                                       >
-                                                        {item.name}
-                                                      </Link>
-                                                    </li>
-                                                  ),
-                                                )}
-                                              </ul>
-                                            </div>
-                                            {/* <div>
+                                                        <Link
+                                                          href={item.href}
+                                                          className="hover:text-gray-800"
+                                                        >
+                                                          {item.name}
+                                                        </Link>
+                                                      </li>
+                                                    ),
+                                                  )}
+                                                </ul>
+                                              </div>
+                                              {/* <div>
                                               <p
                                                 id="desktop-categories-heading"
                                                 className="font-medium text-gray-900"
@@ -439,16 +448,17 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                                 )}
                                               </ul>
                                             </div> */}
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </Popover.Panel>
-                                </Transition>
-                              </>
-                            )}
-                          </Popover>
-                        ))}
+                                    </Popover.Panel>
+                                  </Transition>
+                                </>
+                              )}
+                            </Popover>
+                          ),
+                        )}
 
                         {navigation.pages.map((page) => (
                           <Link

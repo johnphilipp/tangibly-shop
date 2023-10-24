@@ -5,7 +5,7 @@ import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
 import Editor from "~/components/editor";
-import Alert from "~/components/editor/Alert";
+import Alert from "~/components/Alert";
 import DemoBanner from "~/components/editor/DemoBanner";
 import { activityDataDemo } from "~/components/editor/demoData/demoData";
 import { api } from "~/utils/api";

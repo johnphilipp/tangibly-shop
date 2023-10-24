@@ -1,20 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 // TODO: Disable this if a local storage key is set (dunno how but somehow) or if user is in db and has been sent this alert before
 
-export default function Alert() {
-  const [show, setShow] = useState(false);
-
+export default function Alert({
+  show,
+  onClose,
+}: {
+  show: boolean;
+  onClose: () => void;
+}) {
   const alertClassNames = show ? "fade-in" : "invisible";
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShow(true);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
 
   if (!show) return null;
 
@@ -47,7 +43,7 @@ export default function Alert() {
             <button
               type="button"
               className="text-sm font-semibold leading-6 text-gray-900"
-              onClick={() => setShow(false)}
+              onClick={onClose}
             >
               No thanks
             </button>
