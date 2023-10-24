@@ -8,7 +8,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex"]
 }
 
 model Post {
@@ -31,12 +32,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String     @unique
-  refresh_token     String? //@db.Text
-  access_token      String? //@db.Text
+  refresh_token     String?    @db.Text
+  access_token      String?    @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? //@db.Text
+  id_token          String?    @db.Text
   session_state     String?
   user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   Activity          Activity[]
@@ -85,7 +86,7 @@ model Activity {
   type                          String
   sport_type                    String
   workout_type                  Int? // '?' means it's optional in Prisma
-  id                            BigInt  @id
+  id                            BigInt  @unique
   start_date                    String
   start_date_local              String
   timezone                      String
@@ -99,7 +100,7 @@ model Activity {
   athlete_count                 Int
   photo_count                   Int
   mapId                         String
-  summaryPolyline               String
+  summaryPolyline               String  @db.Text
   trainer                       Boolean
   commute                       Boolean
   manual                        Boolean
@@ -123,7 +124,7 @@ model Activity {
   elev_low                      Float?
   upload_id                     BigInt?
   upload_id_str                 String?
-  external_id                   String
+  external_id                   String?
   from_accepted_tag             Boolean
   pr_count                      Int
   total_photo_count             Int

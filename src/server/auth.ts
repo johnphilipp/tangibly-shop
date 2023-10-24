@@ -31,7 +31,6 @@ declare module "next-auth" {
   //   // role: UserRole;
   // }
 }
-;
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -65,12 +64,19 @@ export const authOptions: NextAuthOptions = {
           const { token_type, expires_at, refresh_token, access_token } =
             await client.oauthCallback(provider.callbackUrl, params, checks);
 
-          console.debug('token', token_type, expires_at, refresh_token, access_token)
+          console.debug(
+            "token",
+            token_type,
+            expires_at,
+            refresh_token,
+            access_token,
+          );
 
           //Refresh the token when it is about to expire
           if ((expires_at ?? 0) * 1000 < Date.now() - 60000) {
-            const refreshedToken = await refreshStravaToken(refresh_token ?? '');
-            console.log('refreshedToken', refreshedToken);
+            const refreshedToken = await refreshStravaToken(
+              refresh_token ?? "",
+            );
 
             return {
               tokens: {
@@ -111,26 +117,32 @@ export const getServerAuthSession = (ctx: {
 };
 
 interface StravaTokenResponse {
-  token_type: string
-  access_token: string
-  expires_at: number
-  expires_in: number
-  refresh_token: string
+  token_type: string;
+  access_token: string;
+  expires_at: number;
+  expires_in: number;
+  refresh_token: string;
 }
 
-const refreshStravaToken = async (refreshToken: string): Promise<StravaTokenResponse> => {
+const refreshStravaToken = async (
+  refreshToken: string,
+): Promise<StravaTokenResponse> => {
   const formData = new URLSearchParams();
-  formData.append('client_id', env.STRAVA_CLIENT_ID);
-  formData.append('client_secret', env.STRAVA_CLIENT_SECRET);
-  formData.append('grant_type', 'refresh_token');
-  formData.append('refresh_token', refreshToken);
+  formData.append("client_id", env.STRAVA_CLIENT_ID);
+  formData.append("client_secret", env.STRAVA_CLIENT_SECRET);
+  formData.append("grant_type", "refresh_token");
+  formData.append("refresh_token", refreshToken);
 
   try {
-    const response = await axios.post('https://www.strava.com/api/v3/oauth/token', formData, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+    const response = await axios.post(
+      "https://www.strava.com/api/v3/oauth/token",
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       },
-    });
+    );
 
     return response.data as StravaTokenResponse;
   } catch (error) {
@@ -138,4 +150,3 @@ const refreshStravaToken = async (refreshToken: string): Promise<StravaTokenResp
     throw error;
   }
 };
-

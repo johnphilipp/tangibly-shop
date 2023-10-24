@@ -10,8 +10,8 @@ import DemoBanner from "~/components/editor/DemoBanner";
 import { activityDataDemo } from "~/components/editor/demoData/demoData";
 import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
-import {useEffect, useState} from "react";
-import {useData} from "~/contexts/DataContext";
+import { useEffect, useState } from "react";
+import { useData } from "~/contexts/DataContext";
 
 export default function EditorPage() {
   let activityData;
@@ -38,10 +38,9 @@ export default function EditorPage() {
       accessToken: accountData?.access_token ?? "",
     },
     {
-      enabled: (accountData !== undefined && activities.length == 0),
+      enabled: accountData !== undefined && activities.length == 0,
     },
   );
-
 
   useEffect(() => {
     // Set activity data
@@ -53,12 +52,10 @@ export default function EditorPage() {
     } else {
       // Use demo data if user is not logged in
       activityData = activityDataDemo.map((activity) =>
-          fromStravaActivity(activity),
+        fromStravaActivity(activity),
       );
     }
-    console.log(activities)
-    if (activities.length == 0)
-      setActivities(activityData);
+    if (activities.length == 0) setActivities(activityData);
   }, [activityDataFetched]);
 
   // // Render loading screen
@@ -90,7 +87,7 @@ export default function EditorPage() {
             </div>
           )}
 
-          <Editor/>
+          <Editor />
         </div>
       </div>
       {/* <Alert /> */}

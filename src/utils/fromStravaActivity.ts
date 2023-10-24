@@ -1,4 +1,4 @@
-import { type Activity } from '@prisma/client';
+import { type Activity } from "@prisma/client";
 
 interface Athlete {
   id: number;
@@ -50,7 +50,7 @@ export interface StravaActivity {
   average_temp?: null | number;
   average_watts?: null | number;
   kilojoules?: null | number;
-  device_watts?: false,
+  device_watts?: false;
   average_cadence?: number;
   has_heartrate: boolean;
   average_heartrate?: number;
@@ -68,9 +68,7 @@ export interface StravaActivity {
   has_kudoed: boolean;
 }
 
-
 export function fromStravaActivity(activity: StravaActivity): Activity {
-  console.log(activity);
   return {
     athlete: activity.athlete.id.toString(),
     name: activity.name,
