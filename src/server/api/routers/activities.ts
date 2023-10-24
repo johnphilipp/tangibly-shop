@@ -3,7 +3,7 @@ import {z, ZodError} from "zod";
 import {createTRPCRouter, protectedProcedure} from "~/server/api/trpc"; // Adjust the import based on your project structure
 import axios from "axios";
 import {TRPCError} from "@trpc/server";
-import {type Activity, PrismaClient} from "@prisma/client";
+import type { Activity, PrismaClient} from "@prisma/client";
 import {fromStravaActivity, type StravaActivity,} from "~/utils/fromStravaActivity";
 import {db as prisma} from "~/server/db";
 
