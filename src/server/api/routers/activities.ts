@@ -94,10 +94,14 @@ export const activitiesRouter = createTRPCRouter({
           });
 
           // push to db
-          await ctx.db.activity.createMany({
-            data: flattenedActivity,
-            skipDuplicates: true,
-          });
+          try {
+            await ctx.db.activity.createMany({
+              data: flattenedActivity,
+              skipDuplicates: true,
+            });
+          } catch (PrismaClientValidationError) {
+            console.log("PrismaClientValidationError Could not save some activities, skipping");
+          }
         } catch (error) {
           // If there's an HTTP error, throw a TRPCError with the message from the error
           if (axios.isAxiosError(error)) {
