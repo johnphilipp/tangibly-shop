@@ -1,18 +1,14 @@
 // other imports
-import { z, ZodError } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"; // Adjust the import based on your project structure
+import {z, ZodError} from "zod";
+import {createTRPCRouter, protectedProcedure} from "~/server/api/trpc"; // Adjust the import based on your project structure
 import axios from "axios";
-import { TRPCError } from "@trpc/server";
-import { PrismaClient } from "@prisma/client";
-import { type Activity } from "@prisma/client";
-import {
-  fromStravaActivity,
-  type StravaActivity,
-} from "~/utils/fromStravaActivity";
+import {TRPCError} from "@trpc/server";
+import {type Activity} from "@prisma/client";
+import {fromStravaActivity, type StravaActivity,} from "~/utils/fromStravaActivity";
+import {db as prisma} from "~/server/db";
 
 
 const getAllSavedActivities = async (userId: string) => {
-  const prisma = new PrismaClient();
   const response = prisma.activity.findMany({
     where: { athlete: userId },
     orderBy: { start_date: "desc" },
@@ -121,7 +117,6 @@ export const activitiesRouter = createTRPCRouter({
 });
 
 async function saveActivity(activity: Activity, id: string) {
-  const prisma = new PrismaClient();
   activity.athlete = id;
 
   try {
