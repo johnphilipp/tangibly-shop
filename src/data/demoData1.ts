@@ -1,6 +1,6 @@
-import { StravaActivity } from "~/utils/fromStravaActivity";
+import type { StravaActivity } from "~/utils/fromStravaActivity";
 
-export const activityDataDemo: StravaActivity[] = [
+export const demoData1: StravaActivity[] = [
   {
     resource_state: 2,
     athlete: {

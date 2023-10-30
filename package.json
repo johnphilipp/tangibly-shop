@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",
+    "@types/fabric": "^5.3.5",
     "@types/mapbox__polyline": "^1.0.4",
     "@types/node": "^18.16.0",
     "@types/react": "^18.2.20",

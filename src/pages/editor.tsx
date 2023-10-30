@@ -7,7 +7,7 @@ import { LoadingSpinner } from "~/components/Loading";
 import Editor from "~/components/editor";
 import Alert from "~/components/Alert";
 import DemoBanner from "~/components/editor/DemoBanner";
-import { activityDataDemo } from "~/components/editor/demoData/demoData";
+import { demoData1 } from "~/data/demoData1";
 import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 import { useEffect, useState } from "react";
@@ -51,9 +51,7 @@ export default function EditorPage() {
       activityData = [] as Activity[];
     } else {
       // Use demo data if user is not logged in
-      activityData = activityDataDemo.map((activity) =>
-        fromStravaActivity(activity),
-      );
+      activityData = demoData1.map((activity) => fromStravaActivity(activity));
     }
     if (activities.length == 0) setActivities(activityData);
   }, [activityDataFetched]);
