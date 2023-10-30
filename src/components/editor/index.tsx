@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AiFillEdit, AiOutlineDownload } from "react-icons/ai";
+import { AiOutlineDownload } from "react-icons/ai";
 import { BiShuffle } from "react-icons/bi";
 import { BsEyeFill } from "react-icons/bs";
 import type { Activity } from "@prisma/client";
@@ -9,8 +9,7 @@ import { AddActivityModal } from "./AddActivityModal";
 import { convertToSVGPath } from "./utils/convertToSVGPath";
 import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
 import { handleDownload } from "./utils/handleDownload";
-import { useRouter } from "next/router";
-import {useData} from "~/contexts/DataContext";
+import { useData } from "~/contexts/DataContext";
 import Overlay from "~/components/3d/Overlay";
 
 export interface AspectRatio {
@@ -21,10 +20,8 @@ export interface AspectRatio {
 export default function Editor() {
   const { activities } = useData();
 
-  const router = useRouter();
-
-  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF"); // default white
-  const [strokeColor, setStrokeColor] = useState("#000000"); // default black
+  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
+  const [strokeColor, setStrokeColor] = useState("#000000");
   const [isOverlayOpen, setOverlayOpen] = useState(false);
 
   const aspectRatios: AspectRatio[] = [
@@ -113,31 +110,6 @@ export default function Editor() {
 
     // Create and return the object URL
     return URL.createObjectURL(svgBlob);
-  };
-
-  const navigateToFabric = async () => {
-    try {
-      // assuming getSVGDataURL is synchronous, if it's not, you might need to await it
-      const svgUrl = getSVGDataURL();
-
-      if (!svgUrl) {
-        throw new Error("No SVG data available for navigation.");
-      }
-
-      // Await the router.push and check if it was successful.
-      // If this is Next.js, the push method resolves to 'true' if the navigation happened, 'false' otherwise.
-      const navigationResult = await router.push({
-        pathname: "/fabric",
-        query: { svg: svgUrl },
-      });
-
-      if (!navigationResult) {
-        throw new Error("Navigation to /fabric was not successful.");
-      }
-    } catch (error) {
-      // Handle any errors that occur during the process
-      console.error("An error occurred while navigating to /fabric:", error);
-    }
   };
 
   useEffect(() => {
@@ -324,14 +296,10 @@ export default function Editor() {
 
         {/* ACTIONS */}
         <div className="flex-col space-y-1 p-4 sm:p-6">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <Button onClick={shuffleActivities} className="w-full">
               <BiShuffle className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">Shuffle</span>
-            </Button>
-            <Button className="w-full" onClick={navigateToFabric}>
-              <AiFillEdit className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
-              <span className="hidden sm:block">Fabric</span>
             </Button>
             <Button className="w-full" onClick={() => setOverlayOpen(true)}>
               <BsEyeFill className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
@@ -344,7 +312,11 @@ export default function Editor() {
           </div>
         </div>
       </div>
-      <Overlay svgDataURL={getSVGDataURL() ?? ""} isOpen={isOverlayOpen} onClose={() => setOverlayOpen(false)} />
+      <Overlay
+        svgDataURL={getSVGDataURL() ?? ""}
+        isOpen={isOverlayOpen}
+        onClose={() => setOverlayOpen(false)}
+      />
     </div>
   );
 }
