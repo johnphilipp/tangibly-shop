@@ -4,7 +4,7 @@
 
 /* Canvas hover */
 .hoverable-rect:hover {
-    fill: rgba(0, 0, 0, 0.05);
+    fill: rgba(0, 0, 0, 0.1);
 }
   
 /* Canvas prevent line from blocking hover */
@@ -26,6 +26,11 @@
     animation: fadeIn 0.5s forwards;
 }
 
-/* Fabric */
-
-  
+.gridBackground {
+    --grid-color: #eee;
+    --grid-size: 2em;
+    background:
+      var(--grid-color)
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 2'><path fill='%23fff' d='M0 0h1v1H0zM1 1h1v1H1z'/></svg>")
+      0 0/var(--grid-size);
+  }

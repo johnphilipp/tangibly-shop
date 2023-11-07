@@ -20,14 +20,16 @@ export interface AspectRatio {
 export default function Editor() {
   const { activities } = useData();
 
-  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [isOverlayOpen, setOverlayOpen] = useState(false);
 
   const aspectRatios: AspectRatio[] = [
     { rows: 5, cols: 10 },
+    { rows: 10, cols: 5 },
     { rows: 10, cols: 10 },
     { rows: 10, cols: 20 },
+    { rows: 20, cols: 10 },
     { rows: 20, cols: 20 },
   ];
   const [currentAspectRatio, setCurrentAspectRatio] = useState<AspectRatio>(
@@ -119,15 +121,22 @@ export default function Editor() {
   return (
     <div className="m-4 space-y-4">
       {/* CANVAS */}
-      <div className="min-w-[300px] border text-center shadow-lg sm:min-w-[800px]">
+      <div className="min-w-[300px] bg-white text-center shadow-lg sm:min-w-[800px]">
         <svg
           ref={svgRef}
           width="100%"
-          height="100%"
+          height="400px"
           viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           preserveAspectRatio="xMidYMid meet"
+          className="gridBackground"
         >
-          <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
+          <rect
+            width={SVG_WIDTH}
+            height={SVG_HEIGHT}
+            fill={backgroundColor}
+            stroke={"#cfcfcf"}
+            strokeWidth={"2"}
+          />
 
           {Array.from({ length: MAX_ACTIVITIES }).map((_, index) => {
             const row = Math.floor(index / currentAspectRatio.cols);
@@ -188,34 +197,12 @@ export default function Editor() {
         </svg>
       </div>
 
-      {/* MODALS */}
-      {isModalVisible &&
-        selectedActivityIndex !== null &&
-        selectedActivities[selectedActivityIndex] && (
-          <ActivityModal
-            activity={selectedActivities[selectedActivityIndex]!}
-            onClose={() => setIsModalVisible(false)}
-            onDelete={() => deleteActivity(selectedActivityIndex)}
-          />
-        )}
-
-      {isAddModalVisible && (
-        <AddActivityModal
-          activities={activitiesWithGPS}
-          onAdd={(activity) => {
-            typeof selectedActivityIndex === "number" &&
-              addActivity(selectedActivityIndex, activity);
-          }}
-          onClose={() => setIsAddModalVisible(false)}
-        />
-      )}
-
       {/* CONTROLS */}
       <div className="border bg-white shadow-lg">
         {/* ASPECT RATIOS */}
         <div className="flex-col space-y-1 p-4 sm:p-6">
           <p className="text-left font-semibold ">Aspect Ratios</p>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
             {aspectRatios.map((ratio, index) => {
               // Check if this ratio is the current one.
               const isActive =
@@ -312,11 +299,35 @@ export default function Editor() {
           </div>
         </div>
       </div>
+
+      {/* OVERLAY */}
       <Overlay
         svgDataURL={getSVGDataURL() ?? ""}
         isOpen={isOverlayOpen}
         onClose={() => setOverlayOpen(false)}
       />
+
+      {/* MODALS */}
+      {isModalVisible &&
+        selectedActivityIndex !== null &&
+        selectedActivities[selectedActivityIndex] && (
+          <ActivityModal
+            activity={selectedActivities[selectedActivityIndex]!}
+            onClose={() => setIsModalVisible(false)}
+            onDelete={() => deleteActivity(selectedActivityIndex)}
+          />
+        )}
+
+      {isAddModalVisible && (
+        <AddActivityModal
+          activities={activitiesWithGPS}
+          onAdd={(activity) => {
+            typeof selectedActivityIndex === "number" &&
+              addActivity(selectedActivityIndex, activity);
+          }}
+          onClose={() => setIsAddModalVisible(false)}
+        />
+      )}
     </div>
   );
 }
