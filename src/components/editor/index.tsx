@@ -1,21 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import type { Activity } from "@prisma/client";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineDownload } from "react-icons/ai";
 import { BiShuffle } from "react-icons/bi";
 import { BsEyeFill } from "react-icons/bs";
-import type { Activity } from "@prisma/client";
+import Overlay from "~/components/3d/Overlay";
+import { useData } from "~/contexts/DataContext";
 import Button from "../Button";
 import { ActivityModal } from "./ActivityModal";
 import { AddActivityModal } from "./AddActivityModal";
 import { convertToSVGPath } from "./utils/convertToSVGPath";
 import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
 import { handleDownload } from "./utils/handleDownload";
-import { useData } from "~/contexts/DataContext";
-import Overlay from "~/components/3d/Overlay";
 
 export interface AspectRatio {
   rows: number;
   cols: number;
 }
+
+const aspectRatios: AspectRatio[] = [
+  { rows: 5, cols: 10 },
+  { rows: 10, cols: 5 },
+  { rows: 10, cols: 10 },
+  { rows: 10, cols: 20 },
+  { rows: 20, cols: 10 },
+  { rows: 20, cols: 20 },
+];
 
 export default function Editor() {
   const { activities } = useData();
@@ -24,14 +33,6 @@ export default function Editor() {
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [isOverlayOpen, setOverlayOpen] = useState(false);
 
-  const aspectRatios: AspectRatio[] = [
-    { rows: 5, cols: 10 },
-    { rows: 10, cols: 5 },
-    { rows: 10, cols: 10 },
-    { rows: 10, cols: 20 },
-    { rows: 20, cols: 10 },
-    { rows: 20, cols: 20 },
-  ];
   const [currentAspectRatio, setCurrentAspectRatio] = useState<AspectRatio>(
     aspectRatios[0]!,
   );
@@ -48,17 +49,29 @@ export default function Editor() {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const activitiesWithGPS = activities.filter(
-    (activity) => activity.summaryPolyline,
+  const activitiesWithGPS = useMemo(
+    () => activities.filter((activity) => activity.summaryPolyline),
+    [activities],
   );
+
+  const sportTypes = useMemo(
+    () =>
+      activitiesWithGPS.reduce<string[]>((acc, activity) => {
+        if (!acc.includes(activity.sport_type)) {
+          acc.push(activity.sport_type);
+        }
+        return acc;
+      }, []),
+    [activitiesWithGPS],
+  );
+
+  const [selectedActivityTypes, setSelectedActivityTypes] = useState<string[]>(
+    [],
+  );
+
   const [selectedActivities, setSelectedActivities] = useState<
     (Activity | null)[]
   >(activitiesWithGPS.slice(0, MAX_ACTIVITIES));
-
-  const shuffleActivities = () => {
-    const shuffled = [...activitiesWithGPS].sort(() => Math.random() - 0.5);
-    setSelectedActivities(shuffled.slice(0, MAX_ACTIVITIES));
-  };
 
   const pathDataArray = selectedActivities.map((activity, index) => {
     const polyData = activity?.summaryPolyline;
@@ -74,7 +87,7 @@ export default function Editor() {
     return convertToSVGPath(quadrantCoordinates);
   });
 
-  const handlePathClick = (index: number) => {
+  const handleClickActivity = (index: number) => {
     setSelectedActivityIndex(index);
     const activity = selectedActivities[index];
     if (activity) {
@@ -84,18 +97,28 @@ export default function Editor() {
     }
   };
 
-  const deleteActivity = (index: number) => {
+  const handleDeleteActivity = (index: number) => {
     const newActivities = [...selectedActivities];
     newActivities[index] = null;
     setSelectedActivities(newActivities);
     setIsModalVisible(false);
   };
 
-  const addActivity = (index: number, activity: Activity) => {
+  const handleAddActivity = (index: number, activity: Activity) => {
     const newActivities = [...selectedActivities];
     newActivities[index] = activity;
     setSelectedActivities(newActivities);
     setIsAddModalVisible(false);
+  };
+
+  const handleTtoggleActivityType = (sportType: string) => {
+    setSelectedActivityTypes((prevSelectedActivityTypes) => {
+      if (prevSelectedActivityTypes.includes(sportType)) {
+        return prevSelectedActivityTypes.filter((type) => type !== sportType);
+      } else {
+        return [...prevSelectedActivityTypes, sportType];
+      }
+    });
   };
 
   const getSVGDataURL = () => {
@@ -114,9 +137,39 @@ export default function Editor() {
     return URL.createObjectURL(svgBlob);
   };
 
+  const shuffleActivities = () => {
+    const shuffled = [...activitiesWithGPS].sort(() => Math.random() - 0.5);
+    setSelectedActivities(shuffled.slice(0, MAX_ACTIVITIES));
+  };
+
   useEffect(() => {
-    setSelectedActivities(activitiesWithGPS.slice(0, MAX_ACTIVITIES));
-  }, [activities, currentAspectRatio, MAX_ACTIVITIES]);
+    const newSportTypes = activitiesWithGPS.reduce<string[]>(
+      (acc, activity) => {
+        if (!acc.includes(activity.sport_type)) {
+          acc.push(activity.sport_type);
+        }
+        return acc;
+      },
+      [],
+    );
+
+    setSelectedActivityTypes(newSportTypes);
+  }, [activitiesWithGPS]);
+
+  useEffect(() => {
+    // Filter activities based on the selected activity types
+    const filteredActivities = activitiesWithGPS.filter((activity) =>
+      selectedActivityTypes.includes(activity.sport_type),
+    );
+
+    setSelectedActivities(filteredActivities.slice(0, MAX_ACTIVITIES));
+  }, [
+    activities,
+    activitiesWithGPS,
+    currentAspectRatio,
+    MAX_ACTIVITIES,
+    selectedActivityTypes,
+  ]);
 
   return (
     <div className="m-4 space-y-4">
@@ -151,7 +204,7 @@ export default function Editor() {
             const y = row * (quadrantHeight + padding) + padding;
 
             return (
-              <g key={index} onClick={() => handlePathClick(index)}>
+              <g key={index} onClick={() => handleClickActivity(index)}>
                 {/* Render a transparent rectangle to capture the click event */}
                 <rect
                   x={x}
@@ -221,6 +274,34 @@ export default function Editor() {
                   className={className}
                 >
                   {`${ratio.cols}x${ratio.rows}`}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        <hr />
+
+        {/* ASPECT RATIOS */}
+        <div className="flex-col space-y-1 p-4 sm:p-6">
+          <p className="text-left font-semibold ">Activity Types</p>
+          <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+            {sportTypes.map((sportType, index) => {
+              // Check if this ratio is the current one.
+              const isActive = selectedActivityTypes.includes(sportType);
+
+              const className = isActive
+                ? "bg-gray-900 text-white hover:text-gray-900"
+                : "";
+
+              return (
+                <Button
+                  key={index}
+                  onClick={() => handleTtoggleActivityType(sportType)}
+                  // Apply the 'bg-red-100' class if active, otherwise a different class or none.
+                  className={className}
+                >
+                  <span>{sportType}</span>
                 </Button>
               );
             })}
@@ -314,7 +395,7 @@ export default function Editor() {
           <ActivityModal
             activity={selectedActivities[selectedActivityIndex]!}
             onClose={() => setIsModalVisible(false)}
-            onDelete={() => deleteActivity(selectedActivityIndex)}
+            onDelete={() => handleDeleteActivity(selectedActivityIndex)}
           />
         )}
 
@@ -323,7 +404,7 @@ export default function Editor() {
           activities={activitiesWithGPS}
           onAdd={(activity) => {
             typeof selectedActivityIndex === "number" &&
-              addActivity(selectedActivityIndex, activity);
+              handleAddActivity(selectedActivityIndex, activity);
           }}
           onClose={() => setIsAddModalVisible(false)}
         />
