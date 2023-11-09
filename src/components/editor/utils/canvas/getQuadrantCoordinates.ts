@@ -1,4 +1,4 @@
-import type { AspectRatio } from "..";
+import type { AspectRatio } from "../..";
 import { decodePolyline } from "./decodePolyline";
 
 export function getQuadrantCoordinates(

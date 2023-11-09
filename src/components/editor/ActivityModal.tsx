@@ -1,7 +1,7 @@
 import humanFormat from "human-format";
 import Button from "../Button";
 import { timeScale } from "./AddActivityModal";
-import type { Activity } from "@prisma/client"
+import type { Activity } from "@prisma/client";
 
 export function ActivityModal({
   activity,
