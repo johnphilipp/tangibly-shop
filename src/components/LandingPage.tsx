@@ -91,7 +91,7 @@ export default function LandingPage() {
                       </button>
                     </div>
                     <Link
-                      href="/editor"
+                      href="/dashboard"
                       className="text-sm font-semibold leading-6 text-gray-900"
                     >
                       <span className="font-normal">Or check out our</span>{" "}

@@ -4,14 +4,14 @@ import { useEffect } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
-import Editor from "~/components/editor";
+import Bubbles from "~/components/bubbles";
 import DemoBanner from "~/components/editor/DemoBanner";
 import { useData } from "~/contexts/DataContext";
 import { demoData1 } from "~/data/demoData1";
 import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
-export default function EditorPage() {
+export default function BubblesPage() {
   let activityData;
   const { activities, setActivities } = useData();
   const user = useSession().data?.user;
@@ -83,7 +83,7 @@ export default function EditorPage() {
             </div>
           )}
 
-          <Editor />
+          <Bubbles />
         </div>
       </div>
       {/* <Alert /> */}

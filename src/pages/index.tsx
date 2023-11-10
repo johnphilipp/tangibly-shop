@@ -1,9 +1,9 @@
-import LandingPage from "~/components/LandingPage";
 import { useSession } from "next-auth/react";
-import EditorPage from "./editor";
+import Dashboard from "~/components/Dashboard";
+import LandingPage from "~/components/LandingPage";
 
 export default function Home() {
   const { status } = useSession();
 
-  return status === "authenticated" ? <EditorPage /> : <LandingPage />;
+  return status === "authenticated" ? <Dashboard /> : <LandingPage />;
 }
