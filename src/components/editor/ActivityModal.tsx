@@ -10,7 +10,7 @@ export function ActivityModal({
 }: {
   activity: Activity;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }) {
   return (
     <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">

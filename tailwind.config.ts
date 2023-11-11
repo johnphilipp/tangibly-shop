@@ -6,6 +6,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {},
+      gridTemplateColumns: {
+        "53": "repeat(53, minmax(0, 1fr))",
+      },
     },
   },
   plugins: [

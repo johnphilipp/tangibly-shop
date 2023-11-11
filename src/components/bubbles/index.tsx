@@ -1,14 +1,20 @@
+import React, { useState } from "react";
 import { useData } from "~/contexts/DataContext";
+import { ActivityModal } from "../editor/ActivityModal";
+import type { Activity } from "@prisma/client";
 
 interface MappedActivity {
   dayOfYear: number;
   intensity: number;
+  activity: Activity;
 }
-
-// TODO: Add dropdown for multiple years
 
 export default function Bubbles() {
   const { activities } = useData();
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
+    null,
+  );
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const numberOfElements = 365;
 
@@ -37,8 +43,13 @@ export default function Bubbles() {
       logIntensity(activity.moving_time / 60, minMovingTime, maxMovingTime) *
         80 +
       20;
-    return { dayOfYear, intensity };
+    return { dayOfYear, intensity, activity };
   });
+
+  const handleActivityClick = (activity: Activity) => {
+    setSelectedActivity(activity);
+    setIsModalVisible(true);
+  };
 
   const generateElements = (): JSX.Element[] => {
     const elements: JSX.Element[] = [];
@@ -50,8 +61,11 @@ export default function Bubbles() {
       elements.push(
         <div
           key={i}
-          className="h-4 w-4 flex-shrink-0 rounded-sm"
+          className="h-4 w-4 cursor-pointer rounded-sm"
           style={{ backgroundColor }}
+          onClick={() =>
+            activity?.activity && handleActivityClick(activity.activity)
+          }
         />,
       );
     }
@@ -60,9 +74,23 @@ export default function Bubbles() {
 
   return (
     <div className="m-4 space-y-4">
-      <div className="mx-auto flex flex-wrap justify-center gap-2 border bg-white p-4 text-center shadow-lg">
-        {generateElements()}
+      <div className="overflow-x-auto">
+        <div
+          className="grid-cols-53 grid gap-2 border bg-white p-4 text-center shadow-lg"
+          style={{ minWidth: "calc(53 * (1rem + 0.5rem))" }}
+        >
+          {generateElements()}
+        </div>
       </div>
+      {isModalVisible && selectedActivity && (
+        <ActivityModal
+          activity={selectedActivity}
+          onClose={() => {
+            setIsModalVisible(false);
+            setSelectedActivity(null);
+          }}
+        />
+      )}
     </div>
   );
 }
