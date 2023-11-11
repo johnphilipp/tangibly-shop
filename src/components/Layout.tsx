@@ -272,7 +272,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
       <header className="relative z-10">
         <nav aria-label="Top">
           {/* Top navigation */}
-          <div className="bg-gray-900">
+          <div className="hidden bg-gray-900 lg:block">
             <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
               {/* Currency selector */}
               <form className="hidden lg:block lg:flex-1">
