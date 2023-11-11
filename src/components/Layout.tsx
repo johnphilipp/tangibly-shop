@@ -54,7 +54,7 @@ const navigation = {
     //   ],
     // },
   ],
-  pages: [{ name: "Editor", href: "/editor" }],
+  pages: [{ name: "Store", href: "/dashboard" }],
 };
 
 function classNames(...classes: string[] | undefined[]) {
