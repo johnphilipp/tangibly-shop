@@ -3,6 +3,7 @@ import { RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon, TrashIcon } from "@heroicons/react/20/solid";
 import Layout, { classNames } from "./Layout";
 import Background from "./Background";
+import { useRouter } from "next/router";
 
 const products = [
   {
@@ -34,9 +35,30 @@ const paymentMethods = [
 ];
 
 export default function Checkout() {
+  const router = useRouter();
+
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(
     deliveryMethods[0],
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    // Set a timeout to simulate a delay
+    setTimeout(() => {
+      router
+        .push("/confirmation")
+        .then(() => {
+          setIsSubmitting(false); // Reset submitting state after navigation
+        })
+        .catch((err) => {
+          console.error(err);
+          setIsSubmitting(false); // Reset submitting state in case of error
+        });
+    }, 1000); // 1 second delay
+  };
 
   return (
     <Layout>
@@ -47,7 +69,10 @@ export default function Checkout() {
             <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
               <h2 className="mb-8 text-2xl font-bold">Checkout</h2>
 
-              <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+              <form
+                className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16"
+                onSubmit={handleSubmit}
+              >
                 <div>
                   <div>
                     <h2 className="text-lg font-medium text-gray-900">
@@ -567,7 +592,7 @@ export default function Checkout() {
                         type="submit"
                         className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                       >
-                        Confirm order
+                        {isSubmitting ? "Submitting..." : "Confirm order"}
                       </button>
                     </div>
                   </div>
