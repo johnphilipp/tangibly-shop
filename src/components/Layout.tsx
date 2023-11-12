@@ -12,6 +12,7 @@ import Link from "next/link";
 import type { FC, ReactNode } from "react";
 import { Fragment, useState } from "react";
 import { ImMagicWand } from "react-icons/im";
+import ShoppingCartSidebar from "./ShoppingCartSidebar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -65,6 +66,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   const { status } = useSession();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [ShoppingCartOpen, setShoppingCartOpen] = useState(false);
 
   return (
     <div className="bg-white">
@@ -539,9 +541,9 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                       />
 
                       <div className="flow-root">
-                        <Link
-                          href="#"
+                        <button
                           className="group -m-2 flex items-center p-2"
+                          onClick={() => setShoppingCartOpen(true)}
                         >
                           <ShoppingCartIcon
                             className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -553,7 +555,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                           <span className="sr-only">
                             items in cart, view bag
                           </span>
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -567,6 +569,10 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
       <main>{children}</main>
 
       <footer>{/* ...footer content... */}</footer>
+      <ShoppingCartSidebar
+        open={ShoppingCartOpen}
+        setOpen={setShoppingCartOpen}
+      />
     </div>
   );
 };
