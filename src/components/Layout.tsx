@@ -58,7 +58,7 @@ const navigation = {
   pages: [{ name: "Store", href: "/dashboard" }],
 };
 
-function classNames(...classes: string[] | undefined[]) {
+export function classNames(...classes: string[] | undefined[]) {
   return classes.filter(Boolean).join(" ");
 }
 
