@@ -37,7 +37,7 @@ export const accountRouter = createTRPCRouter({
                 });
             }
 
-            const accessTokenExpiresAt = new Date(account.expires_at);
+            const accessTokenExpiresAt = new Date(account.expires_at*1000);
 
             console.log('Exipred Access Token', accessTokenExpiresAt)
 
@@ -64,11 +64,12 @@ export const accountRouter = createTRPCRouter({
                         expires_at: tokens.expires_at,
                     },
                 });
+            }
 
-                return ctx.db.account.findUnique({
+            return  ctx.db.account.findUnique({
                     where: {id: account.id},
                 });
-            }
+
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new TRPCError({

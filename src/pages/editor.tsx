@@ -51,7 +51,7 @@ export default function EditorPage() {
       // Use demo data if user is not logged in
       activityData = demoData1.map((activity) => fromStravaActivity(activity));
     }
-    if (activities.length == 0) setActivities(activityData);
+    setActivities(activityData);
   }, [activityDataFetched]);
 
   // // Render loading screen
