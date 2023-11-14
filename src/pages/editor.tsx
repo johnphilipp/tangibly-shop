@@ -36,7 +36,7 @@ export default function EditorPage() {
       accessToken: accountData?.access_token ?? "",
     },
     {
-      enabled: accountData !== undefined && activities.length == 0,
+      enabled: accountData !== undefined,
     },
   );
 
