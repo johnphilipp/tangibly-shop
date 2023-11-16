@@ -17,6 +17,7 @@ import { useActivityTypes } from "./utils/useActivityTypes";
 import AspectRatioSelector from "./AspectRatioSelector";
 import ActivityTypeSelector from "./ActivityTypeSelector";
 import SVGCanvas from "./SVGCanvas";
+import {FaShoppingCart} from "react-icons/fa";
 
 export default function Editor() {
   const { activities } = useData();
@@ -243,6 +244,10 @@ export default function Editor() {
             <Button onClick={() => handleDownload(svgRef)} className="w-full">
               <AiOutlineDownload className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">Download</span>
+            </Button>
+            <Button className="w-full">
+              <FaShoppingCart className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
+              <span className="hidden sm:block">Add to cart</span>
             </Button>
           </div>
         </div>

@@ -73,19 +73,7 @@ export const authOptions: NextAuthOptions = {
           );
 
           //Refresh the token when it is about to expire
-          if ((expires_at ?? 0) * 1000 < Date.now() - 60000) {
-            const refreshedToken = await refreshStravaToken(
-              refresh_token ?? "",
-            );
 
-            return {
-              tokens: {
-                access_token: refreshedToken.access_token,
-                refresh_token: refreshedToken.refresh_token,
-                expires_at: refreshedToken.expires_at,
-              },
-            };
-          }
           return {
             tokens: { token_type, expires_at, refresh_token, access_token },
           };
