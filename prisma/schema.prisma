@@ -83,8 +83,8 @@ model Activity {
   moving_time                   Int
   elapsed_time                  Int
   total_elevation_gain          Float
-  type                          String?
-  sport_type                    String?
+  type                          String
+  sport_type                    String
   workout_type                  Int? // '?' means it's optional in Prisma
   id                            BigInt  @unique
   start_date                    String
