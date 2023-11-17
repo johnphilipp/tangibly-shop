@@ -87,8 +87,8 @@ model Activity {
   sport_type                    String?
   workout_type                  Int? // '?' means it's optional in Prisma
   id                            BigInt  @unique
-  start_date                    String?
-  start_date_local              String?
+  start_date                    String
+  start_date_local              String
   timezone                      String?
   utc_offset                    Float
   location_city                 String? // 'null | type' becomes 'type?' in Prisma
