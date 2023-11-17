@@ -78,34 +78,34 @@ model VerificationToken {
 model Activity {
   userId                        Account @relation(fields: [athlete], references: [id])
   athlete                       String
-  name                          String
+  name                          String?
   distance                      Float
   moving_time                   Int
   elapsed_time                  Int
   total_elevation_gain          Float
-  type                          String
-  sport_type                    String
+  type                          String?
+  sport_type                    String?
   workout_type                  Int? // '?' means it's optional in Prisma
   id                            BigInt  @unique
-  start_date                    String
-  start_date_local              String
-  timezone                      String
+  start_date                    String?
+  start_date_local              String?
+  timezone                      String?
   utc_offset                    Float
   location_city                 String? // 'null | type' becomes 'type?' in Prisma
   location_state                String? // 'null | type' becomes 'type?' in Prisma
-  location_country              String
+  location_country              String?
   achievement_count             Int
   kudos_count                   Int
   comment_count                 Int
   athlete_count                 Int
   photo_count                   Int
-  mapId                         String
+  mapId                         String?
   summaryPolyline               String  @db.Text
   trainer                       Boolean
   commute                       Boolean
   manual                        Boolean
   private                       Boolean
-  visibility                    String
+  visibility                    String?
   flagged                       Boolean
   gear_id                       String?
   lat_start                     Float
