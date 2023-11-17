@@ -2,7 +2,7 @@ import type { Activity } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineDownload } from "react-icons/ai";
 import { BiShuffle } from "react-icons/bi";
-import { BsEyeFill } from "react-icons/bs";
+import {BsEmojiHeartEyes, BsEyeFill } from "react-icons/bs";
 import Overlay from "~/components/3d/Overlay";
 import { useData } from "~/contexts/DataContext";
 import Button from "../Button";
@@ -18,6 +18,7 @@ import AspectRatioSelector from "./AspectRatioSelector";
 import ActivityTypeSelector from "./ActivityTypeSelector";
 import SVGCanvas from "./SVGCanvas";
 import {FaShoppingCart} from "react-icons/fa";
+import {InterestedModal} from "~/components/editor/InterestedModal";
 
 export default function Editor() {
   const { activities } = useData();
@@ -36,6 +37,7 @@ export default function Editor() {
   >(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [isInterestedModalVisible, setIsInterestedModalVisible] = useState(false);
 
   // Refs
   const svgRef = useRef<SVGSVGElement>(null);
@@ -245,11 +247,11 @@ export default function Editor() {
               <AiOutlineDownload className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">Download</span>
             </Button>
-            <Button className="w-full">
-              <FaShoppingCart className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
-              <span className="hidden sm:block">Add to cart</span>
-            </Button>
           </div>
+          <Button className="w-full" onClick={() => setIsInterestedModalVisible(true)}>
+              <BsEmojiHeartEyes className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
+              <span className="hidden sm:block">I am interested</span>
+          </Button>
         </div>
       </div>
 
@@ -268,6 +270,12 @@ export default function Editor() {
             activity={selectedActivities[selectedActivityIndex]!}
             onClose={() => setIsModalVisible(false)}
             onDelete={() => handleDeleteActivity(selectedActivityIndex)}
+          />
+        )}
+
+      {isInterestedModalVisible && (
+          <InterestedModal
+            onClose={() => setIsInterestedModalVisible(false)}
           />
         )}
 
