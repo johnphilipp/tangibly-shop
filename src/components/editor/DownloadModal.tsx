@@ -2,7 +2,12 @@ import Button from "../Button";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
-export function DownloadModal({ onClose }: { onClose: () => void }) {
+interface DownloadModalProps {
+  onClose: () => void;
+  svg: string; // New prop
+}
+
+export function DownloadModal({ onClose, svg }: DownloadModalProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -13,7 +18,7 @@ export function DownloadModal({ onClose }: { onClose: () => void }) {
   //const sendEmailRequest = api.token.token.useQuery({email: email});
 
   const { data, refetch } = api.mail.registerUserForMail.useQuery(
-    { email: email },
+    { email: email, svg: svg },
     { enabled: false },
   );
   //const sendEmail = api.token.token.useQuery({email: email});

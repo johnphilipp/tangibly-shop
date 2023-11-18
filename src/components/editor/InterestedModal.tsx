@@ -2,7 +2,13 @@ import Button from "../Button";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
-export function InterestedModal({ onClose }: { onClose: () => void }) {
+
+interface InterestedModalProps {
+  onClose: () => void;
+  svg: string; // New prop
+}
+
+export function InterestedModal({ onClose, svg }: InterestedModalProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -13,7 +19,7 @@ export function InterestedModal({ onClose }: { onClose: () => void }) {
   //const sendEmailRequest = api.token.token.useQuery({email: email});
 
   const { data, refetch } = api.mail.registerUserForMail.useQuery(
-    { email: email },
+    { email: email, svg: svg },
     { enabled: false },
   );
   //const sendEmail = api.token.token.useQuery({email: email});
@@ -22,9 +28,11 @@ export function InterestedModal({ onClose }: { onClose: () => void }) {
     setEmail(e.target.value);
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+
     e.preventDefault();
     if (!emailRegex.test(email) || !email) {
-      setError("Please use a valid @student.unisg.ch e-mail address.");
+      setError("Please use a valid e-mail address.");
     } else {
       setError(null);
       const res = refetch().then((r) => {
@@ -59,7 +67,7 @@ export function InterestedModal({ onClose }: { onClose: () => void }) {
           </label>
           <div className="mt-1 text-sm text-gray-500">
             <p>
-              Enter your E-Mail to get notified when orders are open. We'd be
+              Enter your E-Mail to get notified when orders are open. We would be
               delighted to have you on board!
             </p>
           </div>

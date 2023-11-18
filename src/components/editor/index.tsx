@@ -112,6 +112,19 @@ export default function Editor() {
     return URL.createObjectURL(svgBlob);
   };
 
+  const getSVGBase64 = () => {
+    const svgNode = svgRef.current;
+    if (!svgNode) return;
+
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgNode);
+
+    // Convert to Base64
+    const base64 = btoa(unescape(encodeURIComponent(svgString)));
+
+    return base64;
+};
+
   // Hooks
   useEffect(() => {
     const newSportTypes = activitiesWithGPS.reduce<string[]>(
@@ -246,7 +259,7 @@ export default function Editor() {
             </Button>
             <Button
               onClick={() => setIsInterestedModalVisible(true)}
-              className="w-full"
+              className="w-full bg-gray-900 text-white hover:bg-gray-700"
             >
               <BsEmojiHeartEyes className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">I am interested</span>
@@ -274,11 +287,11 @@ export default function Editor() {
         )}
 
       {isDownloadModalVisible && (
-        <DownloadModal onClose={() => setIsDownloadModalVisible(false)} />
+        <DownloadModal onClose={() => setIsDownloadModalVisible(false)}  svg={getSVGBase64() ?? ""} />
       )}
 
       {isInterestedModalVisible && (
-        <InterestedModal onClose={() => setIsInterestedModalVisible(false)} />
+        <InterestedModal onClose={() => setIsInterestedModalVisible(false)} svg={getSVGBase64() ?? ""} />
       )}
 
       {isAddModalVisible && (
