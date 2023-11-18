@@ -49,7 +49,7 @@ async function sendEmail(to: string, subject: string, user: string, svg: string)
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const transporter = process.env.NODE_ENV == "production" ? gmail_transporter : mailhog_transporter;
+    const transporter = process.env.NODE_ENV === "production" ? gmail_transporter : mailhog_transporter;
 
         // Compile the Pug template to HTML
     const compiledFunction = pug.compileFile(path.join(process.cwd(), 'mail/html.pug'));
