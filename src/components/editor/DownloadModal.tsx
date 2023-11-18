@@ -2,7 +2,7 @@ import Button from "../Button";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
-export function InterestedModal({ onClose }: { onClose: () => void }) {
+export function DownloadModal({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -55,12 +55,12 @@ export function InterestedModal({ onClose }: { onClose: () => void }) {
             htmlFor="email"
             className="text-base font-semibold text-gray-900"
           >
-            Register your interest
+            Download image
           </label>
           <div className="mt-1 text-sm text-gray-500">
             <p>
-              Enter your E-Mail to get notified when orders are open. We'd be
-              delighted to have you on board!
+              Enter your E-Mail to receive a free image of the beautiful collage
+              you just created.
             </p>
           </div>
           <input

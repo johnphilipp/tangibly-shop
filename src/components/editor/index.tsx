@@ -2,7 +2,7 @@ import type { Activity } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineDownload } from "react-icons/ai";
 import { BiShuffle } from "react-icons/bi";
-import {BsEmojiHeartEyes, BsEyeFill } from "react-icons/bs";
+import { BsEmojiHeartEyes, BsEyeFill } from "react-icons/bs";
 import Overlay from "~/components/3d/Overlay";
 import { useData } from "~/contexts/DataContext";
 import Button from "../Button";
@@ -17,8 +17,9 @@ import { useActivityTypes } from "./utils/useActivityTypes";
 import AspectRatioSelector from "./AspectRatioSelector";
 import ActivityTypeSelector from "./ActivityTypeSelector";
 import SVGCanvas from "./SVGCanvas";
-import {FaShoppingCart} from "react-icons/fa";
-import {InterestedModal} from "~/components/editor/InterestedModal";
+import { FaShoppingCart } from "react-icons/fa";
+import { InterestedModal } from "~/components/editor/InterestedModal";
+import { DownloadModal } from "./DownloadModal";
 
 export default function Editor() {
   const { activities } = useData();
@@ -37,7 +38,9 @@ export default function Editor() {
   >(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [isInterestedModalVisible, setIsInterestedModalVisible] = useState(false);
+  const [isInterestedModalVisible, setIsInterestedModalVisible] =
+    useState(false);
+  const [isDownloadModalVisible, setIsDownloadModalVisible] = useState(false);
 
   // Refs
   const svgRef = useRef<SVGSVGElement>(null);
@@ -91,11 +94,6 @@ export default function Editor() {
         return [...prevSelectedActivityTypes, sportType];
       }
     });
-  };
-
-  const handleShuffleActivities = () => {
-    const shuffled = [...activitiesWithGPS].sort(() => Math.random() - 0.5);
-    setSelectedActivities(shuffled.slice(0, MAX_ACTIVITIES));
   };
 
   const getSVGDataURL = () => {
@@ -235,23 +233,25 @@ export default function Editor() {
         {/* ACTIONS */}
         <div className="flex-col space-y-1 p-4 sm:p-6">
           <div className="grid grid-cols-3 gap-4">
-            <Button onClick={handleShuffleActivities} className="w-full">
-              <BiShuffle className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
-              <span className="hidden sm:block">Shuffle</span>
-            </Button>
             <Button className="w-full" onClick={() => setOverlayOpen(true)}>
               <BsEyeFill className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">Preview</span>
             </Button>
-            <Button onClick={() => handleDownload(svgRef)} className="w-full">
+            <Button
+              onClick={() => setIsDownloadModalVisible(true)}
+              className="w-full"
+            >
               <AiOutlineDownload className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">Download</span>
             </Button>
-          </div>
-          <Button className="w-full" onClick={() => setIsInterestedModalVisible(true)}>
+            <Button
+              onClick={() => setIsInterestedModalVisible(true)}
+              className="w-full"
+            >
               <BsEmojiHeartEyes className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">I am interested</span>
-          </Button>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -273,11 +273,13 @@ export default function Editor() {
           />
         )}
 
+      {isDownloadModalVisible && (
+        <DownloadModal onClose={() => setIsDownloadModalVisible(false)} />
+      )}
+
       {isInterestedModalVisible && (
-          <InterestedModal
-            onClose={() => setIsInterestedModalVisible(false)}
-          />
-        )}
+        <InterestedModal onClose={() => setIsInterestedModalVisible(false)} />
+      )}
 
       {isAddModalVisible && (
         <AddActivityModal
