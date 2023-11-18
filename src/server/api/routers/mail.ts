@@ -18,10 +18,13 @@ export const mailRouter = createTRPCRouter({
             }
 
             try {
+                console.log("Saving mail ", input.email)
                 await ctx.db.user.update({
                     where: {id: ctx.session.user.id},
                     data: {email: input.email},
                 });
+
+                console.log("Sending mail ", input.email)
                 await sendEmail(input.email, 'Tangibly Export', ctx.session.user.name ?? 'there', input.svg)
 
                 return {status: 'success', message: 'Success! Thank you.'};
