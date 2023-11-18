@@ -18,10 +18,7 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
 
   //const sendEmailRequest = api.token.token.useQuery({email: email});
 
-  const { data, refetch } = api.mail.registerUserForMail.useQuery(
-    { email: email, svg: svg },
-    { enabled: false },
-  );
+  const register = api.mail.registerUserForMail.useMutation();
   //const sendEmail = api.token.token.useQuery({email: email});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,31 +26,30 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 
-
+    const data = register.mutateAsync({ email: email, svg: svg });
     e.preventDefault();
-    if (!emailRegex.test(email) || !email) {
+
+    data.then(value => {
+      if (!emailRegex.test(email) || !email) {
       setError("Please use a valid e-mail address.");
     } else {
       setError(null);
-      const res = refetch().then((r) => {
-        if (r.data?.status === "success") {
-          setSuccess(r.data.message);
+        if (value.status === "success") {
+          setSuccess(value.message);
           setError(null);
-        } else if (!result) {
+        } else if (value.status === error) {
           setError("Something went wrong ;(");
           setSuccess(null);
         } else {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          setError(r.data.message);
+          setError(value.message);
           setSuccess(null);
         }
-      });
-      const result = data;
-
-      console.log(result);
+      };
+    });
+    //const result = data;
     }
-  };
 
   return (
     <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">

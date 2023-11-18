@@ -12,7 +12,7 @@ const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}
 export const mailRouter = createTRPCRouter({
   registerUserForMail: protectedProcedure
     .input(z.object({ email: z.string(), svg: z.string() }))
-    .query( async ({ctx, input}) => {
+    .mutation( async ({ctx, input}) => {
             if (!emailRegex.test(input.email)) {
                 return {status: 'error', message: 'Invalid e-mail'};
             }
