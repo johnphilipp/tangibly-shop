@@ -29,7 +29,7 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
     const data = register.mutateAsync({ email: email, svg: svg });
     e.preventDefault();
 
-    data.then(value => {
+    void data.then(value => {
       if (!emailRegex.test(email) || !email) {
       setError("Please use a valid e-mail address.");
     } else {
