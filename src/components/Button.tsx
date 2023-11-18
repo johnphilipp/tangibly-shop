@@ -11,6 +11,7 @@ interface ButtonProps {
   className?: string;
   children: React.ReactNode;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset"; // Added type with its possible values
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
   children,
   disabled,
+  type = "button", // Default type is set to "button"
 }) => {
   return href ? (
     <Link
@@ -32,6 +34,7 @@ const Button: React.FC<ButtonProps> = ({
       className={`rounded-md border px-2 py-2 font-semibold text-gray-900 no-underline transition hover:bg-gray-100 sm:px-4 md:px-6 ${className}`}
       onClick={onClick}
       disabled={disabled}
+      type={type} // Using the type property here
     >
       {children}
     </button>
