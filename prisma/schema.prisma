@@ -65,6 +65,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
+  Product       Product[]
 }
 
 model VerificationToken {
@@ -131,4 +132,19 @@ model Activity {
   has_kudoed                    Boolean
 
   @@index([athlete])
+}
+
+// Define the Product model with a unique constraint on the 'name' field
+model Product {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  product_type String
+  name         String
+  svg          String   @db.Text
+  amount       Int      @default(1)
+  // Define a many-to-many relationship between Product and Cart
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+
+  @@index([userId])
 }

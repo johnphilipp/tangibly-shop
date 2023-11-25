@@ -55,7 +55,7 @@ export const authOptions: NextAuthOptions = {
         url: "https://www.strava.com/api/v3/oauth/authorize",
         params: {
           scope: "activity:read_all",
-          approval_prompt: "auto",
+          approval_prompt: " ",
           response_type: "code",
         },
       },

@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import {api} from "~/utils/api";
 
 const products = [
   {
@@ -37,6 +38,11 @@ export default function ShoppingCartSidebar({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
+
+  const { data: cartData } = api.cart.getProductsFromCart.useQuery({null: null});
+
+  console.log(cartData);
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={() => setOpen(false)}>

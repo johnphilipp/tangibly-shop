@@ -20,6 +20,8 @@ import SVGCanvas from "./SVGCanvas";
 import { FaShoppingCart } from "react-icons/fa";
 import { InterestedModal } from "~/components/editor/InterestedModal";
 import { DownloadModal } from "./DownloadModal";
+import {FaBasketShopping} from "react-icons/fa6";
+import {api} from "~/utils/api";
 
 export default function Editor() {
   const { activities } = useData();
@@ -95,6 +97,20 @@ export default function Editor() {
       }
     });
   };
+
+  const cart = api.cart.addProductToCart.useMutation();
+
+    const handleAddToCart = () => {
+
+    const data = cart.mutateAsync({
+      product_type: "cup",
+      name: "Test",
+      svg: getSVGBase64() ?? "",
+      amount: 1,
+    });
+
+    //const result = data;
+    }
 
   const getSVGDataURL = () => {
     const svgNode = svgRef.current;
@@ -263,6 +279,13 @@ export default function Editor() {
             >
               <BsEmojiHeartEyes className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">I am interested</span>
+            </Button>
+            <Button
+              onClick={handleAddToCart}
+              className="w-full bg-gray-900 text-white hover:bg-gray-700"
+            >
+              <FaBasketShopping className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
+              <span className="hidden sm:block">Add to cart</span>
             </Button>
           </div>
         </div>
