@@ -1,10 +1,14 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import {api} from "~/utils/api";
+import { api } from "~/utils/api";
+import { useSession } from "next-auth/react";
+import { useData } from "~/contexts/DataContext";
+import { CartItem } from "@prisma/client";
 
-const products = [
+/**
+const dasdad = [
   {
     id: 1,
     name: "Throwback Hip Bag",
@@ -29,7 +33,7 @@ const products = [
     imageAlt:
       "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
   },
-];
+]; **/
 
 export default function ShoppingCartSidebar({
   open,
@@ -38,10 +42,31 @@ export default function ShoppingCartSidebar({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
+  const { cartItems, setCartItems } = useData();
+  const user = useSession().data?.user;
 
-  const { data: cartData } = api.cart.getProductsFromCart.useQuery({null: null});
+  const { data: cartData } = api.cart.get.useQuery({
+    enabled: user !== undefined,
+  });
 
   console.log(cartData);
+
+  useEffect(() => {
+    if (cartData?.items) {
+      setCartItems(cartData.items);
+      console.log("cartData", cartData.items);
+    }
+  }, [cartData, setCartItems, user]);
+
+  const cart = api.cart.delete.useMutation();
+  const handleCartDeletion = async (id: number) => {
+    await cart.mutateAsync({
+      id: id,
+    });
+    setCartItems((currentCartItems) =>
+      currentCartItems.filter((cartItem) => cartItem.id !== id),
+    );
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -96,13 +121,13 @@ export default function ShoppingCartSidebar({
                             role="list"
                             className="-my-6 divide-y divide-gray-200"
                           >
-                            {products.map((product) => (
-                              <li key={product.id} className="flex py-6">
+                            {cartItems.map((cartItem) => (
+                              <li key={cartItem.id} className="flex py-6">
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                   <img
-                                    src={product.imageSrc}
-                                    alt={product.imageAlt}
-                                    className="h-full w-full object-cover object-center"
+                                    src={`data:image/svg+xml;base64,${cartItem.design.previewSvg}`}
+                                    //src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
+                                    className="h-full w-full object-contain object-center"
                                   />
                                 </div>
 
@@ -110,25 +135,33 @@ export default function ShoppingCartSidebar({
                                   <div>
                                     <div className="flex justify-between text-base font-medium text-gray-900">
                                       <h3>
-                                        <a href={product.href}>
-                                          {product.name}
-                                        </a>
+                                        {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
+                                        <a href={"#"}>{cartItem.design.name}</a>
                                       </h3>
-                                      <p className="ml-4">{product.price}</p>
+                                      <p className="ml-4">{20}</p>
                                     </div>
                                     <p className="mt-1 text-sm text-gray-500">
-                                      {product.color}
+                                      {cartItem.design.productType}
                                     </p>
                                   </div>
                                   <div className="flex flex-1 items-end justify-between text-sm">
                                     <p className="text-gray-500">
-                                      Qty {product.quantity}
+                                      Qty {cartItem.amount}
                                     </p>
 
                                     <div className="flex">
+                                      <Link
+                                        href={"/editor?designId=" + cartItem.id}
+                                        className="mr-2 font-medium text-indigo-600 hover:text-indigo-500"
+                                      >
+                                        Edit
+                                      </Link>
                                       <button
                                         type="button"
                                         className="font-medium text-indigo-600 hover:text-indigo-500"
+                                        onClick={() =>
+                                          handleCartDeletion(cartItem.id)
+                                        }
                                       >
                                         Remove
                                       </button>

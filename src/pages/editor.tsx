@@ -52,6 +52,7 @@ export default function EditorPage() {
       activityData = demoData1.map((activity) => fromStravaActivity(activity));
     }
     setActivities(activityData);
+    console.log("activityDataFetched", activityDataFetched);
   }, [activityDataFetched]);
 
   // // Render loading screen

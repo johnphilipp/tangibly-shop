@@ -13,6 +13,9 @@ import type { FC, ReactNode } from "react";
 import { Fragment, useState } from "react";
 import { ImMagicWand } from "react-icons/im";
 import ShoppingCartSidebar from "./ShoppingCartSidebar";
+import DesignName from "~/components/DesignName";
+import { useRouter } from "next/router";
+import { useData } from "~/contexts/DataContext";
 
 interface LayoutProps {
   children: ReactNode;
@@ -67,6 +70,12 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [ShoppingCartOpen, setShoppingCartOpen] = useState(false);
+
+  const { cartItems } = useData();
+
+  const user = useSession().data?.user;
+
+  const router = useRouter();
 
   return (
     <div className="bg-white">
@@ -340,15 +349,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                   {/* Logo (lg+) */}
-                  <div className="hidden lg:flex lg:items-center">
-                    <Link href="/">
-                      <span className="sr-only">Your Company</span>
-                      <ImMagicWand
-                        className="h-8 w-auto text-gray-700"
-                        aria-hidden="true"
-                      />
-                    </Link>
-                  </div>
+                  <div className="hidden lg:flex lg:items-center"></div>
 
                   <div className="hidden h-full lg:flex">
                     {/* Mega menus */}
@@ -462,15 +463,9 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                           ),
                         )}
 
-                        {navigation.pages.map((page) => (
-                          <Link
-                            key={page.name}
-                            href={page.href}
-                            className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
-                          >
-                            {page.name}
-                          </Link>
-                        ))}
+                        {user && router.pathname === "/editor" ? (
+                          <DesignName />
+                        ) : null}
                       </div>
                     </Popover.Group>
                   </div>
@@ -550,7 +545,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                             aria-hidden="true"
                           />
                           <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                            0
+                            {cartItems.length}
                           </span>
                           <span className="sr-only">
                             items in cart, view bag
