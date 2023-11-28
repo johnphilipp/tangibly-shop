@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { pricing } from "~/utils/pricing";
 
 export const cartRouter = createTRPCRouter({
   add: protectedProcedure
@@ -39,7 +40,7 @@ export const cartRouter = createTRPCRouter({
         include: { design: true },
       });
 
-      return { status: "success", items: items };
+      return { status: "success", items: items, prices: pricing.products };
     } catch (error) {
       console.log(error);
       return {

@@ -14,6 +14,7 @@ type Product = {
   id: number;
   name: string;
   href: string;
+  kind: string;
   imageSrc: string;
   imageAlt: string;
   price: string;
@@ -24,6 +25,7 @@ const products: Product[] = [
   {
     id: 1,
     name: "Coffee cup",
+    kind: "mug",
     href: "/editor",
     imageSrc: "/collage-2.png",
     imageAlt: "Front of men's Basic Tee in black.",
@@ -34,6 +36,7 @@ const products: Product[] = [
     id: 2,
     name: "Coffee cup",
     href: "/bubbles",
+    kind: "mug",
     imageSrc: "/bubbles-2.png",
     imageAlt: "Front of men's Basic Tee in black.",
     price: "€15",
@@ -54,7 +57,7 @@ export default function Dashboard() {
     try {
       // Trigger the mutation and wait for the result
       const data = await mutation.mutateAsync({
-        productType: product.name,
+        productType: product.kind,
       });
 
       if (data?.design) {
