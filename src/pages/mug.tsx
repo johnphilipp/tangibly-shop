@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
-import Editor from "~/components/editor";
 import DemoBanner from "~/components/editor/DemoBanner";
 import Mug from "~/components/mug";
 import { useData } from "~/contexts/DataContext";
@@ -14,7 +13,7 @@ import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
 export default function MugPage() {
   let activityData;
-  const { activities, setActivities } = useData();
+  const { setActivities } = useData();
   const user = useSession().data?.user;
 
   // Fetch user account data to get access token
@@ -53,15 +52,6 @@ export default function MugPage() {
     }
     setActivities(activityData);
   }, [activityDataFetched]);
-
-  // // Render loading screen
-  // if (activityDataLoading) {
-  //   return (
-  //     <Layout>
-  //       <LoadingPage />
-  //     </Layout>
-  //   );
-  // }
 
   // Render editor
   return (
