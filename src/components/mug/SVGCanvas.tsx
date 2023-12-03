@@ -21,7 +21,7 @@ const METRIC_TEXT = "Activities";
 
 const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT;
 
-const CELL_MARGIN = 1;
+const CELL_MARGIN = 10;
 
 interface SVGCanvasProps {
   activities: (Activity | null)[];

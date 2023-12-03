@@ -18,6 +18,9 @@ export function getQuadrantCoordinates(
     SVG_WIDTH,
     SVG_HEIGHT,
   );
+
+  const [minX, maxX, minY, maxY] = findBoundingBox(scaledCoordinates);
+
   const row = Math.floor(index / aspectRatio.cols);
   const col = index % aspectRatio.cols;
 
@@ -25,15 +28,21 @@ export function getQuadrantCoordinates(
   const quadrantHeight =
     (SVG_HEIGHT - (aspectRatio.rows + 1)) / aspectRatio.rows;
 
-  const offsetX = col * quadrantWidth;
-  const offsetY = row * quadrantHeight;
+  const offsetX = col * quadrantWidth + margin;
+  const offsetY = row * quadrantHeight + margin;
 
-  const adjustedOffsetX = offsetX + margin;
-  const adjustedOffsetY = offsetY + margin;
+  const pathCenterX = (minX + maxX) / 2;
+  const pathCenterY = (minY + maxY) / 2;
+
+  const quadrantCenterX = offsetX + quadrantWidth / 2;
+  const quadrantCenterY = offsetY + quadrantHeight / 2;
+
+  const translateX = quadrantCenterX - pathCenterX;
+  const translateY = quadrantCenterY - pathCenterY;
 
   return scaledCoordinates.map((coord) => [
-    coord[0] + adjustedOffsetX,
-    coord[1] + adjustedOffsetY,
+    coord[0] + translateX,
+    coord[1] + translateY,
   ]);
 }
 
@@ -79,4 +88,22 @@ function scaleCoordinates(
     (coord[1] - minX) * latCorrection * scale,
     adjustedQuadrantHeight - (coord[0] - minY) * scale, // Adjust the y-coordinate scaling
   ]);
+}
+
+function findBoundingBox(
+  coordinates: [number, number][],
+): [number, number, number, number] {
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  for (const [x, y] of coordinates) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+
+  return [minX, maxX, minY, maxY];
 }
