@@ -1,35 +1,32 @@
-import type { AspectRatio } from "../aspectRatios";
 import { decodePolyline } from "./decodePolyline";
 
 export function getQuadrantCoordinates(
   polylineData: string,
   index: number,
-  margin: number,
-  aspectRatio: AspectRatio,
+  CELL_MARGIN: number,
+  cols: number,
   SVG_WIDTH: number,
   SVG_HEIGHT: number,
-  SVG_MARGIN: number,
 ): [number, number][] {
   const coordinates = decodePolyline(polylineData);
   const scaledCoordinates = scaleCoordinates(
     coordinates,
-    margin,
-    aspectRatio,
+    CELL_MARGIN,
+    cols,
     SVG_WIDTH,
     SVG_HEIGHT,
   );
 
   const [minX, maxX, minY, maxY] = findBoundingBox(scaledCoordinates);
 
-  const row = Math.floor(index / aspectRatio.cols);
-  const col = index % aspectRatio.cols;
+  const row = Math.floor(index / cols);
+  const col = index % cols;
 
-  const quadrantWidth = (SVG_WIDTH - (aspectRatio.cols + 1)) / aspectRatio.cols;
-  const quadrantHeight =
-    (SVG_HEIGHT - (aspectRatio.rows + 1)) / aspectRatio.rows;
+  const quadrantWidth = SVG_WIDTH / cols;
+  const quadrantHeight = SVG_HEIGHT;
 
-  const offsetX = col * quadrantWidth + margin;
-  const offsetY = row * quadrantHeight + margin;
+  const offsetX = col * quadrantWidth;
+  const offsetY = row * quadrantHeight;
 
   const pathCenterX = (minX + maxX) / 2;
   const pathCenterY = (minY + maxY) / 2;
@@ -49,7 +46,7 @@ export function getQuadrantCoordinates(
 function scaleCoordinates(
   coordinates: [number, number][],
   margin: number,
-  aspectRatio: AspectRatio,
+  cols: number,
   SVG_WIDTH: number,
   SVG_HEIGHT: number,
 ): [number, number][] {
@@ -67,9 +64,8 @@ function scaleCoordinates(
     if (latitude > maxY) maxY = latitude;
   }
 
-  const quadrantWidth = (SVG_WIDTH - (aspectRatio.cols + 1)) / aspectRatio.cols;
-  const quadrantHeight =
-    (SVG_HEIGHT - (aspectRatio.rows + 1)) / aspectRatio.rows;
+  const quadrantWidth = SVG_WIDTH / cols;
+  const quadrantHeight = SVG_HEIGHT;
 
   const avgLat = sumLat / coordinates.length;
   const latCorrection = Math.cos((avgLat * Math.PI) / 180);

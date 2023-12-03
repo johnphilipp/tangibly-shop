@@ -16,10 +16,7 @@ export default function Mug() {
 
   // Custom hooks
   const { activitiesWithGPS } = useActivityTypes(activities);
-  const activitiesFilteredByYear = activitiesWithGPS.filter((activity) => {
-    const year = new Date(activity?.start_date_local).getFullYear();
-    return year === 2023;
-  });
+  const activitiesFilteredByYear = activitiesWithGPS;
 
   const activitiesFiltered = activitiesFilteredByYear;
 
