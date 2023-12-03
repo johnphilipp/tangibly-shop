@@ -3,10 +3,11 @@ import type { Activity } from "@prisma/client";
 import React from "react";
 import { getQuadrantCoordinates } from "./utils/canvas/getQuadrantCoordinates";
 import { convertToSVGPath } from "./utils/canvas/convertToSVGPath";
+import { calculateGridDimensions } from "./utils/canvas/calculateGridDimensions";
 
 const SVG_WIDTH = 2000; // 200 mm
 const SVG_HEIGHT = 960; // 96 mm
-const SVG_MARGIN = 60;
+const SVG_MARGIN = 50;
 
 const FREETEXT_HEIGHT = 160;
 const FREETEXT_X = 0;
@@ -20,49 +21,21 @@ const METRIC_TEXT = "Activities";
 
 const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT;
 
-const CELL_MARGIN = 5;
-
-// TODO: STRETCH
+const CELL_MARGIN = 1;
 
 interface SVGCanvasProps {
   activities: (Activity | null)[];
   backgroundColor: string;
   strokeColor: string;
+  strokeWidth: number;
   svgRef: React.RefObject<SVGSVGElement>;
-}
-
-function calculateGridDimensions(
-  numActivities: number,
-  width: number,
-  height: number,
-) {
-  let bestLayout = {
-    rows: 1,
-    cols: numActivities,
-    aspectDiff: Number.MAX_VALUE,
-  };
-
-  for (let cols = 1; cols <= numActivities; cols++) {
-    const rows = Math.ceil(numActivities / cols);
-    const boxWidth = width / cols;
-    const boxHeight = height / rows;
-
-    // Aspect difference favors more square-like layouts
-    const aspectDiff = Math.abs(boxWidth / boxHeight - 1);
-
-    // Update the best layout if this layout has a more square-like aspect ratio
-    if (aspectDiff < bestLayout.aspectDiff) {
-      bestLayout = { rows, cols, aspectDiff };
-    }
-  }
-
-  return bestLayout;
 }
 
 const SVGCanvas: React.FC<SVGCanvasProps> = ({
   activities,
   backgroundColor,
   strokeColor,
+  strokeWidth,
   svgRef,
 }) => {
   const NUM_ACTIVITIES = activities.length;
@@ -84,6 +57,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
       { rows: 1, cols },
       SVG_WIDTH,
       boxHeight,
+      SVG_MARGIN,
     );
     return convertToSVGPath(quadrantCoordinates);
   });
@@ -108,7 +82,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
               d={path}
               fill="none"
               stroke={strokeColor}
-              strokeWidth="2"
+              strokeWidth={strokeWidth}
             />
           ),
       )}

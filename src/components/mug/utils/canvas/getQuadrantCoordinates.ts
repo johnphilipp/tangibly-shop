@@ -8,6 +8,7 @@ export function getQuadrantCoordinates(
   aspectRatio: AspectRatio,
   SVG_WIDTH: number,
   SVG_HEIGHT: number,
+  SVG_MARGIN: number,
 ): [number, number][] {
   const coordinates = decodePolyline(polylineData);
   const scaledCoordinates = scaleCoordinates(
@@ -27,8 +28,8 @@ export function getQuadrantCoordinates(
   const offsetX = col * quadrantWidth;
   const offsetY = row * quadrantHeight;
 
-  const adjustedOffsetX = offsetX + margin; // Adjust for margin
-  const adjustedOffsetY = offsetY + margin; // Adjust for margin
+  const adjustedOffsetX = offsetX + margin;
+  const adjustedOffsetY = offsetY + margin;
 
   return scaledCoordinates.map((coord) => [
     coord[0] + adjustedOffsetX,

@@ -9,9 +9,7 @@ export default function Mug() {
   // State hooks
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
-  const [strokeWidth, setStrokeWidth] = useState(8);
-  const [padding, setPadding] = useState(20);
-  const [numActivitiesSelected, setNumActivitiesSelected] = useState(50);
+  const [strokeWidth, setStrokeWidth] = useState(6);
 
   // Refs
   const svgRef = useRef<SVGSVGElement>(null);
@@ -30,8 +28,9 @@ export default function Mug() {
       <div className="min-w-[300px] bg-white text-center shadow-lg sm:min-w-[800px]">
         <SVGCanvas
           activities={activitiesFiltered}
-          strokeColor={strokeColor}
           backgroundColor={backgroundColor}
+          strokeColor={strokeColor}
+          strokeWidth={strokeWidth}
           svgRef={svgRef}
         />
       </div>
