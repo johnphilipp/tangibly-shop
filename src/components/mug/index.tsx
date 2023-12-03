@@ -18,11 +18,18 @@ export default function Mug() {
 
   // Custom hooks
   const { activitiesWithGPS } = useActivityTypes(activities);
+  const activitiesFilteredByYear = activitiesWithGPS.filter((activity) => {
+    const year = new Date(activity?.start_date_local).getFullYear();
+    return year === 2023;
+  });
+
+  const activitiesFiltered = activitiesFilteredByYear;
 
   return (
     <div className="m-4 space-y-4">
       <div className="min-w-[300px] bg-white text-center shadow-lg sm:min-w-[800px]">
         <SVGCanvas
+          activities={activitiesFiltered}
           strokeColor={strokeColor}
           backgroundColor={backgroundColor}
           svgRef={svgRef}

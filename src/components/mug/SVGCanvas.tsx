@@ -1,4 +1,5 @@
 // SVGCanvas.tsx
+import type { Activity } from "@prisma/client";
 import React from "react";
 
 const SVG_WIDTH = 2000; // 200 mm
@@ -14,35 +15,34 @@ const METRIC_HEIGHT = 160;
 const METRIC_X = 1000;
 
 const FREETEXT = "Kimberley's 2023 Wrapped";
-const METRIC_NUMBER = "147";
 const METRIC_TEXT = "Activities";
 
 const BOX_PADDING = 10; // Padding between boxes
 const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT; // Height of the area where boxes will be placed
-const ACTIVITIES = 17;
 
 // TODO: STRETCH
 
 interface SVGCanvasProps {
+  activities: (Activity | null)[];
   backgroundColor: string;
   strokeColor: string;
   svgRef: React.RefObject<SVGSVGElement>;
 }
 
 function calculateGridDimensions(
-  activities: number,
+  numActivities: number,
   width: number,
   height: number,
   padding: number,
 ) {
   let bestLayout = {
     rows: 1,
-    cols: activities,
+    cols: numActivities,
     aspectDiff: Number.MAX_VALUE,
   };
 
-  for (let cols = 1; cols <= activities; cols++) {
-    const rows = Math.ceil(activities / cols);
+  for (let cols = 1; cols <= numActivities; cols++) {
+    const rows = Math.ceil(numActivities / cols);
     const boxWidth = (width - (cols + 1) * padding) / cols;
     const boxHeight = (height - (rows + 1) * padding) / rows;
 
@@ -58,41 +58,15 @@ function calculateGridDimensions(
   return bestLayout;
 }
 
-// function calculateGridDimensions(
-//   activities: number,
-//   width: number,
-//   height: number,
-//   padding: number,
-// ) {
-//   let bestLayout = {
-//     rows: 1,
-//     cols: activities,
-//     filledArea: 0,
-//   };
-
-//   for (let cols = 1; cols <= activities; cols++) {
-//     const rows = Math.ceil(activities / cols);
-//     const boxWidth = (width - (cols + 1) * padding) / cols;
-//     const boxHeight = (height - (rows + 1) * padding) / rows;
-
-//     // Calculate the filled area
-//     const filledArea = boxWidth * boxHeight * Math.min(rows * cols, activities);
-
-//     if (filledArea > bestLayout.filledArea) {
-//       bestLayout = { rows, cols, filledArea };
-//     }
-//   }
-
-//   return bestLayout;
-// }
-
 const SVGCanvas: React.FC<SVGCanvasProps> = ({
+  activities,
   backgroundColor,
   strokeColor,
   svgRef,
 }) => {
+  const NUM_ACTIVITIES = activities.length;
   const { rows, cols } = calculateGridDimensions(
-    ACTIVITIES,
+    NUM_ACTIVITIES,
     SVG_WIDTH,
     FREE_AREA_HEIGHT,
     BOX_PADDING,
@@ -124,7 +98,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         const x = col * (boxWidth + BOX_PADDING) + BOX_PADDING;
         const y = row * (boxHeight + BOX_PADDING) + BOX_PADDING;
 
-        return index < ACTIVITIES ? (
+        return index < NUM_ACTIVITIES ? (
           <rect
             key={index}
             x={x}
@@ -161,7 +135,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         alignmentBaseline="middle"
       >
         <tspan fontWeight="bold" alignmentBaseline="middle">
-          {METRIC_NUMBER}{" "}
+          {NUM_ACTIVITIES}{" "}
         </tspan>
         <tspan fontWeight="normal" alignmentBaseline="middle">
           {METRIC_TEXT}
