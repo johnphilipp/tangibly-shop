@@ -1,6 +1,8 @@
 // SVGCanvas.tsx
 import type { Activity } from "@prisma/client";
 import React from "react";
+import { getQuadrantCoordinates } from "./utils/canvas/getQuadrantCoordinates";
+import { convertToSVGPath } from "./utils/canvas/convertToSVGPath";
 
 const SVG_WIDTH = 2000; // 200 mm
 const SVG_HEIGHT = 960; // 96 mm
@@ -17,8 +19,10 @@ const METRIC_X = 1000;
 const FREETEXT = "Kimberley's 2023 Wrapped";
 const METRIC_TEXT = "Activities";
 
-const BOX_PADDING = 10; // Padding between boxes
-const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT; // Height of the area where boxes will be placed
+const BOX_PADDING = 0;
+const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT;
+
+const MARGIN = 5;
 
 // TODO: STRETCH
 
@@ -71,8 +75,23 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
     FREE_AREA_HEIGHT,
     BOX_PADDING,
   );
-  const boxWidth = (SVG_WIDTH - (cols + 1) * BOX_PADDING) / cols;
+
   const boxHeight = (FREE_AREA_HEIGHT - (rows + 1) * BOX_PADDING) / rows;
+
+  const activityPaths = activities.map((activity, index) => {
+    if (!activity || typeof activity.summaryPolyline !== "string") return null;
+
+    const quadrantCoordinates = getQuadrantCoordinates(
+      activity.summaryPolyline,
+      index,
+      BOX_PADDING,
+      MARGIN, // Pass the margin value
+      { rows: 1, cols },
+      SVG_WIDTH,
+      boxHeight,
+    );
+    return convertToSVGPath(quadrantCoordinates);
+  });
 
   return (
     <svg
@@ -83,33 +102,21 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
       preserveAspectRatio="xMidYMid meet"
     >
       {/* BACKGROUND COLOR */}
-      <rect
-        width={SVG_WIDTH}
-        height={SVG_HEIGHT}
-        fill={backgroundColor}
-        stroke={"#cfcfcf"}
-        strokeWidth={"2"}
-      />
+      <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
 
-      {/* GRID */}
-      {Array.from({ length: rows * cols }).map((_, index) => {
-        const row = Math.floor(index / cols);
-        const col = index % cols;
-        const x = col * (boxWidth + BOX_PADDING) + BOX_PADDING;
-        const y = row * (boxHeight + BOX_PADDING) + BOX_PADDING;
-
-        return index < NUM_ACTIVITIES ? (
-          <rect
-            key={index}
-            x={x}
-            y={y}
-            width={boxWidth}
-            height={boxHeight}
-            fill="someColor" // Color for the boxes
-            stroke="someBorderColor" // Border color for the boxes
-          />
-        ) : null; // Leave excess squares blank
-      })}
+      {/* POLYLINES */}
+      {activityPaths.map(
+        (path, index) =>
+          path && (
+            <path
+              key={index}
+              d={path}
+              fill="none"
+              stroke={strokeColor}
+              strokeWidth="2"
+            />
+          ),
+      )}
 
       {/* FREE TEXT */}
       <text

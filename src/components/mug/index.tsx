@@ -20,7 +20,7 @@ export default function Mug() {
   const { activitiesWithGPS } = useActivityTypes(activities);
   const activitiesFilteredByYear = activitiesWithGPS.filter((activity) => {
     const year = new Date(activity?.start_date_local).getFullYear();
-    return year === 2023;
+    return year === 2021;
   });
 
   const activitiesFiltered = activitiesFilteredByYear;

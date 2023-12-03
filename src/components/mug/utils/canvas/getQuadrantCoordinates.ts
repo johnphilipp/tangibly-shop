@@ -5,6 +5,7 @@ export function getQuadrantCoordinates(
   polylineData: string,
   index: number,
   padding: number,
+  margin: number,
   aspectRatio: AspectRatio,
   SVG_WIDTH: number,
   SVG_HEIGHT: number,
@@ -13,12 +14,11 @@ export function getQuadrantCoordinates(
   const scaledCoordinates = scaleCoordinates(
     coordinates,
     padding,
+    margin,
     aspectRatio,
     SVG_WIDTH,
     SVG_HEIGHT,
   );
-  const [minX, maxX, minY, maxY] = findBoundingBox(scaledCoordinates);
-
   const row = Math.floor(index / aspectRatio.cols);
   const col = index % aspectRatio.cols;
 
@@ -30,24 +30,19 @@ export function getQuadrantCoordinates(
   const offsetX = col * (quadrantWidth + padding) + padding;
   const offsetY = row * (quadrantHeight + padding) + padding;
 
-  const pathCenterX = (minX + maxX) / 2;
-  const pathCenterY = (minY + maxY) / 2;
-
-  const quadrantCenterX = offsetX + quadrantWidth / 2;
-  const quadrantCenterY = offsetY + quadrantHeight / 2;
-
-  const translateX = quadrantCenterX - pathCenterX;
-  const translateY = quadrantCenterY - pathCenterY;
+  const adjustedOffsetX = offsetX + margin; // Adjust for margin
+  const adjustedOffsetY = offsetY + margin; // Adjust for margin
 
   return scaledCoordinates.map((coord) => [
-    coord[0] + translateX,
-    coord[1] + translateY,
+    coord[0] + adjustedOffsetX,
+    coord[1] + adjustedOffsetY,
   ]);
 }
 
 function scaleCoordinates(
   coordinates: [number, number][],
   padding: number,
+  margin: number,
   aspectRatio: AspectRatio,
   SVG_WIDTH: number,
   SVG_HEIGHT: number,
@@ -77,29 +72,15 @@ function scaleCoordinates(
   const xRange = (maxX - minX) * latCorrection;
   const yRange = maxY - minY;
 
-  // Maintain aspect ratio
-  const scale = Math.min(quadrantWidth / xRange, quadrantHeight / yRange);
+  const adjustedQuadrantWidth = quadrantWidth - 2 * margin;
+  const adjustedQuadrantHeight = quadrantHeight - 2 * margin;
+
+  const xScale = adjustedQuadrantWidth / xRange;
+  const yScale = adjustedQuadrantHeight / yRange;
+  const scale = Math.min(xScale, yScale);
 
   return coordinates.map((coord) => [
     (coord[1] - minX) * latCorrection * scale,
-    quadrantHeight - (coord[0] - minY) * scale,
+    adjustedQuadrantHeight - (coord[0] - minY) * scale, // Adjust the y-coordinate scaling
   ]);
-}
-
-function findBoundingBox(
-  coordinates: [number, number][],
-): [number, number, number, number] {
-  let minX = Infinity,
-    minY = Infinity,
-    maxX = -Infinity,
-    maxY = -Infinity;
-
-  for (const [x, y] of coordinates) {
-    if (x < minX) minX = x;
-    if (x > maxX) maxX = x;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
-  }
-
-  return [minX, maxX, minY, maxY];
 }
