@@ -1,24 +1,38 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./SVGCanvas";
 import { useActivityTypes } from "./utils/useActivityTypes";
+import { useSession } from "next-auth/react";
 
 export default function Mug() {
   const { activities } = useData();
 
+  const session = useSession();
+
   // State hooks
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
-  const [strokeWidth, setStrokeWidth] = useState(6);
+  const [freeText, setFreeText] = useState("Your 2023 Wrapped");
+  const [metricText, setMetricText] = useState("Activities");
 
   // Refs
   const svgRef = useRef<SVGSVGElement>(null);
 
   // Custom hooks
   const { activitiesWithGPS } = useActivityTypes(activities);
-  const activitiesFilteredByYear = activitiesWithGPS;
+  const activitiesFilteredByYear = activitiesWithGPS.filter((activity) => {
+    const year = new Date(activity?.start_date_local).getFullYear();
+    return year === 2023;
+  });
 
   const activitiesFiltered = activitiesFilteredByYear;
+
+  useEffect(() => {
+    // Update name if loaded
+    if (session?.data?.user?.name) {
+      setFreeText(`${session?.data?.user?.name.split(" ")[0]}'s 2023 Wrapped`);
+    }
+  }, [session?.data?.user?.name]);
 
   return (
     <div className="m-4 space-y-4">
@@ -27,7 +41,8 @@ export default function Mug() {
           activities={activitiesFiltered}
           backgroundColor={backgroundColor}
           strokeColor={strokeColor}
-          strokeWidth={strokeWidth}
+          freeText={freeText}
+          metricText={metricText}
           svgRef={svgRef}
         />
       </div>

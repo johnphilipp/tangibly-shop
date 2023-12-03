@@ -1,9 +1,9 @@
-// SVGCanvas.tsx
 import type { Activity } from "@prisma/client";
 import React from "react";
 import { getQuadrantCoordinates } from "./utils/canvas/getQuadrantCoordinates";
 import { convertToSVGPath } from "./utils/canvas/convertToSVGPath";
 import { calculateGridDimensions } from "./utils/canvas/calculateGridDimensions";
+import { getProperties } from "./utils/canvas/getProperties";
 
 const SVG_WIDTH = 2000; // 200 mm
 const SVG_HEIGHT = 960; // 96 mm
@@ -15,18 +15,16 @@ const METRIC_WIDTH = 1000;
 const METRIC_HEIGHT = 60;
 const METRIC_X = 1000;
 
-const FREETEXT = "Kimberley's 2023 Wrapped";
-const METRIC_TEXT = "Activities";
+const SPACER = 50;
 
-const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT;
-
-const CELL_MARGIN = 10;
+const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT - SPACER;
 
 interface SVGCanvasProps {
   activities: (Activity | null)[];
   backgroundColor: string;
   strokeColor: string;
-  strokeWidth: number;
+  freeText: string;
+  metricText: string;
   svgRef: React.RefObject<SVGSVGElement>;
 }
 
@@ -34,10 +32,15 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
   activities,
   backgroundColor,
   strokeColor,
-  strokeWidth,
+  freeText,
+  metricText,
   svgRef,
 }) => {
   const NUM_ACTIVITIES = activities.length;
+
+  // Determine CELL_MARGIN and STROKE_WIDTH based on NUM_ACTIVITIES
+  const { cellMargin, strokeWidth } = getProperties(NUM_ACTIVITIES);
+
   const { rows, cols } = calculateGridDimensions(
     NUM_ACTIVITIES,
     SVG_WIDTH,
@@ -52,7 +55,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
     const quadrantCoordinates = getQuadrantCoordinates(
       activity.summaryPolyline,
       index,
-      CELL_MARGIN,
+      cellMargin,
       cols,
       SVG_WIDTH,
       boxHeight,
@@ -82,6 +85,9 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
               fill="none"
               stroke={strokeColor}
               strokeWidth={strokeWidth}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              className="non-interactive-path"
             />
           ),
       )}
@@ -96,7 +102,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         fontWeight="bold"
         alignmentBaseline="middle"
       >
-        {FREETEXT}
+        {freeText}
       </text>
 
       {/* METRIC */}
@@ -113,7 +119,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
           {NUM_ACTIVITIES}{" "}
         </tspan>
         <tspan fontWeight="normal" alignmentBaseline="middle">
-          {METRIC_TEXT}
+          {metricText}
         </tspan>
       </text>
     </svg>
