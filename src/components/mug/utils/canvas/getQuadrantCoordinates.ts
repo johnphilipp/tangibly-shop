@@ -4,7 +4,6 @@ import { decodePolyline } from "./decodePolyline";
 export function getQuadrantCoordinates(
   polylineData: string,
   index: number,
-  padding: number,
   margin: number,
   aspectRatio: AspectRatio,
   SVG_WIDTH: number,
@@ -13,7 +12,6 @@ export function getQuadrantCoordinates(
   const coordinates = decodePolyline(polylineData);
   const scaledCoordinates = scaleCoordinates(
     coordinates,
-    padding,
     margin,
     aspectRatio,
     SVG_WIDTH,
@@ -22,13 +20,12 @@ export function getQuadrantCoordinates(
   const row = Math.floor(index / aspectRatio.cols);
   const col = index % aspectRatio.cols;
 
-  const quadrantWidth =
-    (SVG_WIDTH - padding * (aspectRatio.cols + 1)) / aspectRatio.cols;
+  const quadrantWidth = (SVG_WIDTH - (aspectRatio.cols + 1)) / aspectRatio.cols;
   const quadrantHeight =
-    (SVG_HEIGHT - padding * (aspectRatio.rows + 1)) / aspectRatio.rows;
+    (SVG_HEIGHT - (aspectRatio.rows + 1)) / aspectRatio.rows;
 
-  const offsetX = col * (quadrantWidth + padding) + padding;
-  const offsetY = row * (quadrantHeight + padding) + padding;
+  const offsetX = col * quadrantWidth;
+  const offsetY = row * quadrantHeight;
 
   const adjustedOffsetX = offsetX + margin; // Adjust for margin
   const adjustedOffsetY = offsetY + margin; // Adjust for margin
@@ -41,7 +38,6 @@ export function getQuadrantCoordinates(
 
 function scaleCoordinates(
   coordinates: [number, number][],
-  padding: number,
   margin: number,
   aspectRatio: AspectRatio,
   SVG_WIDTH: number,
@@ -61,10 +57,9 @@ function scaleCoordinates(
     if (latitude > maxY) maxY = latitude;
   }
 
-  const quadrantWidth =
-    (SVG_WIDTH - padding * (aspectRatio.cols + 1)) / aspectRatio.cols;
+  const quadrantWidth = (SVG_WIDTH - (aspectRatio.cols + 1)) / aspectRatio.cols;
   const quadrantHeight =
-    (SVG_HEIGHT - padding * (aspectRatio.rows + 1)) / aspectRatio.rows;
+    (SVG_HEIGHT - (aspectRatio.rows + 1)) / aspectRatio.rows;
 
   const avgLat = sumLat / coordinates.length;
   const latCorrection = Math.cos((avgLat * Math.PI) / 180);

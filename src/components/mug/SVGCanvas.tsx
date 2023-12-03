@@ -6,8 +6,7 @@ import { convertToSVGPath } from "./utils/canvas/convertToSVGPath";
 
 const SVG_WIDTH = 2000; // 200 mm
 const SVG_HEIGHT = 960; // 96 mm
-
-const TEXT_MARGIN = 60;
+const SVG_MARGIN = 60;
 
 const FREETEXT_HEIGHT = 160;
 const FREETEXT_X = 0;
@@ -19,10 +18,9 @@ const METRIC_X = 1000;
 const FREETEXT = "Kimberley's 2023 Wrapped";
 const METRIC_TEXT = "Activities";
 
-const BOX_PADDING = 0;
 const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT;
 
-const MARGIN = 5;
+const CELL_MARGIN = 5;
 
 // TODO: STRETCH
 
@@ -37,7 +35,6 @@ function calculateGridDimensions(
   numActivities: number,
   width: number,
   height: number,
-  padding: number,
 ) {
   let bestLayout = {
     rows: 1,
@@ -47,8 +44,8 @@ function calculateGridDimensions(
 
   for (let cols = 1; cols <= numActivities; cols++) {
     const rows = Math.ceil(numActivities / cols);
-    const boxWidth = (width - (cols + 1) * padding) / cols;
-    const boxHeight = (height - (rows + 1) * padding) / rows;
+    const boxWidth = width / cols;
+    const boxHeight = height / rows;
 
     // Aspect difference favors more square-like layouts
     const aspectDiff = Math.abs(boxWidth / boxHeight - 1);
@@ -73,10 +70,9 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
     NUM_ACTIVITIES,
     SVG_WIDTH,
     FREE_AREA_HEIGHT,
-    BOX_PADDING,
   );
 
-  const boxHeight = (FREE_AREA_HEIGHT - (rows + 1) * BOX_PADDING) / rows;
+  const boxHeight = FREE_AREA_HEIGHT / rows;
 
   const activityPaths = activities.map((activity, index) => {
     if (!activity || typeof activity.summaryPolyline !== "string") return null;
@@ -84,8 +80,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
     const quadrantCoordinates = getQuadrantCoordinates(
       activity.summaryPolyline,
       index,
-      BOX_PADDING,
-      MARGIN, // Pass the margin value
+      CELL_MARGIN,
       { rows: 1, cols },
       SVG_WIDTH,
       boxHeight,
@@ -120,7 +115,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
 
       {/* FREE TEXT */}
       <text
-        x={FREETEXT_X + TEXT_MARGIN}
+        x={FREETEXT_X + SVG_MARGIN}
         y={SVG_HEIGHT - FREETEXT_HEIGHT / 2} // Center text vertically in the box
         fill={strokeColor}
         fontSize="60px"
@@ -133,7 +128,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
 
       {/* METRIC */}
       <text
-        x={METRIC_X + METRIC_WIDTH - TEXT_MARGIN} // Right align from this point
+        x={METRIC_X + METRIC_WIDTH - SVG_MARGIN} // Right align from this point
         y={SVG_HEIGHT - METRIC_HEIGHT / 2}
         fill={strokeColor}
         fontSize="60px"
