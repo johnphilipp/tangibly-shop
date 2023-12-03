@@ -123,7 +123,7 @@ export default function Editor() {
     const base64 = btoa(unescape(encodeURIComponent(svgString)));
 
     return base64;
-};
+  };
 
   // Hooks
   useEffect(() => {
@@ -287,11 +287,17 @@ export default function Editor() {
         )}
 
       {isDownloadModalVisible && (
-        <DownloadModal onClose={() => setIsDownloadModalVisible(false)}  svg={getSVGBase64() ?? ""} />
+        <DownloadModal
+          onClose={() => setIsDownloadModalVisible(false)}
+          svg={getSVGBase64() ?? ""}
+        />
       )}
 
       {isInterestedModalVisible && (
-        <InterestedModal onClose={() => setIsInterestedModalVisible(false)} svg={getSVGBase64() ?? ""} />
+        <InterestedModal
+          onClose={() => setIsInterestedModalVisible(false)}
+          svg={getSVGBase64() ?? ""}
+        />
       )}
 
       {isAddModalVisible && (
