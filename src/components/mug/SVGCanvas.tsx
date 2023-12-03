@@ -19,7 +19,7 @@ const METRIC_TEXT = "Activities";
 
 const BOX_PADDING = 10; // Padding between boxes
 const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT; // Height of the area where boxes will be placed
-const ACTIVITIES = 19;
+const ACTIVITIES = 17;
 
 // TODO: STRETCH
 
@@ -38,7 +38,7 @@ function calculateGridDimensions(
   let bestLayout = {
     rows: 1,
     cols: activities,
-    filledArea: 0,
+    aspectDiff: Number.MAX_VALUE,
   };
 
   for (let cols = 1; cols <= activities; cols++) {
@@ -46,16 +46,45 @@ function calculateGridDimensions(
     const boxWidth = (width - (cols + 1) * padding) / cols;
     const boxHeight = (height - (rows + 1) * padding) / rows;
 
-    // Calculate the filled area
-    const filledArea = boxWidth * boxHeight * Math.min(rows * cols, activities);
+    // Aspect difference favors more square-like layouts
+    const aspectDiff = Math.abs(boxWidth / boxHeight - 1);
 
-    if (filledArea > bestLayout.filledArea) {
-      bestLayout = { rows, cols, filledArea };
+    // Update the best layout if this layout has a more square-like aspect ratio
+    if (aspectDiff < bestLayout.aspectDiff) {
+      bestLayout = { rows, cols, aspectDiff };
     }
   }
 
   return bestLayout;
 }
+
+// function calculateGridDimensions(
+//   activities: number,
+//   width: number,
+//   height: number,
+//   padding: number,
+// ) {
+//   let bestLayout = {
+//     rows: 1,
+//     cols: activities,
+//     filledArea: 0,
+//   };
+
+//   for (let cols = 1; cols <= activities; cols++) {
+//     const rows = Math.ceil(activities / cols);
+//     const boxWidth = (width - (cols + 1) * padding) / cols;
+//     const boxHeight = (height - (rows + 1) * padding) / rows;
+
+//     // Calculate the filled area
+//     const filledArea = boxWidth * boxHeight * Math.min(rows * cols, activities);
+
+//     if (filledArea > bestLayout.filledArea) {
+//       bestLayout = { rows, cols, filledArea };
+//     }
+//   }
+
+//   return bestLayout;
+// }
 
 const SVGCanvas: React.FC<SVGCanvasProps> = ({
   backgroundColor,
