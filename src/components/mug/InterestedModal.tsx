@@ -2,7 +2,6 @@ import Button from "../Button";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
-
 interface InterestedModalProps {
   onClose: () => void;
   svg: string; // New prop
@@ -25,15 +24,14 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
     setEmail(e.target.value);
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-
     const data = register.mutateAsync({ email: email, svg: svg });
     e.preventDefault();
 
-    void data.then(value => {
+    void data.then((value) => {
       if (!emailRegex.test(email) || !email) {
-      setError("Please use a valid e-mail address.");
-    } else {
-      setError(null);
+        setError("Please use a valid e-mail address.");
+      } else {
+        setError(null);
         if (value.status === "success") {
           setSuccess(value.message);
           setError(null);
@@ -46,10 +44,10 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
           setError(value.message);
           setSuccess(null);
         }
-      };
+      }
     });
     //const result = data;
-    }
+  };
 
   return (
     <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
@@ -63,8 +61,8 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
           </label>
           <div className="mt-1 text-sm text-gray-500">
             <p>
-              Enter your E-Mail to get notified when orders are open. We would be
-              delighted to have you on board!
+              Enter your E-Mail to get notified when orders are open. We would
+              be delighted to have you on board!
             </p>
           </div>
           <input

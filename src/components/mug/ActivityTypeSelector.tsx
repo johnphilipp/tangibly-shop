@@ -20,8 +20,8 @@ const ActivityTypeSelector: React.FC<ActivityTypeSelectorProps> = ({
         {sportTypes.map((sportType, index) => {
           const isActive = selectedActivityTypes.includes(sportType);
           const className = isActive
-            ? "bg-gray-900 text-white hover:text-gray-900"
-            : "";
+            ? "bg-gray-900 text-white hover:text-gray-900 break-words"
+            : "break-words";
           return (
             <Button
               key={index}
