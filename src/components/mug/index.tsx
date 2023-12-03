@@ -138,6 +138,32 @@ export default function Mug() {
           selectedActivityTypes={selectedActivityTypes}
           onToggleActivityType={handleToggleActivityType}
         />
+
+        <hr />
+
+        <div className="grid grid-cols-2 flex-col gap-4 p-4 sm:p-6">
+          {/* Background Color */}
+          <div className="flex-col space-y-1">
+            <p className="text-left font-semibold">Background Color</p>
+            <input
+              type="color"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              className="h-12 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-center font-semibold"
+            />
+          </div>
+
+          {/* Stroke Color */}
+          <div className="flex-col space-y-1">
+            <p className="text-left font-semibold">Stroke Color</p>
+            <input
+              type="color"
+              value={strokeColor}
+              onChange={(e) => setStrokeColor(e.target.value)}
+              className="h-12 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-center font-semibold"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
