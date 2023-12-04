@@ -57,16 +57,17 @@ model Session {
 }
 
 model User {
-  id            String     @id @default(cuid())
-  name          String?
-  email         String?    @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  cartItems     CartItem[]
-  design        Design[]
+  id               String     @id @default(cuid())
+  name             String?
+  email            String?    @unique
+  emailVerified    DateTime?
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  posts            Post[]
+  cartItems        CartItem[]
+  design           Design[]
+  stripeCustomerId String?    @unique
 }
 
 model VerificationToken {

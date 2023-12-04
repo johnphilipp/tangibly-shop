@@ -1,15 +1,15 @@
 export const pricing = {
   products: {
-    CoffeeMug: {
-      CHF: 20.0,
-      EUR: 18.0,
+    "CoffeeMug": {
+      CHF: 19.99,
+      EUR: 17.99,
     },
-    Bubbles: {
+    "Bubbles": {
       CHF: 20.0,
       EUR: 18.0,
     },
   },
-  shipping: {
+  "shipping": {
     CH: 9.0,
     DE: 4.0,
   },

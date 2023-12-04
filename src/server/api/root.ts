@@ -6,6 +6,7 @@ import { activitiesRouter } from "./routers/activities";
 import { mailRouter } from "~/server/api/routers/mail";
 import { cartRouter } from "~/server/api/routers/cart";
 import { designRouter } from "~/server/api/routers/design";
+import {paymentRouter} from "~/server/api/routers/payment";
 
 /**
  * This is the primary router for your server.
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   mail: mailRouter,
   cart: cartRouter,
   design: designRouter,
+  payment: paymentRouter,
 });
 
 // export type definition of API

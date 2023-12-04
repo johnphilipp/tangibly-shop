@@ -33,7 +33,7 @@ const initialDesign: Design = {
   previewSvg: "",
 };
 
-interface ExtendedCartItem extends CartItem {
+export interface ExtendedCartItem extends CartItem {
   design: Design;
 }
 

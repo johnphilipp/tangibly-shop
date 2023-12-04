@@ -4,8 +4,11 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
-import { useData } from "~/contexts/DataContext";
-import { CartItem } from "@prisma/client";
+import {ExtendedCartItem, useData} from "~/contexts/DataContext";
+import {pricing} from "~/utils/pricing";
+
+const product = 'CoffeeMug'; // or 'Bubbles'
+const currency = 'CHF'; // or 'EUR'
 
 /**
 const dasdad = [
@@ -67,6 +70,27 @@ export default function ShoppingCartSidebar({
       currentCartItems.filter((cartItem) => cartItem.id !== id),
     );
   };
+
+  const getPrice = (cartItem: ExtendedCartItem) => {
+    if (cartItem.design.productType === "CoffeeMug") {
+      if (currency === "CHF") {
+        return pricing.products.CoffeeMug.CHF;
+      }
+      if (currency === "EUR") {
+        return pricing.products.CoffeeMug.EUR;
+      }
+    }
+    if (cartItem.design.productType === "Bubbles") {
+        if (currency === "CHF") {
+            return pricing.products.Bubbles.CHF;
+        }
+        if (currency === "EUR") {
+            return pricing.products.Bubbles.EUR;
+        }
+    }
+    return
+
+  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -138,7 +162,7 @@ export default function ShoppingCartSidebar({
                                         {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
                                         <a href={"#"}>{cartItem.design.name}</a>
                                       </h3>
-                                      <p className="ml-4">{20}</p>
+                                      <p className="ml-4">{currency} {getPrice(cartItem)}</p>
                                     </div>
                                     <p className="mt-1 text-sm text-gray-500">
                                       {cartItem.design.productType}
@@ -178,7 +202,9 @@ export default function ShoppingCartSidebar({
                     <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Subtotal</p>
-                        <p>$262.00</p>
+                        <p>{currency} {cartItems.map(value => getPrice(value)).reduce((total, current) => {
+                          return (total ?? 0) + (current ?? 0);
+                        }, 0)}</p>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">
                         Shipping and taxes calculated at checkout.
