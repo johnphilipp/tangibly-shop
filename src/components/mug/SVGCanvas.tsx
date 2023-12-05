@@ -70,6 +70,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
       height="100%"
       viewBox={`-60 -60 ${SVG_WIDTH + 120} ${SVG_HEIGHT + 120}`}
       preserveAspectRatio="xMidYMid meet"
+      className="border"
     >
       {/* BACKGROUND COLOR */}
       <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
@@ -115,9 +116,6 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         alignmentBaseline="middle"
       >
         <tspan fontWeight="bold" alignmentBaseline="middle">
-          {NUM_ACTIVITIES}{" "}
-        </tspan>
-        <tspan fontWeight="normal" alignmentBaseline="middle">
           {metricText}
         </tspan>
       </text>

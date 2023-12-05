@@ -22,7 +22,6 @@ export default function Mug() {
 
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
-  const [metricText, setMetricText] = useState("Activities");
   const [selectedYears, setSelectedYears] = useState<number[]>([
     new Date().getFullYear(),
   ]);
@@ -36,12 +35,8 @@ export default function Mug() {
     return Array.from(years).sort((a, b) => b - a);
   }, [activities]);
 
-  const newestYear = useMemo(
-    () => Math.max(...availableYears),
-    [availableYears],
-  );
-
-  const [freeText, setFreeText] = useState(`Your ${newestYear} Wrapped`);
+  const [freeText, setFreeText] = useState("");
+  const [metricText, setMetricText] = useState("");
 
   const activitiesFilteredByYears = useMemo(
     () =>
@@ -87,6 +82,14 @@ export default function Mug() {
     );
   };
 
+  const handleFreeTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFreeText(e.target.value);
+  };
+
+  const handleMetricTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMetricText(e.target.value);
+  };
+
   useEffect(() => {
     // Once sportTypes is populated, set all as selected
     setSelectedActivityTypes(sportTypes);
@@ -101,19 +104,24 @@ export default function Mug() {
   }, [selectedActivityTypes, activitiesWithGPS]);
 
   useEffect(() => {
-    const year =
-      selectedYears.length === 0
-        ? ""
-        : selectedYears.length === 1
-        ? selectedYears[0]
-        : "Years";
+    // Check if selectedYears array is not empty
+    if (selectedYears.length > 0) {
+      const year = selectedYears.length === 1 ? selectedYears[0] : "Years";
+      const numActivities = selectedActivities.length;
 
-    if (session?.user?.name) {
-      setFreeText(`${session.user.name.split(" ")[0]}'s ${year} Wrapped`);
+      if (session?.user?.name) {
+        setFreeText(`${session.user.name.split(" ")[0]}'s ${year} Wrapped`);
+      } else {
+        setFreeText(`Your ${year} Wrapped`);
+      }
+
+      setMetricText(`${numActivities} Activities`);
     } else {
-      setFreeText(`Your ${year} Wrapped`);
+      // If selectedYears is empty, set freeText to a default or blank value
+      setFreeText("");
+      setMetricText("");
     }
-  }, [selectedYears, session?.user?.name]);
+  }, [selectedYears, session?.user?.name, selectedActivities]);
 
   return (
     <div className="m-4 space-y-4">
@@ -165,6 +173,31 @@ export default function Mug() {
               value={strokeColor}
               onChange={(e) => setStrokeColor(e.target.value)}
               className="h-12 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-center font-semibold"
+            />
+          </div>
+        </div>
+
+        <hr />
+        <div className="grid grid-cols-2 flex-col gap-4 p-4 sm:p-6">
+          {/* Primary Text */}
+          <div className="flex-col space-y-1">
+            <label className="text-left font-semibold">Primary Text</label>
+            <input
+              type="text"
+              value={freeText}
+              onChange={handleFreeTextChange}
+              className="focus:shadow-outline w-full rounded border border-gray-200 px-3 py-2 leading-tight text-gray-700 focus:outline-none"
+            />
+          </div>
+
+          {/* Secondary Text */}
+          <div className="flex-col space-y-1">
+            <label className="text-left font-semibold">Secondary Text</label>
+            <input
+              type="text"
+              value={metricText}
+              onChange={handleMetricTextChange}
+              className="focus:shadow-outline w-full rounded border border-gray-200 px-3 py-2 leading-tight text-gray-700 focus:outline-none"
             />
           </div>
         </div>
