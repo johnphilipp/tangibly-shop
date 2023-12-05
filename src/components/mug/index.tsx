@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useData } from "~/contexts/DataContext";
-import SVGCanvas from "./SVGCanvas";
+import SVGCanvas from "./canvas/SVGCanvas";
 import ActivityTypeSelector from "./selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
 import type { Activity } from "@prisma/client";
@@ -21,12 +21,13 @@ export default function Mug() {
   const { activities } = useData();
   const { data: session } = useSession();
   const svgRef = useRef<SVGSVGElement>(null);
-
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [selectedYears, setSelectedYears] = useState<number[]>([
     new Date().getFullYear(),
   ]);
+  const [primaryText, setPrimaryText] = useState("");
+  const [secondaryText, setSecondaryText] = useState("");
 
   const availableYears = useMemo(() => {
     const years = new Set(
@@ -36,9 +37,6 @@ export default function Mug() {
     );
     return Array.from(years).sort((a, b) => b - a);
   }, [activities]);
-
-  const [primaryText, setPrimaryText] = useState("");
-  const [secondaryText, setSecondaryText] = useState("");
 
   const activitiesFilteredByYears = useMemo(
     () =>
@@ -60,13 +58,32 @@ export default function Mug() {
     [activitiesWithGPS],
   );
 
-  // Initially set selectedActivityTypes as an empty array
   const [selectedActivityTypes, setSelectedActivityTypes] = useState<string[]>(
     [],
   );
-
-  // Set selectedActivities based on selectedActivityTypes
   const [selectedActivities, setSelectedActivities] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    // Once sportTypes is populated, set all as selected
+    setSelectedActivityTypes(sportTypes);
+  }, [sportTypes]);
+
+  useEffect(() => {
+    // Once selectedActivityTypes is populated, filter activitiesWithGPS to get selectedActivities
+    setSelectedActivities(
+      activitiesWithGPS.filter((activity) =>
+        selectedActivityTypes.includes(activity.sport_type),
+      ),
+    );
+  }, [selectedActivityTypes, activitiesWithGPS]);
+
+  useEffect(() => {
+    // Check if selectedYears array is not empty, otherwise -Infinity bug
+    const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
+    const userName = `${session?.user?.name?.split(" ")[0]}'s` ?? "Your";
+    setPrimaryText(`${userName} ${yearText} Wrapped`);
+    setSecondaryText(`${selectedActivities.length} Activities`);
+  }, [selectedYears, session?.user?.name, selectedActivities]);
 
   const handleToggleActivityType = (sportType: string) => {
     setSelectedActivityTypes((prev) =>
@@ -94,45 +111,11 @@ export default function Mug() {
     setSecondaryText(e.target.value);
   };
 
-  useEffect(() => {
-    // Once sportTypes is populated, set all as selected
-    setSelectedActivityTypes(sportTypes);
-  }, [sportTypes]);
-
-  useEffect(() => {
-    // Once selectedActivityTypes is populated, filter activitiesWithGPS to get selectedActivities
-    setSelectedActivities(
-      activitiesWithGPS.filter((activity) =>
-        selectedActivityTypes.includes(activity.sport_type),
-      ),
-    );
-  }, [selectedActivityTypes, activitiesWithGPS]);
-
-  useEffect(() => {
-    // Check if selectedYears array is not empty, otherwise -Infinity bug
-    if (selectedYears.length > 0) {
-      const year = selectedYears.length === 1 ? selectedYears[0] : "Years";
-      const numActivities = selectedActivities.length;
-
-      if (session?.user?.name) {
-        setPrimaryText(`${session.user.name.split(" ")[0]}'s ${year} Wrapped`);
-      } else {
-        setPrimaryText(`Your ${year} Wrapped`);
-      }
-
-      setSecondaryText(`${numActivities} Activities`);
-    } else {
-      // If selectedYears is empty, set freeText to a default or blank value
-      setPrimaryText("");
-      setSecondaryText("");
-    }
-  }, [selectedYears, session?.user?.name, selectedActivities]);
-
   return (
     <div className="m-4">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {/* Left-side canvas */}
         <div className="lg:col-span-2">
-          {/* SVG Canvas */}
           <div className="bg-white text-center shadow-lg">
             <SVGCanvas
               activities={selectedActivities}
@@ -145,7 +128,7 @@ export default function Mug() {
           </div>
         </div>
 
-        {/* Right-side Selectors */}
+        {/* Right-side selectors */}
         <div className="grid gap-4 border bg-white p-4 shadow-lg sm:p-6 lg:col-span-1">
           <YearSelector
             availableYears={availableYears}

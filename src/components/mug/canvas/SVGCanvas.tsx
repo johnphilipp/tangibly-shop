@@ -1,9 +1,9 @@
 import type { Activity } from "@prisma/client";
 import React from "react";
-import { getQuadrantCoordinates } from "./utils/canvas/getQuadrantCoordinates";
-import { convertToSVGPath } from "./utils/canvas/convertToSVGPath";
-import { calculateGridDimensions } from "./utils/canvas/calculateGridDimensions";
-import { getProperties } from "./utils/canvas/getProperties";
+import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
+import { convertToSVGPath } from "./utils/convertToSVGPath";
+import { calculateGridDimensions } from "./utils/calculateGridDimensions";
+import { getProperties } from "./utils/getProperties";
 
 const SVG_WIDTH = 2000; // 200 mm
 const SVG_HEIGHT = 960; // 96 mm
