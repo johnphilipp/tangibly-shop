@@ -11,6 +11,7 @@ import Button from "../Button";
 import { ShoppingCartIcon } from "@heroicons/react/20/solid";
 import { BsCupFill } from "react-icons/bs";
 import WarningBanner from "../WarningBanner";
+import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -30,6 +31,7 @@ export default function Mug() {
   const [selectedYears, setSelectedYears] = useState<number[]>([
     new Date().getFullYear(),
   ]);
+  const [useText, setUseText] = useState(true);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
 
@@ -136,8 +138,9 @@ export default function Mug() {
               activities={selectedActivities}
               backgroundColor={backgroundColor}
               strokeColor={strokeColor}
-              freeText={primaryText}
-              metricText={secondaryText}
+              useText={useText}
+              primaryText={primaryText}
+              secondaryText={secondaryText}
               svgRef={svgRef}
             />
           </div>
@@ -186,6 +189,8 @@ export default function Mug() {
             color={strokeColor}
             onColorChange={(e) => setStrokeColor(e.target.value)}
           />
+
+          <ToggleTextDisplay useText={useText} setUseText={setUseText} />
 
           <TextSelector
             label="Primary Text"

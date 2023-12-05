@@ -23,8 +23,9 @@ interface SVGCanvasProps {
   activities: (Activity | null)[];
   backgroundColor: string;
   strokeColor: string;
-  freeText: string;
-  metricText: string;
+  useText: boolean;
+  primaryText: string;
+  secondaryText: string;
   svgRef: React.RefObject<SVGSVGElement>;
 }
 
@@ -32,22 +33,26 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
   activities,
   backgroundColor,
   strokeColor,
-  freeText,
-  metricText,
+  useText,
+  primaryText,
+  secondaryText,
   svgRef,
 }) => {
-  const NUM_ACTIVITIES = activities.length;
+  const numActivities = activities.length;
 
   // Determine CELL_MARGIN and STROKE_WIDTH based on NUM_ACTIVITIES
-  const { cellMargin, strokeWidth } = getProperties(NUM_ACTIVITIES);
+  const { cellMargin, strokeWidth } = getProperties(numActivities);
+
+  // Adjust the free area height based on whether text is used
+  const adjustedFreeAreaHeight = useText ? FREE_AREA_HEIGHT : SVG_HEIGHT;
 
   const { rows, cols } = calculateGridDimensions(
-    NUM_ACTIVITIES,
+    numActivities,
     SVG_WIDTH,
-    FREE_AREA_HEIGHT,
+    adjustedFreeAreaHeight,
   );
 
-  const boxHeight = FREE_AREA_HEIGHT / rows;
+  const boxHeight = adjustedFreeAreaHeight / rows;
 
   const activityPaths = activities.map((activity, index) => {
     if (!activity || typeof activity.summaryPolyline !== "string") return null;
@@ -92,32 +97,36 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
       )}
 
       {/* FREE TEXT */}
-      <text
-        x={FREETEXT_X}
-        y={SVG_HEIGHT - FREETEXT_HEIGHT / 2} // Center text vertically in the box
-        fill={strokeColor}
-        fontSize="60px"
-        fontFamily="'Roboto', sans-serif"
-        fontWeight="bold"
-        alignmentBaseline="middle"
-      >
-        {freeText}
-      </text>
+      {useText && (
+        <>
+          <text
+            x={FREETEXT_X}
+            y={SVG_HEIGHT - FREETEXT_HEIGHT / 2} // Center text vertically in the box
+            fill={strokeColor}
+            fontSize="60px"
+            fontFamily="'Roboto', sans-serif"
+            fontWeight="bold"
+            alignmentBaseline="middle"
+          >
+            {primaryText}
+          </text>
 
-      {/* METRIC */}
-      <text
-        x={METRIC_X + METRIC_WIDTH} // Right align from this point
-        y={SVG_HEIGHT - METRIC_HEIGHT / 2}
-        fill={strokeColor}
-        fontSize="60px"
-        fontFamily="'Roboto', sans-serif"
-        textAnchor="end" // Aligns the text to the right
-        alignmentBaseline="middle"
-      >
-        <tspan fontWeight="bold" alignmentBaseline="middle">
-          {metricText}
-        </tspan>
-      </text>
+          {/* METRIC */}
+          <text
+            x={METRIC_X + METRIC_WIDTH} // Right align from this point
+            y={SVG_HEIGHT - METRIC_HEIGHT / 2}
+            fill={strokeColor}
+            fontSize="60px"
+            fontFamily="'Roboto', sans-serif"
+            textAnchor="end" // Aligns the text to the right
+            alignmentBaseline="middle"
+          >
+            <tspan fontWeight="bold" alignmentBaseline="middle">
+              {secondaryText}
+            </tspan>
+          </text>
+        </>
+      )}
     </svg>
   );
 };
