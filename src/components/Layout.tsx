@@ -566,7 +566,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         </nav>
       </header>
 
-      <main>{children}</main>
+      <main className="mx-auto max-w-7xl">{children}</main>
 
       <footer>{/* ...footer content... */}</footer>
       <ShoppingCartSidebar

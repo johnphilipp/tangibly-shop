@@ -58,23 +58,22 @@ export default function MugPage() {
     <Layout>
       <div className="relative isolate">
         <Background />
-        <div className="mx-auto max-w-4xl overflow-hidden">
-          {!user && <DemoBanner />}
 
-          {user && activityDataLoading && (
-            <div className="mt-4 flex justify-center">
-              <LoadingSpinner size={40} />
-            </div>
-          )}
+        {!user && <DemoBanner />}
 
-          {user && activityDataError && (
-            <div className="mt-4 flex justify-center">
-              <p>Error loading activities. Please try again later.</p>
-            </div>
-          )}
+        {user && activityDataLoading && (
+          <div className="mt-4 flex justify-center">
+            <LoadingSpinner size={40} />
+          </div>
+        )}
 
-          <Mug />
-        </div>
+        {user && activityDataError && (
+          <div className="mt-4 flex justify-center">
+            <p>Error loading activities. Please try again later.</p>
+          </div>
+        )}
+
+        <Mug />
       </div>
       {/* <Alert /> */}
     </Layout>

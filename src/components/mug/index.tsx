@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./SVGCanvas";
-import ActivityTypeSelector from "./ActivityTypeSelector";
+import ActivityTypeSelector from "./selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
 import type { Activity } from "@prisma/client";
-import YearSelector from "./YearSelector";
+import YearSelector from "./selectors/YearSelector";
+import ColorSelector from "./selectors/ColorSelector";
+import TextSelector from "./selectors/TextSelector";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -35,8 +37,8 @@ export default function Mug() {
     return Array.from(years).sort((a, b) => b - a);
   }, [activities]);
 
-  const [freeText, setFreeText] = useState("");
-  const [metricText, setMetricText] = useState("");
+  const [primaryText, setPrimaryText] = useState("");
+  const [secondaryText, setSecondaryText] = useState("");
 
   const activitiesFilteredByYears = useMemo(
     () =>
@@ -82,12 +84,14 @@ export default function Mug() {
     );
   };
 
-  const handleFreeTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFreeText(e.target.value);
+  const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPrimaryText(e.target.value);
   };
 
-  const handleMetricTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMetricText(e.target.value);
+  const handleSecondaryTextChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setSecondaryText(e.target.value);
   };
 
   useEffect(() => {
@@ -96,6 +100,7 @@ export default function Mug() {
   }, [sportTypes]);
 
   useEffect(() => {
+    // Once selectedActivityTypes is populated, filter activitiesWithGPS to get selectedActivities
     setSelectedActivities(
       activitiesWithGPS.filter((activity) =>
         selectedActivityTypes.includes(activity.sport_type),
@@ -104,102 +109,79 @@ export default function Mug() {
   }, [selectedActivityTypes, activitiesWithGPS]);
 
   useEffect(() => {
-    // Check if selectedYears array is not empty
+    // Check if selectedYears array is not empty, otherwise -Infinity bug
     if (selectedYears.length > 0) {
       const year = selectedYears.length === 1 ? selectedYears[0] : "Years";
       const numActivities = selectedActivities.length;
 
       if (session?.user?.name) {
-        setFreeText(`${session.user.name.split(" ")[0]}'s ${year} Wrapped`);
+        setPrimaryText(`${session.user.name.split(" ")[0]}'s ${year} Wrapped`);
       } else {
-        setFreeText(`Your ${year} Wrapped`);
+        setPrimaryText(`Your ${year} Wrapped`);
       }
 
-      setMetricText(`${numActivities} Activities`);
+      setSecondaryText(`${numActivities} Activities`);
     } else {
       // If selectedYears is empty, set freeText to a default or blank value
-      setFreeText("");
-      setMetricText("");
+      setPrimaryText("");
+      setSecondaryText("");
     }
   }, [selectedYears, session?.user?.name, selectedActivities]);
 
   return (
-    <div className="m-4 space-y-4">
-      <div className="min-w-[300px] bg-white text-center shadow-lg sm:min-w-[800px]">
-        <SVGCanvas
-          activities={selectedActivities}
-          backgroundColor={backgroundColor}
-          strokeColor={strokeColor}
-          freeText={freeText}
-          metricText={metricText}
-          svgRef={svgRef}
-        />
-      </div>
-
-      <div className="border bg-white shadow-lg">
-        <YearSelector
-          availableYears={availableYears}
-          selectedYears={selectedYears}
-          onSelectYear={handleYearChange}
-        />
-
-        <hr />
-
-        <ActivityTypeSelector
-          sportTypes={sportTypes}
-          selectedActivityTypes={selectedActivityTypes}
-          onToggleActivityType={handleToggleActivityType}
-        />
-
-        <hr />
-
-        <div className="grid grid-cols-2 flex-col gap-4 p-4 sm:p-6">
-          {/* Background Color */}
-          <div className="flex-col space-y-1">
-            <p className="text-left font-semibold">Background Color</p>
-            <input
-              type="color"
-              value={backgroundColor}
-              onChange={(e) => setBackgroundColor(e.target.value)}
-              className="h-12 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-center font-semibold"
-            />
-          </div>
-
-          {/* Stroke Color */}
-          <div className="flex-col space-y-1">
-            <p className="text-left font-semibold">Stroke Color</p>
-            <input
-              type="color"
-              value={strokeColor}
-              onChange={(e) => setStrokeColor(e.target.value)}
-              className="h-12 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-center font-semibold"
+    <div className="m-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          {/* SVG Canvas */}
+          <div className="bg-white text-center shadow-lg">
+            <SVGCanvas
+              activities={selectedActivities}
+              backgroundColor={backgroundColor}
+              strokeColor={strokeColor}
+              freeText={primaryText}
+              metricText={secondaryText}
+              svgRef={svgRef}
             />
           </div>
         </div>
 
-        <hr />
-        <div className="grid grid-cols-2 flex-col gap-4 p-4 sm:p-6">
-          {/* Primary Text */}
-          <div className="flex-col space-y-1">
-            <label className="text-left font-semibold">Primary Text</label>
-            <input
-              type="text"
-              value={freeText}
-              onChange={handleFreeTextChange}
-              className="focus:shadow-outline w-full rounded border border-gray-200 px-3 py-2 leading-tight text-gray-700 focus:outline-none"
-            />
-          </div>
+        {/* Right-side Selectors */}
+        <div className="grid gap-4 border bg-white p-4 shadow-lg sm:p-6 lg:col-span-1">
+          <YearSelector
+            availableYears={availableYears}
+            selectedYears={selectedYears}
+            onSelectYear={handleYearChange}
+          />
 
-          {/* Secondary Text */}
-          <div className="flex-col space-y-1">
-            <label className="text-left font-semibold">Secondary Text</label>
-            <input
-              type="text"
-              value={metricText}
-              onChange={handleMetricTextChange}
-              className="focus:shadow-outline w-full rounded border border-gray-200 px-3 py-2 leading-tight text-gray-700 focus:outline-none"
-            />
-          </div>
+          <ActivityTypeSelector
+            sportTypes={sportTypes}
+            selectedActivityTypes={selectedActivityTypes}
+            onToggleActivityType={handleToggleActivityType}
+          />
+
+          <ColorSelector
+            label="Background Color"
+            color={backgroundColor}
+            onColorChange={(e) => setBackgroundColor(e.target.value)}
+          />
+
+          <ColorSelector
+            label="Stroke Color"
+            color={strokeColor}
+            onColorChange={(e) => setStrokeColor(e.target.value)}
+          />
+
+          <TextSelector
+            label="Primary Text"
+            text={primaryText}
+            onTextChange={handlePrimaryTextChange}
+          />
+
+          <TextSelector
+            label="Secondary Text"
+            text={secondaryText}
+            onTextChange={handleSecondaryTextChange}
+          />
         </div>
       </div>
     </div>
