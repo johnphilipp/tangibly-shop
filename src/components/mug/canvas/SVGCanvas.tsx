@@ -97,7 +97,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         y={SVG_HEIGHT - FREETEXT_HEIGHT / 2} // Center text vertically in the box
         fill={strokeColor}
         fontSize="60px"
-        fontFamily="Helvetica, Roboto, sans-serif"
+        fontFamily="'Roboto', sans-serif"
         fontWeight="bold"
         alignmentBaseline="middle"
       >
@@ -110,7 +110,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         y={SVG_HEIGHT - METRIC_HEIGHT / 2}
         fill={strokeColor}
         fontSize="60px"
-        fontFamily="Helvetica, Roboto, sans-serif"
+        fontFamily="'Roboto', sans-serif"
         textAnchor="end" // Aligns the text to the right
         alignmentBaseline="middle"
       >
