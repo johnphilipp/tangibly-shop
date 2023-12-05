@@ -68,7 +68,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
       ref={svgRef}
       width="100%"
       height="100%"
-      viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+      viewBox={`-60 -60 ${SVG_WIDTH + 120} ${SVG_HEIGHT + 120}`}
       preserveAspectRatio="xMidYMid meet"
     >
       {/* BACKGROUND COLOR */}

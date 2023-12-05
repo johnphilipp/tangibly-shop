@@ -101,13 +101,17 @@ export default function Mug() {
   }, [selectedActivityTypes, activitiesWithGPS]);
 
   useEffect(() => {
-    const metricText =
-      selectedYears.length === 1 ? `${selectedYears[0]} Wrapped` : "Wrap";
+    const year =
+      selectedYears.length === 0
+        ? ""
+        : selectedYears.length === 1
+        ? selectedYears[0]
+        : "Years";
 
     if (session?.user?.name) {
-      setFreeText(`${session.user.name.split(" ")[0]}'s ${metricText}`);
+      setFreeText(`${session.user.name.split(" ")[0]}'s ${year} Wrapped`);
     } else {
-      setFreeText(`Your ${metricText}`);
+      setFreeText(`Your ${year} Wrapped`);
     }
   }, [selectedYears, session?.user?.name]);
 
