@@ -1,6 +1,6 @@
 // ActivityTypeSelector.tsx
 import React from "react";
-import Button from "../Button";
+import SelectorButton from "~/components/SelectorButton";
 
 interface ActivityTypeSelectorProps {
   sportTypes: string[];
@@ -14,22 +14,22 @@ const ActivityTypeSelector: React.FC<ActivityTypeSelectorProps> = ({
   onToggleActivityType,
 }) => {
   return (
-    <div className="flex-col space-y-1 p-4 sm:p-6">
+    <div className="flex-col space-y-1">
       <p className="text-left font-semibold">Activity Types</p>
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2">
         {sportTypes.map((sportType, index) => {
           const isActive = selectedActivityTypes.includes(sportType);
           const className = isActive
-            ? "bg-gray-900 text-white hover:text-gray-900 break-words"
-            : "break-words";
+            ? "bg-gray-900 text-white hover:bg-gray-700 break-words"
+            : "bg-white text-gray-900 hover:bg-gray-200 break-words";
           return (
-            <Button
+            <SelectorButton
               key={index}
               onClick={() => onToggleActivityType(sportType)}
               className={className}
             >
               {sportType}
-            </Button>
+            </SelectorButton>
           );
         })}
       </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "../Button";
+import SelectorButton from "~/components/SelectorButton";
 
 interface YearSelectorProps {
   availableYears: number[];
@@ -13,23 +13,23 @@ const YearSelector: React.FC<YearSelectorProps> = ({
   onSelectYear,
 }) => {
   return (
-    <div className="flex-col space-y-1 p-4 sm:p-6">
+    <div className="flex-col space-y-1">
       <p className="text-left font-semibold">Select Year(s)</p>{" "}
       {/* Updated text */}
-      <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2">
         {availableYears.map((year, index) => {
           const isActive = selectedYears.includes(year);
           const className = isActive
-            ? "bg-gray-900 text-white hover:text-gray-900"
-            : "bg-white text-gray-900 hover:bg-gray-900 hover:text-white";
+            ? "bg-gray-900 text-white hover:bg-gray-700"
+            : "bg-white text-gray-900 hover:bg-gray-200";
           return (
-            <Button
+            <SelectorButton
               key={index}
               onClick={() => onSelectYear(year)}
               className={className}
             >
               {year}
-            </Button>
+            </SelectorButton>
           );
         })}
       </div>
