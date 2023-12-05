@@ -85,6 +85,7 @@ export default function Mug() {
 
   useEffect(() => {
     // Check if selectedYears array is not empty, otherwise -Infinity bug
+    if (selectedActivities.length === 0 || selectedYears.length === 0) return;
     const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
     const userName = `${session?.user?.name?.split(" ")[0]}'s` ?? "Your";
     setPrimaryText(`${userName} ${yearText} Wrapped`);
