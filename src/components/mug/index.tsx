@@ -22,7 +22,7 @@ const getUniqueSportTypes = (activities: Activity[]): string[] =>
     return acc;
   }, []);
 
-export default function Mug() {
+export default function Mug({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
   const { data: session } = useSession();
   const svgRef = useRef<SVGSVGElement>(null);
@@ -146,64 +146,70 @@ export default function Mug() {
             />
           </div>
 
-          <div className="mt-4 flex w-full gap-4 sm:mt-6 sm:gap-6">
-            <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-700">
-              <BsCupFill
-                className="mr-2 inline-block h-6 w-6"
-                aria-hidden="true"
-              />
-              Visualize
-            </Button>
+          {!isLoading && (
+            <div className="mt-4 flex w-full gap-4 sm:mt-6 sm:gap-6">
+              <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-700">
+                <BsCupFill
+                  className="mr-2 inline-block h-6 w-6"
+                  aria-hidden="true"
+                />
+                Visualize
+              </Button>
 
-            <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
-              <ShoppingCartIcon
-                className="mr-2 inline-block h-6 w-6"
-                aria-hidden="true"
-              />
-              Checkout
-            </Button>
-          </div>
+              <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
+                <ShoppingCartIcon
+                  className="mr-2 inline-block h-6 w-6"
+                  aria-hidden="true"
+                />
+                Checkout
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Right-side selectors */}
         <div className="grid gap-4 border bg-white p-4 shadow-lg sm:p-6 lg:col-span-1">
-          <YearSelector
-            availableYears={availableYears}
-            selectedYears={selectedYears}
-            onSelectYear={handleYearChange}
-          />
+          {!isLoading && (
+            <>
+              <YearSelector
+                availableYears={availableYears}
+                selectedYears={selectedYears}
+                onSelectYear={handleYearChange}
+              />
 
-          <ActivityTypeSelector
-            sportTypes={sportTypes}
-            selectedActivityTypes={selectedActivityTypes}
-            onToggleActivityType={handleToggleActivityType}
-          />
+              <ActivityTypeSelector
+                sportTypes={sportTypes}
+                selectedActivityTypes={selectedActivityTypes}
+                onToggleActivityType={handleToggleActivityType}
+              />
 
-          <ColorSelector
-            label="Background Color"
-            color={backgroundColor}
-            onColorChange={(e) => setBackgroundColor(e.target.value)}
-          />
+              <ColorSelector
+                label="Background Color"
+                color={backgroundColor}
+                onColorChange={(e) => setBackgroundColor(e.target.value)}
+              />
 
-          <ColorSelector
-            label="Stroke Color"
-            color={strokeColor}
-            onColorChange={(e) => setStrokeColor(e.target.value)}
-          />
+              <ColorSelector
+                label="Stroke Color"
+                color={strokeColor}
+                onColorChange={(e) => setStrokeColor(e.target.value)}
+              />
 
-          <ToggleTextDisplay useText={useText} setUseText={setUseText} />
+              <ToggleTextDisplay useText={useText} setUseText={setUseText} />
 
-          <TextSelector
-            label="Primary Text"
-            text={primaryText}
-            onTextChange={handlePrimaryTextChange}
-          />
+              <TextSelector
+                label="Primary Text"
+                text={primaryText}
+                onTextChange={handlePrimaryTextChange}
+              />
 
-          <TextSelector
-            label="Secondary Text"
-            text={secondaryText}
-            onTextChange={handleSecondaryTextChange}
-          />
+              <TextSelector
+                label="Secondary Text"
+                text={secondaryText}
+                onTextChange={handleSecondaryTextChange}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

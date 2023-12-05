@@ -73,7 +73,7 @@ export default function MugPage() {
           </div>
         )}
 
-        <Mug />
+        <Mug isLoading={activityDataLoading} />
       </div>
       {/* <Alert /> */}
     </Layout>
