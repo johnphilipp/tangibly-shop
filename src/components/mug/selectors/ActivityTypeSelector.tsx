@@ -16,7 +16,7 @@ const ActivityTypeSelector: React.FC<ActivityTypeSelectorProps> = ({
   return (
     <div className="flex-col space-y-1">
       <p className="text-left font-semibold">Activity Types</p>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-2">
         {sportTypes.map((sportType, index) => {
           const isActive = selectedActivityTypes.includes(sportType);
           const className = isActive

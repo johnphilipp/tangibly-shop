@@ -59,7 +59,7 @@ export default function MugPage() {
       <div className="relative isolate">
         <Background />
 
-        {!user && <DemoBanner />}
+        {/* {!user && <DemoBanner />} */}
 
         {user && activityDataLoading && (
           <div className="mt-4 flex justify-center">

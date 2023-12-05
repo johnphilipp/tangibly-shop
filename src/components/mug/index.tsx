@@ -7,6 +7,10 @@ import type { Activity } from "@prisma/client";
 import YearSelector from "./selectors/YearSelector";
 import ColorSelector from "./selectors/ColorSelector";
 import TextSelector from "./selectors/TextSelector";
+import Button from "../Button";
+import { ShoppingCartIcon } from "@heroicons/react/20/solid";
+import { BsCupFill } from "react-icons/bs";
+import WarningBanner from "../WarningBanner";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -113,6 +117,17 @@ export default function Mug() {
 
   return (
     <div className="m-4">
+      <h1 className="my-4 text-2xl font-bold sm:my-6 sm:text-4xl">
+        Create Your Own Mug
+      </h1>
+
+      {selectedActivities.length > 200 && (
+        <WarningBanner
+          title="Warning"
+          text="Selecting >200 activities makes for a tough print"
+        />
+      )}
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Left-side canvas */}
         <div className="lg:col-span-2">
@@ -125,6 +140,24 @@ export default function Mug() {
               metricText={secondaryText}
               svgRef={svgRef}
             />
+          </div>
+
+          <div className="mt-4 flex w-full gap-4 sm:mt-6 sm:gap-6">
+            <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-700">
+              <BsCupFill
+                className="mr-2 inline-block h-6 w-6"
+                aria-hidden="true"
+              />
+              Visualize
+            </Button>
+
+            <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
+              <ShoppingCartIcon
+                className="mr-2 inline-block h-6 w-6"
+                aria-hidden="true"
+              />
+              Checkout
+            </Button>
           </div>
         </div>
 
