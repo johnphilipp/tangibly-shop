@@ -12,6 +12,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { stripe } from "~/server/stripe/client";
 
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
@@ -54,6 +55,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   return {
     db,
     session,
+    stripe,
   };
 };
 

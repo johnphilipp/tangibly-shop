@@ -1,28 +1,49 @@
 import CheckoutForm from "~/components/CheckoutForm";
-import {useEffect} from "react";
+import { useEffect, useState } from "react";
 import getStripe from "~/utils/get-stripe";
+import { api } from "~/utils/api";
+
+import {
+  EmbeddedCheckoutProvider,
+  EmbeddedCheckout,
+} from "@stripe/react-stripe-js";
+import { useSession } from "next-auth/react";
 
 export default function Checkout() {
   const stripe = getStripe();
+  const [clientSecret, setClientSecret] = useState("");
 
-  const appearance = { /* appearance */ };
-const options = { /* options */ };
-const elements = stripe.elements({ clientSecret, appearance });
-const paymentElement = elements.create('payment', options);
-paymentElement.mount('#payment-element');
+  const getCheckout = api.payment.createCheckoutSession.useMutation();
 
-}
-const CardInput = () => {
+  const user = useSession().data?.user;
+
+  const { data: cartData } = api.cart.get.useQuery({
+    enabled: user !== undefined,
+  });
+
   useEffect(() => {
-    // Assuming 'cardElement' is defined and initialized elsewhere, e.g., using Stripe.js
-    cardElement.mount('#card-element');
-  }, []);
+    void getCheckout
+      .mutateAsync({
+        lineItems:
+          cartData?.items?.map((item) => ({
+            price: item.design.name,
+            quantity: item.amount,
+          })) ?? [],
+      })
+      .then((value) => {
+        setClientSecret(value.clientSecret ?? "");
+      });
+  }, [cartData?.items]);
 
   return (
     <>
-      <label htmlFor="card-element">Card</label>
-      <div id="card-element" />
+      <div id="checkout">
+        {clientSecret && (
+          <EmbeddedCheckoutProvider stripe={stripe} options={{ clientSecret }}>
+            <EmbeddedCheckout />
+          </EmbeddedCheckoutProvider>
+        )}
+      </div>
     </>
   );
-};
-
+}
