@@ -20,7 +20,11 @@ const config = {
   },
 
   images: {
-    domains: ["images.unsplash.com", "tailwindui.com"],
+    domains: [
+      "images.unsplash.com",
+      "tailwindui.com",
+      "dgalywyr863hv.cloudfront.net",
+    ],
   },
 };
 

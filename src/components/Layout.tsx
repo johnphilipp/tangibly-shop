@@ -1,21 +1,21 @@
-import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { Dialog, Menu, Popover, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
   ShoppingCartIcon,
-  UserIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
 import { Fragment, useState } from "react";
-import { ImMagicWand } from "react-icons/im";
 import ShoppingCartSidebar from "./ShoppingCartSidebar";
 import DesignName from "~/components/DesignName";
 import { useRouter } from "next/router";
 import { useData } from "~/contexts/DataContext";
+import { Logo } from "./Logo";
+import Image from "next/image";
+
 
 interface LayoutProps {
   children: ReactNode;
@@ -28,7 +28,8 @@ interface Category {
   categories: { name: string; href: string }[];
 }
 
-const currencies = ["EUR"];
+const userNavigation = [{ name: "Sign out", href: "/api/auth/signout" }];
+
 const navigation = {
   categories: [
     // {
@@ -67,6 +68,9 @@ export function classNames(...classes: string[] | undefined[]) {
 
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { status } = useSession();
+  const { data } = useSession();
+
+  const userImage = data?.user?.image ?? "";
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [ShoppingCartOpen, setShoppingCartOpen] = useState(false);
@@ -221,14 +225,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   <div className="flow-root">
-                    <Link
-                      href="#"
-                      className="-m-2 block p-2 font-medium text-gray-900"
-                    >
-                      Create an account
-                    </Link>
-                  </div>
-                  <div className="flow-root">
                     {status === "authenticated" ? (
                       <Link
                         href="/api/auth/signout"
@@ -246,110 +242,26 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                     )}
                   </div>
                 </div>
-
-                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  {/* Currency selector */}
-                  <form>
-                    <div className="inline-block">
-                      <label htmlFor="mobile-currency" className="sr-only">
-                        Currency
-                      </label>
-                      <div className="group relative -ml-2 rounded-md border-transparent focus-within:ring-2 focus-within:ring-white">
-                        <select
-                          id="mobile-currency"
-                          name="currency"
-                          className="flex items-center rounded-md border-transparent bg-none py-0.5 pl-2 pr-5 text-sm font-medium text-gray-700 focus:border-transparent focus:outline-none focus:ring-0 group-hover:text-gray-800"
-                        >
-                          {currencies.map((currency) => (
-                            <option key={currency}>{currency}</option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center">
-                          <ChevronDownIcon
-                            className="h-5 w-5 text-gray-500"
-                            aria-hidden="true"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
         </Dialog>
       </Transition.Root>
 
-      <header className="relative z-10">
+      <header className="relative z-0">
         <nav aria-label="Top">
-          {/* Top navigation */}
-          <div className="hidden bg-gray-900 lg:block">
-            <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-              {/* Currency selector */}
-              <form className="hidden lg:block lg:flex-1">
-                <div className="flex">
-                  <label htmlFor="desktop-currency" className="sr-only">
-                    Currency
-                  </label>
-                  <div className="group relative -ml-2 rounded-md border-transparent bg-gray-900 focus-within:ring-2 focus-within:ring-white">
-                    <select
-                      id="desktop-currency"
-                      name="currency"
-                      className="flex items-center rounded-md border-transparent bg-gray-900 bg-none py-0.5 pl-2 pr-5 text-sm font-medium text-white focus:border-transparent focus:outline-none focus:ring-0 group-hover:text-gray-100"
-                    >
-                      {currencies.map((currency) => (
-                        <option key={currency}>{currency}</option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center">
-                      <ChevronDownIcon
-                        className="h-5 w-5 text-gray-300"
-                        aria-hidden="true"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </form>
-
-              <p className="flex-1 text-center text-sm font-medium text-white lg:flex-none">
-                {/* Get free delivery on orders over $100 */}
-              </p>
-
-              <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                <Link
-                  href="/api/auth/signin"
-                  className="text-sm font-medium text-white hover:text-gray-100"
-                >
-                  Create an account
-                </Link>
-                <span className="h-6 w-px bg-gray-600" aria-hidden="true" />
-
-                {status === "authenticated" ? (
-                  <Link
-                    href="/api/auth/signout"
-                    className="text-sm font-medium text-white hover:text-gray-100"
-                  >
-                    Sign out
-                  </Link>
-                ) : (
-                  <Link
-                    href="/api/auth/signin"
-                    className="text-sm font-medium text-white hover:text-gray-100"
-                  >
-                    Sign in
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-
           {/* Secondary navigation */}
           <div className="bg-white">
             <div className="border-b border-gray-200">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                   {/* Logo (lg+) */}
-                  <div className="hidden lg:flex lg:items-center"></div>
+                  <div className="hidden lg:flex lg:items-center">
+                    <Link href="/">
+                      <span className="sr-only">Your Company</span>
+                      <Logo />
+                    </Link>
+                  </div>
 
                   <div className="hidden h-full lg:flex">
                     {/* Mega menus */}
@@ -497,10 +409,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                   {/* Logo (lg-) */}
                   <Link href="/" className="lg:hidden">
                     <span className="sr-only">Your Company</span>
-                    <ImMagicWand
-                      className="h-8 w-auto text-gray-700"
-                      aria-hidden="true"
-                    />
+                    <Logo />
                   </Link>
 
                   <div className="flex flex-1 items-center justify-end">
@@ -525,7 +434,51 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                             className="-m-2 p-2 text-gray-400 hover:text-gray-500"
                           >
                             <span className="sr-only">Account</span>
-                            <UserIcon className="h-6 w-6" aria-hidden="true" />
+                            {/* Profile Dropdown */}
+                            <div className="hidden sm:ml-6 sm:flex sm:items-center">
+                              <Menu as="div" className="relative ml-3">
+                                <div>
+                                  <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <span className="sr-only">
+                                      Open user menu
+                                    </span>
+                                    <Image
+                                      className="h-8 w-8 rounded-full"
+                                      src={userImage}
+                                      alt=""
+                                      width={32}
+                                      height={32}
+                                    />
+                                  </Menu.Button>
+                                </div>
+                                <Transition
+                                  as={Fragment}
+                                  enter="transition ease-out duration-200"
+                                  enterFrom="transform opacity-0 scale-95"
+                                  enterTo="transform opacity-100 scale-100"
+                                  leave="transition ease-in duration-75"
+                                  leaveFrom="transform opacity-100 scale-100"
+                                  leaveTo="transform opacity-0 scale-95"
+                                >
+                                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    {userNavigation.map((item) => (
+                                      <Menu.Item key={item.name}>
+                                        {({ active }) => (
+                                          <Link
+                                            href={item.href}
+                                            className={`${
+                                              active ? "bg-gray-100" : ""
+                                            } block px-4 py-2 text-sm text-gray-700`}
+                                          >
+                                            {item.name}
+                                          </Link>
+                                        )}
+                                      </Menu.Item>
+                                    ))}
+                                  </Menu.Items>
+                                </Transition>
+                              </Menu>
+                            </div>
                           </Link>
                         </div>
                       </div>
@@ -561,9 +514,10 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         </nav>
       </header>
 
-      <main>{children}</main>
+      <main className="mx-auto max-w-7xl">{children}</main>
 
       <footer>{/* ...footer content... */}</footer>
+
       <ShoppingCartSidebar
         open={ShoppingCartOpen}
         setOpen={setShoppingCartOpen}

@@ -1,4 +1,4 @@
-import Button from "../Button";
+import Button from "../../Button";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
@@ -50,19 +50,19 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
   };
 
   return (
-    <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed left-0 top-0 z-20 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
       <div className="max-h-140 m-4 rounded-lg border bg-white p-4 sm:p-8">
         <form onSubmit={handleSubmit} className="max-w-sm">
           <label
             htmlFor="email"
             className="text-base font-semibold text-gray-900"
           >
-            Register your interest ❤️
+            Pre-order ❤️
           </label>
           <div className="mt-1 text-sm text-gray-500">
             <p>
-              Enter your E-Mail to get notified when orders are open. We would
-              be delighted to have you on board!
+              We&apos;ll send you an email with your design and let you know
+              once orders are open. We&apos;d be delighted to have you on board!
             </p>
           </div>
           <input
