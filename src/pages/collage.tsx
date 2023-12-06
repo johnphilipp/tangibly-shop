@@ -4,14 +4,13 @@ import { useEffect } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
-import DemoBanner from "~/components/editor/DemoBanner";
-import Mug from "~/components/mug";
+import Collage from "~/components/collage";
 import { useData } from "~/contexts/DataContext";
 import { demoData1 } from "~/data/demoData1";
 import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
-export default function MugPage() {
+export default function CollagePage() {
   let activityData;
   const { setActivities } = useData();
   const user = useSession().data?.user;
@@ -73,7 +72,7 @@ export default function MugPage() {
           </div>
         )}
 
-        <Mug isLoading={activityDataLoading} />
+        <Collage isLoading={activityDataLoading} />
       </div>
       {/* <Alert /> */}
     </Layout>

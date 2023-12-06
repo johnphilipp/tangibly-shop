@@ -5,21 +5,21 @@ import Layout from "~/components/Layout";
 const products = [
   {
     id: 1,
-    name: "Coffee cup",
-    href: "/editor",
+    name: "Collage",
+    href: "/collage",
     imageSrc: "/collage-2.png",
-    imageAlt: "Front of men's Basic Tee in black.",
+    imageAlt: "Your GPS tracks merged into a collage",
     price: "€15",
-    color: "Personalized with your sports activities",
+    color: "Your GPS tracks merged into a unique collage",
   },
   {
     id: 2,
-    name: "Coffee cup",
+    name: "Heatmap",
     href: "/bubbles",
     imageSrc: "/bubbles-2.png",
-    imageAlt: "Front of men's Basic Tee in black.",
+    imageAlt: "Your activity time plotted as a heatmap",
     price: "€15",
-    color: "Personalized with your sports activities",
+    color: "Your activity time plotted as a unique heatmap",
   },
 ];
 
