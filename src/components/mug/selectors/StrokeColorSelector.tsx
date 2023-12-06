@@ -1,19 +1,18 @@
-// ColorSelector.tsx
 import React, { FC } from "react";
 
-interface ColorSelectorProps {
+interface StrokeColorSelectorProps {
   label: string;
   color: string;
   onColorChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ColorSelector: FC<ColorSelectorProps> = ({
+const StrokeColorSelector: FC<StrokeColorSelectorProps> = ({
   label,
   color,
   onColorChange,
 }) => {
   return (
-    <div className="flex-col space-y-1">
+    <div className="w-full flex-col space-y-1">
       <p className="text-left font-semibold">{label}</p>
       <input
         type="color"
@@ -25,4 +24,4 @@ const ColorSelector: FC<ColorSelectorProps> = ({
   );
 };
 
-export default ColorSelector;
+export default StrokeColorSelector;

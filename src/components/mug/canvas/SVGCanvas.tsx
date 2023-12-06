@@ -69,65 +69,67 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
   });
 
   return (
-    <svg
-      ref={svgRef}
-      width="100%"
-      viewBox={`-60 -60 ${SVG_WIDTH + 120} ${SVG_HEIGHT + 120}`}
-      preserveAspectRatio="xMidYMid meet"
-      className="border"
-    >
-      {/* BACKGROUND COLOR */}
-      <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
+    <div style={{ backgroundColor: backgroundColor }}>
+      <svg
+        ref={svgRef}
+        width="100%"
+        viewBox={`-60 -60 ${SVG_WIDTH + 120} ${SVG_HEIGHT + 120}`}
+        preserveAspectRatio="xMidYMid meet"
+        className="border"
+      >
+        {/* BACKGROUND COLOR */}
+        <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
 
-      {/* POLYLINES */}
-      {activityPaths.map(
-        (path, index) =>
-          path && (
-            <path
-              key={index}
-              d={path}
-              fill="none"
-              stroke={strokeColor}
-              strokeWidth={strokeWidth}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              className="non-interactive-path"
-            />
-          ),
-      )}
+        {/* POLYLINES */}
+        {activityPaths.map(
+          (path, index) =>
+            path && (
+              <path
+                key={index}
+                d={path}
+                fill="none"
+                stroke={strokeColor}
+                strokeWidth={strokeWidth}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                className="non-interactive-path"
+              />
+            ),
+        )}
 
-      {/* FREE TEXT */}
-      {useText && (
-        <>
-          <text
-            x={FREETEXT_X}
-            y={SVG_HEIGHT - FREETEXT_HEIGHT / 2} // Center text vertically in the box
-            fill={strokeColor}
-            fontSize="60px"
-            fontFamily="'Roboto', sans-serif"
-            fontWeight="bold"
-            alignmentBaseline="middle"
-          >
-            {primaryText}
-          </text>
+        {/* FREE TEXT */}
+        {useText && (
+          <>
+            <text
+              x={FREETEXT_X}
+              y={SVG_HEIGHT - FREETEXT_HEIGHT / 2} // Center text vertically in the box
+              fill={strokeColor}
+              fontSize="60px"
+              fontFamily="'Roboto', sans-serif"
+              fontWeight="bold"
+              alignmentBaseline="middle"
+            >
+              {primaryText}
+            </text>
 
-          {/* METRIC */}
-          <text
-            x={METRIC_X + METRIC_WIDTH} // Right align from this point
-            y={SVG_HEIGHT - METRIC_HEIGHT / 2}
-            fill={strokeColor}
-            fontSize="60px"
-            fontFamily="'Roboto', sans-serif"
-            textAnchor="end" // Aligns the text to the right
-            alignmentBaseline="middle"
-          >
-            <tspan fontWeight="bold" alignmentBaseline="middle">
-              {secondaryText}
-            </tspan>
-          </text>
-        </>
-      )}
-    </svg>
+            {/* METRIC */}
+            <text
+              x={METRIC_X + METRIC_WIDTH} // Right align from this point
+              y={SVG_HEIGHT - METRIC_HEIGHT / 2}
+              fill={strokeColor}
+              fontSize="60px"
+              fontFamily="'Roboto', sans-serif"
+              textAnchor="end" // Aligns the text to the right
+              alignmentBaseline="middle"
+            >
+              <tspan fontWeight="bold" alignmentBaseline="middle">
+                {secondaryText}
+              </tspan>
+            </text>
+          </>
+        )}
+      </svg>
+    </div>
   );
 };
 

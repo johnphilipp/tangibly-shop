@@ -5,16 +5,15 @@ import ActivityTypeSelector from "./selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
 import type { Activity } from "@prisma/client";
 import YearSelector from "./selectors/YearSelector";
-import ColorSelector from "./selectors/ColorSelector";
+import StrokeColorSelector from "./selectors/StrokeColorSelector";
 import TextSelector from "./selectors/TextSelector";
 import Button from "../Button";
-import { ShoppingCartIcon } from "@heroicons/react/20/solid";
-import { BsCupFill } from "react-icons/bs";
 import WarningBanner from "../WarningBanner";
 import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
 import { InterestedModal } from "./modals/InterestedModal";
 import { getSVGBase64 } from "./utils/getSVGBase64";
 import { BiMailSend } from "react-icons/bi";
+import MugColorSelector from "./selectors/MugColorSelector";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -123,6 +122,19 @@ export default function Mug({ isLoading }: { isLoading: boolean }) {
     setSecondaryText(e.target.value);
   };
 
+  const handleColorChange = (newColor: string) => {
+    // Check if the new color is black and the current stroke color is black
+    if (newColor === "#000000" && strokeColor === "#000000") {
+      setStrokeColor("#ffffff");
+    }
+    // Check if the new color is white and the current stroke color is white
+    else if (newColor === "#ffffff" && strokeColor === "#ffffff") {
+      setStrokeColor("#000000");
+    }
+    // Update the background color
+    setBackgroundColor(newColor);
+  };
+
   return (
     <div className="m-4 sm:m-6">
       <h1 className="mt-4 text-2xl font-bold sm:mt-6 sm:text-4xl">
@@ -190,49 +202,48 @@ export default function Mug({ isLoading }: { isLoading: boolean }) {
       )}
 
       {/* Right-side selectors */}
-      <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
-        {!isLoading && (
-          <>
-            <YearSelector
-              availableYears={availableYears}
-              selectedYears={selectedYears}
-              onSelectYear={handleYearChange}
+      {!isLoading && (
+        <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
+          <YearSelector
+            availableYears={availableYears}
+            selectedYears={selectedYears}
+            onSelectYear={handleYearChange}
+          />
+
+          <ActivityTypeSelector
+            sportTypes={sportTypes}
+            selectedActivityTypes={selectedActivityTypes}
+            onToggleActivityType={handleToggleActivityType}
+          />
+
+          <div className="flex space-x-4 sm:space-x-6">
+            <MugColorSelector
+              label="Mug Base Color"
+              onColorChange={handleColorChange}
             />
 
-            <ActivityTypeSelector
-              sportTypes={sportTypes}
-              selectedActivityTypes={selectedActivityTypes}
-              onToggleActivityType={handleToggleActivityType}
-            />
-
-            <ColorSelector
-              label="Background Color"
-              color={backgroundColor}
-              onColorChange={(e) => setBackgroundColor(e.target.value)}
-            />
-
-            <ColorSelector
+            <StrokeColorSelector
               label="Stroke Color"
               color={strokeColor}
               onColorChange={(e) => setStrokeColor(e.target.value)}
             />
+          </div>
 
-            <ToggleTextDisplay useText={useText} setUseText={setUseText} />
+          <ToggleTextDisplay useText={useText} setUseText={setUseText} />
 
-            <TextSelector
-              label="Primary Text"
-              text={primaryText}
-              onTextChange={handlePrimaryTextChange}
-            />
+          <TextSelector
+            label="Primary Text"
+            text={primaryText}
+            onTextChange={handlePrimaryTextChange}
+          />
 
-            <TextSelector
-              label="Secondary Text"
-              text={secondaryText}
-              onTextChange={handleSecondaryTextChange}
-            />
-          </>
-        )}
-      </div>
+          <TextSelector
+            label="Secondary Text"
+            text={secondaryText}
+            onTextChange={handleSecondaryTextChange}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -16,7 +16,7 @@ const YearSelector: React.FC<YearSelectorProps> = ({
     <div className="flex-col space-y-1">
       <p className="text-left font-semibold">Select Year(s)</p>{" "}
       {/* Updated text */}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-2">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
         {availableYears.map((year, index) => {
           const isActive = selectedYears.includes(year);
           const className = isActive
