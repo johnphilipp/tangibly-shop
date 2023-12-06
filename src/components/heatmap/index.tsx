@@ -24,7 +24,7 @@ const getUniqueSportTypes = (activities: Activity[]): string[] =>
     return acc;
   }, []);
 
-export default function Mug({ isLoading }: { isLoading: boolean }) {
+export default function Heatmap({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
   const { data: session } = useSession();
   const svgRef = useRef<SVGSVGElement>(null);
