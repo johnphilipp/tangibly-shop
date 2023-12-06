@@ -119,8 +119,8 @@ export default function Mug({ isLoading }: { isLoading: boolean }) {
   };
 
   return (
-    <div className="m-4">
-      <h1 className="my-4 text-2xl font-bold sm:my-6 sm:text-4xl">
+    <div className="m-4 sm:m-6">
+      <h1 className="mt-4 text-2xl font-bold sm:mt-6 sm:text-4xl">
         Create Your Own Mug
       </h1>
 
@@ -131,86 +131,84 @@ export default function Mug({ isLoading }: { isLoading: boolean }) {
         />
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {/* Left-side canvas */}
-        <div className="lg:col-span-2">
-          <div className="bg-white text-center shadow-lg">
-            <SVGCanvas
-              activities={selectedActivities}
-              backgroundColor={backgroundColor}
-              strokeColor={strokeColor}
-              useText={useText}
-              primaryText={primaryText}
-              secondaryText={secondaryText}
-              svgRef={svgRef}
+      {/* Sticky SVGCanvas */}
+      <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
+        <div className="bg-white shadow-2xl">
+          <SVGCanvas
+            activities={selectedActivities}
+            backgroundColor={backgroundColor}
+            strokeColor={strokeColor}
+            useText={useText}
+            primaryText={primaryText}
+            secondaryText={secondaryText}
+            svgRef={svgRef}
+          />
+        </div>
+      </div>
+
+      {!isLoading && (
+        <div className="flex w-full gap-4 sm:gap-6">
+          <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-800">
+            <BsCupFill
+              className="mr-2 inline-block h-6 w-6"
+              aria-hidden="true"
             />
-          </div>
+            Visualize
+          </Button>
 
-          {!isLoading && (
-            <div className="mt-4 flex w-full gap-4 sm:mt-6 sm:gap-6">
-              <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-700">
-                <BsCupFill
-                  className="mr-2 inline-block h-6 w-6"
-                  aria-hidden="true"
-                />
-                Visualize
-              </Button>
-
-              <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
-                <ShoppingCartIcon
-                  className="mr-2 inline-block h-6 w-6"
-                  aria-hidden="true"
-                />
-                Checkout
-              </Button>
-            </div>
-          )}
+          <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
+            <ShoppingCartIcon
+              className="mr-2 inline-block h-6 w-6"
+              aria-hidden="true"
+            />
+            Checkout
+          </Button>
         </div>
+      )}
 
-        {/* Right-side selectors */}
-        <div className="grid gap-4 border bg-white p-4 shadow-lg sm:p-6 lg:col-span-1">
-          {!isLoading && (
-            <>
-              <YearSelector
-                availableYears={availableYears}
-                selectedYears={selectedYears}
-                onSelectYear={handleYearChange}
-              />
+      {/* Right-side selectors */}
+      <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
+        {!isLoading && (
+          <>
+            <YearSelector
+              availableYears={availableYears}
+              selectedYears={selectedYears}
+              onSelectYear={handleYearChange}
+            />
 
-              <ActivityTypeSelector
-                sportTypes={sportTypes}
-                selectedActivityTypes={selectedActivityTypes}
-                onToggleActivityType={handleToggleActivityType}
-              />
+            <ActivityTypeSelector
+              sportTypes={sportTypes}
+              selectedActivityTypes={selectedActivityTypes}
+              onToggleActivityType={handleToggleActivityType}
+            />
 
-              <ColorSelector
-                label="Background Color"
-                color={backgroundColor}
-                onColorChange={(e) => setBackgroundColor(e.target.value)}
-              />
+            <ColorSelector
+              label="Background Color"
+              color={backgroundColor}
+              onColorChange={(e) => setBackgroundColor(e.target.value)}
+            />
 
-              <ColorSelector
-                label="Stroke Color"
-                color={strokeColor}
-                onColorChange={(e) => setStrokeColor(e.target.value)}
-              />
+            <ColorSelector
+              label="Stroke Color"
+              color={strokeColor}
+              onColorChange={(e) => setStrokeColor(e.target.value)}
+            />
 
-              <ToggleTextDisplay useText={useText} setUseText={setUseText} />
+            <ToggleTextDisplay useText={useText} setUseText={setUseText} />
 
-              <TextSelector
-                label="Primary Text"
-                text={primaryText}
-                onTextChange={handlePrimaryTextChange}
-              />
+            <TextSelector
+              label="Primary Text"
+              text={primaryText}
+              onTextChange={handlePrimaryTextChange}
+            />
 
-              <TextSelector
-                label="Secondary Text"
-                text={secondaryText}
-                onTextChange={handleSecondaryTextChange}
-              />
-            </>
-          )}
-        </div>
+            <TextSelector
+              label="Secondary Text"
+              text={secondaryText}
+              onTextChange={handleSecondaryTextChange}
+            />
+          </>
+        )}
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ const ToggleTextDisplay: React.FC<ToggleTextDisplayProps> = ({
           onChange={(e) => setUseText(e.target.checked)}
           className="form-checkbox h-5 w-5 text-gray-900 transition duration-150 ease-in-out focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
         />
-        <span>Display Text</span>
+        <span className="font-semibold">Display Text</span>
       </label>
     </div>
   );

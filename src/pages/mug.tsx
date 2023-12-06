@@ -56,7 +56,7 @@ export default function MugPage() {
   // Render editor
   return (
     <Layout>
-      <div className="relative isolate">
+      <div className="relative isolate mx-auto max-w-4xl">
         <Background />
 
         {/* {!user && <DemoBanner />} */}
