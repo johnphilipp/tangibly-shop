@@ -57,7 +57,7 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
             htmlFor="email"
             className="text-base font-semibold text-gray-900"
           >
-            Pre-order
+            Pre-order ❤️
           </label>
           <div className="mt-1 text-sm text-gray-500">
             <p>
