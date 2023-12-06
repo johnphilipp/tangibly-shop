@@ -12,6 +12,9 @@ import { ShoppingCartIcon } from "@heroicons/react/20/solid";
 import { BsCupFill } from "react-icons/bs";
 import WarningBanner from "../WarningBanner";
 import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
+import { InterestedModal } from "./modals/InterestedModal";
+import { getSVGBase64 } from "./utils/getSVGBase64";
+import { BiMailSend } from "react-icons/bi";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -34,6 +37,8 @@ export default function Mug({ isLoading }: { isLoading: boolean }) {
   const [useText, setUseText] = useState(true);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
+  const [isInterestedModalVisible, setIsInterestedModalVisible] =
+    useState(false);
 
   const availableYears = useMemo(() => {
     const years = new Set(
@@ -131,6 +136,13 @@ export default function Mug({ isLoading }: { isLoading: boolean }) {
         />
       )}
 
+      {isInterestedModalVisible && (
+        <InterestedModal
+          onClose={() => setIsInterestedModalVisible(false)}
+          svg={getSVGBase64(svgRef) ?? ""}
+        />
+      )}
+
       {/* Sticky SVGCanvas */}
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
         <div className="bg-white shadow-2xl">
@@ -148,21 +160,32 @@ export default function Mug({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="flex w-full gap-4 sm:gap-6">
-          <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-800">
+          {/* <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-800">
             <BsCupFill
               className="mr-2 inline-block h-6 w-6"
               aria-hidden="true"
             />
             Visualize
+          </Button> */}
+
+          <Button
+            onClick={() => setIsInterestedModalVisible(true)}
+            className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700"
+          >
+            <BiMailSend
+              className="mr-2 inline-block h-6 w-6"
+              aria-hidden="true"
+            />
+            Pre-order
           </Button>
 
-          <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
+          {/* <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
             <ShoppingCartIcon
               className="mr-2 inline-block h-6 w-6"
               aria-hidden="true"
             />
             Checkout
-          </Button>
+          </Button> */}
         </div>
       )}
 
