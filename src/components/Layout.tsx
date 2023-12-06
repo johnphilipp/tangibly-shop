@@ -1,5 +1,4 @@
 import { Dialog, Menu, Popover, Tab, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
@@ -27,7 +26,6 @@ interface Category {
 
 const userNavigation = [{ name: "Sign out", href: "/api/auth/signout" }];
 
-const currencies = ["EUR"];
 const navigation = {
   categories: [
     // {
@@ -68,7 +66,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   const { status } = useSession();
   const { data } = useSession();
 
-  const userImage = data?.user?.image;
+  const userImage = data?.user?.image ?? "";
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [ShoppingCartOpen, setShoppingCartOpen] = useState(false);
