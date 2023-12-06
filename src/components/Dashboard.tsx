@@ -12,15 +12,15 @@ const products = [
     price: "€15",
     color: "Your GPS tracks merged into a unique collage",
   },
-  {
-    id: 2,
-    name: "Heatmap",
-    href: "/bubbles",
-    imageSrc: "/bubbles-2.png",
-    imageAlt: "Your activity time plotted as a heatmap",
-    price: "€15",
-    color: "Your activity time plotted as a unique heatmap",
-  },
+  // {
+  //   id: 2,
+  //   name: "Heatmap",
+  //   href: "/heatmap",
+  //   imageSrc: "/bubbles-2.png",
+  //   imageAlt: "Your activity time plotted as a heatmap",
+  //   price: "€15",
+  //   color: "Your activity time plotted as a unique heatmap",
+  // },
 ];
 
 export default function Dashboard() {
