@@ -50,14 +50,14 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
     const maxActivityTime = Math.max(...yearlyActivityMap);
 
     const calculateColorIntensity = (time: number): string => {
-      if (time === 0 || maxActivityTime === 0) return "rgba(234, 88, 12, 0.12)";
+      if (time === 0 || maxActivityTime === 0) return "#f3f4f6"; // Default color for 0 moving time
 
       // Apply a logarithmic scale
-      const scaledTime = Math.log(time + 0.8); // +1 to avoid log(0)
+      const scaledTime = Math.log(time + 1); // +1 to avoid log(0)
       const scaledMaxTime = Math.log(maxActivityTime + 1);
-      const intensity = (scaledTime / scaledMaxTime) * 0.8 + 0.2;
+      const intensity = (scaledTime / scaledMaxTime) * 0.8 + 0.2; // Scale between 20% and 100%
 
-      return `rgba(234, 88, 12, ${intensity.toFixed(2)})`;
+      return `rgba(234, 88, 12, ${intensity.toFixed(2)})`; // Color #ea580c with varying opacity
     };
 
     const newElements: JSX.Element[] = [];
@@ -93,7 +93,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
           key={`day-${day}`}
           x={LABEL_X_POSITION}
           y={startY + 2 * i * squareSize + squareSize / 2}
-          fill="#ea580c"
+          fill={strokeColor}
           fontSize="32" // Adjust font size as needed
           fontFamily="'Roboto', sans-serif"
           textAnchor="start" // Align text to the left
