@@ -76,7 +76,7 @@ export default function Bubbles() {
     <div className="m-4 space-y-4">
       <div className="overflow-x-auto">
         <div
-          className="grid-cols-53 grid gap-2 border bg-white p-4 text-center shadow-lg"
+          className="grid grid-cols-53 gap-2 border bg-white p-4 text-center shadow-lg"
           style={{ minWidth: "calc(53 * (1rem + 0.5rem))" }}
         >
           {generateElements()}
