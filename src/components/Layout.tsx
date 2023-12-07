@@ -1,7 +1,6 @@
 import { Dialog, Menu, Popover, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
-  MagnifyingGlassIcon,
   ShoppingCartIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -388,18 +387,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                       <span className="sr-only">Open menu</span>
                       <Bars3Icon className="h-6 w-6" aria-hidden="true" />
                     </button>
-
-                    {/* Search */}
-                    <Link
-                      href="#"
-                      className="ml-2 p-2 text-gray-400 hover:text-gray-500"
-                    >
-                      <span className="sr-only">Search</span>
-                      <MagnifyingGlassIcon
-                        className="h-6 w-6"
-                        aria-hidden="true"
-                      />
-                    </Link>
                   </div>
 
                   {/* Logo (lg-) */}
@@ -411,19 +398,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                   <div className="flex flex-1 items-center justify-end">
                     <div className="flex items-center lg:ml-8">
                       <div className="flex space-x-8">
-                        <div className="hidden lg:flex">
-                          <Link
-                            href="#"
-                            className="-m-2 p-2 text-gray-400 hover:text-gray-500"
-                          >
-                            <span className="sr-only">Search</span>
-                            <MagnifyingGlassIcon
-                              className="h-6 w-6"
-                              aria-hidden="true"
-                            />
-                          </Link>
-                        </div>
-
                         <div className="flex">
                           <Link
                             href="#"
