@@ -1,16 +1,18 @@
 import Button from "../../Button";
 import { useState } from "react";
+import { LoadingSpinner } from "~/components/Loading";
 import { api } from "~/utils/api";
 
 interface InterestedModalProps {
   onClose: () => void;
-  svg: string; // New prop
+  svg: string;
 }
 
 export function InterestedModal({ onClose, svg }: InterestedModalProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const emailRegex =
     /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -26,12 +28,15 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const data = register.mutateAsync({ email: email, svg: svg });
     e.preventDefault();
+    setIsLoading(true);
 
     void data.then((value) => {
       if (!emailRegex.test(email) || !email) {
         setError("Please use a valid e-mail address.");
+        setIsLoading(false);
       } else {
         setError(null);
+        setIsLoading(false);
         if (value.status === "success") {
           setSuccess(value.message);
           setError(null);
@@ -75,8 +80,8 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
             placeholder="you@example.com"
             required
           />
-          {error && <p className="text-red-500">{error}</p>}
-          {success && <p className="text-green-500">{success}</p>}
+          {error && <p className="mt-2 text-red-500">{error}</p>}
+          {success && <p className="mt-2 text-green-600">{success}</p>}
           <div className="mt-3 flex items-center justify-between gap-4">
             <Button onClick={onClose} className="w-full">
               Close
@@ -85,7 +90,13 @@ export function InterestedModal({ onClose, svg }: InterestedModalProps) {
               type="submit"
               className="w-full bg-gray-900 text-white hover:bg-gray-700"
             >
-              Submit
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <LoadingSpinner size={24} />
+                </div>
+              ) : (
+                "Send"
+              )}
             </Button>
           </div>
         </form>

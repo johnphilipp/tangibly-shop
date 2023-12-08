@@ -8,15 +8,11 @@ import YearSelector from "./selectors/YearSelector";
 import StrokeColorSelector from "./selectors/StrokeColorSelector";
 import TextSelector from "./selectors/TextSelector";
 import Button from "../Button";
-import WarningBanner from "../WarningBanner";
 import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
 import { InterestedModal } from "./modals/InterestedModal";
 import { getSVGBase64 } from "./utils/getSVGBase64";
 import { BiMailSend } from "react-icons/bi";
 import MugColorSelector from "./selectors/MugColorSelector";
-
-const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
-  activities.filter((activity) => activity.summaryPolyline);
 
 const getUniqueSportTypes = (activities: Activity[]): string[] =>
   activities.reduce<string[]>((acc, activity) => {
@@ -58,14 +54,9 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
     [activities, selectedYears],
   );
 
-  const activitiesWithGPS = useMemo(
-    () => getActivitiesWithGPS(activitiesFilteredByYears),
-    [activitiesFilteredByYears],
-  );
-
   const sportTypes = useMemo(
-    () => getUniqueSportTypes(activitiesWithGPS),
-    [activitiesWithGPS],
+    () => getUniqueSportTypes(activitiesFilteredByYears),
+    [activitiesFilteredByYears],
   );
 
   const [selectedActivityTypes, setSelectedActivityTypes] = useState<string[]>(
@@ -81,19 +72,27 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
   useEffect(() => {
     // Once selectedActivityTypes is populated, filter activitiesWithGPS to get selectedActivities
     setSelectedActivities(
-      activitiesWithGPS.filter((activity) =>
+      activitiesFilteredByYears.filter((activity) =>
         selectedActivityTypes.includes(activity.sport_type),
       ),
     );
-  }, [selectedActivityTypes, activitiesWithGPS]);
+  }, [selectedActivityTypes, activitiesFilteredByYears]);
 
   useEffect(() => {
+    const totalMovingTime = Math.round(
+      selectedActivities.reduce(
+        (acc, activity) => acc + activity.moving_time,
+        0,
+      ) /
+        60 /
+        60,
+    );
     // Check if selectedYears array is not empty, otherwise -Infinity bug
     if (selectedActivities.length === 0 || selectedYears.length === 0) return;
     const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
     const userName = `${session?.user?.name?.split(" ")[0]}'s` ?? "Your";
     setPrimaryText(`${userName} ${yearText} Wrapped`);
-    setSecondaryText(`${selectedActivities.length} Activities`);
+    setSecondaryText(`Total moving time: ${totalMovingTime} hours`);
   }, [selectedYears, session?.user?.name, selectedActivities]);
 
   const handleToggleActivityType = (sportType: string) => {
@@ -140,13 +139,6 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
       <h1 className="mt-4 text-2xl font-bold sm:mt-6 sm:text-4xl">
         Create Your Own Mug
       </h1>
-
-      {selectedActivities.length > 200 && (
-        <WarningBanner
-          title="Warning"
-          text="Selecting >200 activities makes for a tough print"
-        />
-      )}
 
       {isInterestedModalVisible && (
         <InterestedModal
