@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { useData } from "~/contexts/DataContext";
 import { Logo } from "./Logo";
 import Image from "next/image";
-
+import { useSearchParams } from "next/navigation";
 
 interface LayoutProps {
   children: ReactNode;

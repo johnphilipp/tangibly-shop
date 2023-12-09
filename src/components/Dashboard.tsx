@@ -26,6 +26,7 @@ const products: Product[] = [
     id: 1,
     name: "Collage",
     href: "/collage",
+    kind: "mug",
     imageSrc: "/collage-2.png",
     imageAlt: "Your GPS tracks merged into a collage",
     price: "€15",
@@ -34,13 +35,14 @@ const products: Product[] = [
   {
     id: 2,
     name: "Heatmap",
+    kind: "mug",
     href: "/heatmap",
     imageSrc: "/bubbles-3.png",
     imageAlt: "Your activity time plotted as a heatmap",
     price: "€15",
     color: "Your activity time plotted as a unique heatmap",
   },
-    {
+  {
     id: 3,
     name: "Coffee cup",
     kind: "mug",
@@ -48,13 +50,11 @@ const products: Product[] = [
     imageSrc: "/collage-2.png",
     imageAlt: "Front of men's Basic Tee in black.",
     price: "€15",
-    color: "Personalized with your sports activities",
+    color: "Your GPS tracks merged into a unique collage",
   },
 ];
 
 export default function Dashboard() {
-  const { activeDesign, setActiveDesign } = useData();
-
   const router = useRouter();
 
   // Assuming useMutation is from a library like React Query
@@ -66,18 +66,16 @@ export default function Dashboard() {
       // Trigger the mutation and wait for the result
       const data = await mutation.mutateAsync({
         productType: product.kind,
+        designType: product.name,
+        collageType: product.name,
       });
 
-      if (data?.design) {
-        setActiveDesign(data.design);
+      if (!data) {
+        alert("Error creating design");
+        return;
       }
 
-      if (product.id === 1) {
-        void router.push(`/editor?designId=${data.design?.id}`);
-      } else if (product.id === 2) {
-        void router.push(`/bubbles?designId=${data.design?.id}`);
-      }
-
+      void router.push(`${product.href}?designId=${data.id}`);
       // Navigate based on product id
 
       // Set the active design (if design is available)

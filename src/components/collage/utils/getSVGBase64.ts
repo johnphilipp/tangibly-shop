@@ -1,4 +1,4 @@
-export const getSVGBase64 = (svgRef: React.RefObject<SVGSVGElement>) => {
+export const getSVGBase64 = (svgRef: SVGSVGElement) => {
   const svgNode = svgRef.current;
   if (!svgNode) return;
 

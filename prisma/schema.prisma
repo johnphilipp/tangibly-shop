@@ -79,7 +79,7 @@ model VerificationToken {
 }
 
 model Activity {
-  userId                        Account              @relation(fields: [athlete], references: [id])
+  userId                        Account @relation(fields: [athlete], references: [id])
   athlete                       String
   name                          String?
   distance                      Float
@@ -89,7 +89,7 @@ model Activity {
   type                          String
   sport_type                    String
   workout_type                  Int? // '?' means it's optional in Prisma
-  id                            BigInt               @id @unique
+  id                            BigInt  @id @unique
   start_date                    String
   start_date_local              String
   timezone                      String?
@@ -103,7 +103,7 @@ model Activity {
   athlete_count                 Int
   photo_count                   Int
   mapId                         String?
-  summaryPolyline               String               @db.Text
+  summaryPolyline               String  @db.Text
   trainer                       Boolean
   commute                       Boolean
   manual                        Boolean
@@ -132,7 +132,6 @@ model Activity {
   pr_count                      Int
   total_photo_count             Int
   has_kudoed                    Boolean
-  ActivitiesOnDesign            ActivitiesOnDesign[]
 
   @@index([athlete])
 }
@@ -151,35 +150,43 @@ model CartItem {
 }
 
 model Design {
-  id                 Int                  @id @default(autoincrement())
-  createdAt          DateTime             @default(now())
-  productType        String
-  name               String
+  id              Int       @id @default(autoincrement())
+  createdAt       DateTime  @default(now())
+  productType     String
+  name            String
   // Define a many-to-many relationship between Product and Cart
-  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId             String
-  aspectRatioRow     Int
-  aspectRatioColumn  Int
-  activityTypes      String               @db.Text
-  stroke             Int
-  padding            Int
-  backgroundColor    String
-  strokeColor        String
-  previewSvg         String               @db.Text
-  ActivitiesOnDesign ActivitiesOnDesign[]
-  CartItem           CartItem?
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  activityTypes   String    @db.Text
+  backgroundColor String
+  strokeColor     String
+  previewSvg      String    @db.Text
+  CartItem        CartItem?
+  Collage         Collage?
+  Heatmap         Heatmap?
 
   @@index([userId])
 }
 
-model ActivitiesOnDesign {
-  activity    Activity @relation(fields: [activityId], references: [id])
-  activityId  BigInt
-  design      Design   @relation(fields: [designId], references: [id])
-  designId    Int
-  canvasIndex Int
+model Collage {
+  id            Int     @id @default(autoincrement())
+  designId      Int     @unique
+  primaryText   String
+  secondaryText String
+  useText       Boolean
+  collageType   String
+  Design        Design  @relation(fields: [designId], references: [id])
 
-  @@id([activityId, designId, canvasIndex])
   @@index([designId])
-  @@index([activityId])
+}
+
+model Heatmap {
+  id            Int     @id @default(autoincrement())
+  designId      Int     @unique
+  primaryText   String
+  secondaryText String
+  useText       Boolean
+  Design        Design  @relation(fields: [designId], references: [id])
+
+  @@index([designId])
 }

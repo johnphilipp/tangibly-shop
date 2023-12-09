@@ -4,12 +4,11 @@ import { useData } from "~/contexts/DataContext";
 import { api } from "~/utils/api";
 
 export default function DesignName() {
+  const [editDesignName, setEditDesignName] = useState<boolean>(false);
   const { activeDesign, setActiveDesign } = useData();
 
-  const [editDesignName, setEditDesignName] = useState<boolean>(false);
-
   const [designName, setDesignName] = useState<string>(
-    activeDesign.name || "Untitled-1",
+    activeDesign?.name ?? "Untitled-1",
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,6 +16,7 @@ export default function DesignName() {
   };
 
   const handleCancel = () => {
+    if (!activeDesign) return;
     setDesignName(activeDesign.name);
     setEditDesignName(false);
   };
@@ -24,6 +24,7 @@ export default function DesignName() {
   const saveName = api.design.setName.useMutation();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!activeDesign) return;
     activeDesign.name = designName;
     setActiveDesign(activeDesign);
     setEditDesignName(false);
@@ -36,7 +37,7 @@ export default function DesignName() {
   };
 
   useEffect(() => {
-    setDesignName(activeDesign.name || "Untitled-1");
+    setDesignName(activeDesign?.name ?? "Untitled-1");
   }, [activeDesign]);
 
   return (

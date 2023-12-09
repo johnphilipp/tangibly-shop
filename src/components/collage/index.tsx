@@ -4,6 +4,7 @@ import SVGCanvas from "./canvas/SVGCanvas";
 import ActivityTypeSelector from "./selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
 import type { Activity } from "@prisma/client";
+import type { Collage } from "@prisma/client";
 import YearSelector from "./selectors/YearSelector";
 import StrokeColorSelector from "./selectors/StrokeColorSelector";
 import TextSelector from "./selectors/TextSelector";
@@ -11,9 +12,11 @@ import Button from "../Button";
 import WarningBanner from "../WarningBanner";
 import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
 import { InterestedModal } from "./modals/InterestedModal";
-import { getSVGBase64 } from "./utils/getSVGBase64";
+import { getSVGBase64 } from "../utils/editor-utils";
 import { BiMailSend } from "react-icons/bi";
 import MugColorSelector from "./selectors/MugColorSelector";
+import { api } from "~/utils/api";
+import { useSearchParams } from "next/navigation";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -27,6 +30,7 @@ const getUniqueSportTypes = (activities: Activity[]): string[] =>
 export default function Collage({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
   const { data: session } = useSession();
+
   const svgRef = useRef<SVGSVGElement>(null);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
@@ -38,6 +42,12 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
   const [secondaryText, setSecondaryText] = useState("");
   const [isInterestedModalVisible, setIsInterestedModalVisible] =
     useState(false);
+
+  const [currentDesign, setCurrentDesign] = useState<Collage>();
+  const { activeDesign, setActiveDesign } = useData();
+
+  const searchParams = useSearchParams();
+  const user = useSession().data?.user;
 
   const availableYears = useMemo(() => {
     const years = new Set(
@@ -135,11 +145,61 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
     setBackgroundColor(newColor);
   };
 
+  const saveDesign = api.design.saveCollage.useMutation();
+
+  const designId = searchParams.get("designId");
+
+  const handleSaveDesignData = async () => {
+    await saveDesign.mutateAsync({
+      id: Number(designId) ?? 0,
+      activityTypes: selectedActivityTypes.join(","),
+      backgroundColor: backgroundColor,
+      strokeColor: strokeColor,
+      previewSvg: getSVGBase64(svgRef.current) ?? "",
+      primaryText: primaryText,
+      secondaryText: secondaryText,
+      name: activeDesign?.name ?? currentDesign?.Design.name ?? "Untitled-1",
+    });
+  };
+
+  const { data: fetchedDesign } = api.design.getCollage.useQuery(
+    { id: Number(designId) },
+    {
+      enabled: user !== undefined,
+    },
+  );
+
+  useEffect(() => {
+    if (!fetchedDesign) return;
+
+    console.log("foundDesign", designId);
+
+    const foundDesign = fetchedDesign.design;
+
+    if (foundDesign) {
+      setBackgroundColor(foundDesign.Design.backgroundColor);
+      setStrokeColor(foundDesign.Design.strokeColor);
+      setCurrentDesign(foundDesign);
+      setActiveDesign({ id: foundDesign.id, name: foundDesign.Design.name });
+    } else {
+      // Handle the case where the design is not found
+      console.error("Design not found");
+    }
+  }, [activities, fetchedDesign]);
+
   return (
     <div className="m-4 sm:m-6">
       <h1 className="mt-4 text-2xl font-bold sm:mt-6 sm:text-4xl">
         Create Your Own Mug
       </h1>
+
+      {/* Floating Save Button */}
+      <button
+        onClick={handleSaveDesignData}
+        className="fixed bottom-5 right-5 z-50 rounded-full bg-green-500 p-3 text-lg text-white shadow-lg hover:bg-green-600 focus:outline-none"
+      >
+        Save
+      </button>
 
       {selectedActivities.length > 200 && (
         <WarningBanner
@@ -151,7 +211,7 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
       {isInterestedModalVisible && (
         <InterestedModal
           onClose={() => setIsInterestedModalVisible(false)}
-          svg={getSVGBase64(svgRef) ?? ""}
+          svg={getSVGBase64(svgRef.current) ?? ""}
         />
       )}
 

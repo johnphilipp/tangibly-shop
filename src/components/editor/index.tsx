@@ -245,6 +245,13 @@ export default function Editor() {
 
   return (
     <div className="m-4 space-y-4">
+      {/* Floating Save Button */}
+      <button
+        onClick={handleSaveDesignData}
+        className="fixed bottom-5 right-5 z-50 rounded-full bg-green-500 p-3 text-lg text-white shadow-lg hover:bg-green-600 focus:outline-none"
+      >
+        Save
+      </button>
       {/* CANVAS */}
       <div className="min-w-[300px] bg-white text-center shadow-lg sm:min-w-[800px]">
         <SVGCanvas

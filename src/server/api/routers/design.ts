@@ -3,6 +3,85 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const designRouter = createTRPCRouter({
+  saveCollage: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        activityTypes: z.string(),
+        backgroundColor: z.string(),
+        strokeColor: z.string(),
+        primaryText: z.string(),
+        secondaryText: z.string(),
+        previewSvg: z.string(),
+        name: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        console.log("Saving design", input.id);
+
+        const collage = await ctx.db.collage.findUnique({
+          where: { id: input.id },
+          include: { Design: true },
+        });
+
+        if (!collage) {
+          return {
+            status: "error",
+            message: "Collage not found",
+          };
+        }
+
+        await ctx.db.collage.update({
+          data: {
+            primaryText: input.primaryText,
+            secondaryText: input.secondaryText,
+            Design: {
+              update: {
+                where: { id: collage.designId, userId: ctx.session.user.id },
+                data: {
+                  activityTypes: input.activityTypes,
+                  backgroundColor: input.backgroundColor,
+                  strokeColor: input.strokeColor,
+                  previewSvg: input.previewSvg,
+                  name: input.name,
+                },
+              },
+            },
+          },
+          where: { id: input.id },
+        });
+
+        return { status: "success" };
+      } catch (error) {
+        console.log(error);
+        return {
+          status: "error",
+          message: "Something went wrong. Please try again later",
+        };
+      }
+    }),
+
+  getOneCollage: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        console.log("Getting collage" + input.id);
+        const collage = await ctx.db.collage.findFirst({
+          where: { id: input.id },
+          include: { Design: { include: { ActivitiesOnDesign: true } } },
+        });
+
+        return { status: "success", collage: collage };
+      } catch (error) {
+        console.log(error);
+        return {
+          status: "error",
+          message: "Something went wrong. Please try again later",
+        };
+      }
+    }),
+
   save: protectedProcedure
     .input(
       z.object({
@@ -46,11 +125,7 @@ export const designRouter = createTRPCRouter({
 
         await ctx.db.design.update({
           data: {
-            aspectRatioRow: input.aspectRatioRow,
-            aspectRatioColumn: input.aspectRatioColumn,
             activityTypes: input.activityTypes,
-            stroke: input.stroke,
-            padding: input.padding,
             backgroundColor: input.backgroundColor,
             strokeColor: input.strokeColor,
             previewSvg: input.previewSvg,
@@ -76,6 +151,31 @@ export const designRouter = createTRPCRouter({
         const design = await ctx.db.design.findFirst({
           where: { userId: ctx.session.user.id, id: input.id },
           include: { ActivitiesOnDesign: true },
+        });
+
+        return { status: "success", design: design };
+      } catch (error) {
+        console.log(error);
+        return {
+          status: "error",
+          message: "Something went wrong. Please try again later",
+        };
+      }
+    }),
+
+  getCollage: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        console.log("Getting design" + input.id);
+        const design = await ctx.db.collage.findFirst({
+          where: {
+            id: input.id,
+            Design: {
+              userId: ctx.session.user.id,
+            },
+          },
+          include: { Design: true },
         });
 
         return { status: "success", design: design };
@@ -131,7 +231,13 @@ export const designRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(z.object({ productType: z.string() }))
+    .input(
+      z.object({
+        productType: z.string(),
+        designType: z.string(),
+        collageType: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
         // Get the highest number for "Untitled-" designs
@@ -154,23 +260,28 @@ export const designRouter = createTRPCRouter({
 
         const name = `Untitled-${highestNumber + 1}`;
 
-        const design = await ctx.db.design.create({
-          data: {
-            productType: input.productType,
-            name: name,
-            aspectRatioRow: 5,
-            aspectRatioColumn: 10,
-            activityTypes: "Run Ride",
-            stroke: 5,
-            padding: 10,
-            backgroundColor: "#FFFFFF", // Example: White color
-            strokeColor: "#000000", // Example: Black color
-            previewSvg: "",
-            user: { connect: { id: ctx.session.user.id } },
-          },
-        });
+        if (input.designType === "collage" || input.designType === "heatmap") {
+          const design = await ctx.db.collage.create({
+            data: {
+              primaryText: "",
+              secondaryText: "",
+              collageType: input.collageType,
+              Design: {
+                create: {
+                  productType: input.productType,
+                  name: name,
+                  activityTypes: "Run Ride",
+                  backgroundColor: "#FFFFFF", // Example: White color
+                  strokeColor: "#000000", // Example: Black color
+                  previewSvg: "",
+                  user: { connect: { id: ctx.session.user.id } },
+                },
+              },
+            },
+          });
 
-        return { status: "success", design: design };
+          return { status: "success", id: design.id };
+        }
       } catch (error) {
         console.log(error);
         return {
