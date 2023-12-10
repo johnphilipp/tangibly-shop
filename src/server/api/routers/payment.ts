@@ -10,7 +10,7 @@ export const paymentRouter = createTRPCRouter({
         ),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx }) => {
       if (!ctx.stripe) {
         throw new Error("Payment is not initialized!, Try again later!");
       }
