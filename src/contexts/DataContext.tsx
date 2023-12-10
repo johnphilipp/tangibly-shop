@@ -22,6 +22,7 @@ interface DataContextProps {
 interface ActiveDesign {
   id: number;
   name: string;
+  designId: number;
 }
 
 export interface ExtendedCartItem extends CartItem {

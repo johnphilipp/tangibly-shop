@@ -1,58 +1,11 @@
 import Image from "next/image";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
-import { useData } from "~/contexts/DataContext";
 import { api } from "~/utils/api";
-import { router } from "next/client";
 import { useRouter } from "next/router";
 import DesignList from "~/components/DesignList";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
-import { Design } from "@prisma/client";
-
-type Product = {
-  id: number;
-  name: string;
-  href: string;
-  kind: string;
-  imageSrc: string;
-  imageAlt: string;
-  price: string;
-  color: string;
-};
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Collage",
-    href: "/collage",
-    kind: "mug",
-    imageSrc: "/collage-2.png",
-    imageAlt: "Your GPS tracks merged into a collage",
-    price: "€15",
-    color: "Your GPS tracks merged into a unique collage",
-  },
-  {
-    id: 2,
-    name: "Heatmap",
-    kind: "mug",
-    href: "/heatmap",
-    imageSrc: "/bubbles-3.png",
-    imageAlt: "Your activity time plotted as a heatmap",
-    price: "€15",
-    color: "Your activity time plotted as a unique heatmap",
-  },
-  {
-    id: 3,
-    name: "Coffee cup",
-    kind: "mug",
-    href: "/editor",
-    imageSrc: "/collage-2.png",
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: "€15",
-    color: "Your GPS tracks merged into a unique collage",
-  },
-];
+import type { Product } from "~/components/utils/products";
+import { products } from "~/components/utils/products";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -65,9 +18,7 @@ export default function Dashboard() {
     try {
       // Trigger the mutation and wait for the result
       const data = await mutation.mutateAsync({
-        productType: product.kind,
         designType: product.name,
-        collageType: product.name,
       });
 
       if (!data) {

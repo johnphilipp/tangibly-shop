@@ -374,7 +374,10 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                           ),
                         )}
 
-                        {user && router.pathname === "/editor" ? (
+                        {user &&
+                        (router.pathname === "/editor" ||
+                          router.pathname === "/collage" ||
+                          router.pathname === "/heatmap") ? (
                           <DesignName />
                         ) : null}
                       </div>

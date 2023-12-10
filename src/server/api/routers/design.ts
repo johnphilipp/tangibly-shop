@@ -13,6 +13,7 @@ export const designRouter = createTRPCRouter({
         primaryText: z.string(),
         secondaryText: z.string(),
         previewSvg: z.string(),
+        useText: z.boolean(),
         name: z.string(),
       }),
     )
@@ -36,6 +37,7 @@ export const designRouter = createTRPCRouter({
           data: {
             primaryText: input.primaryText,
             secondaryText: input.secondaryText,
+            useText: input.useText,
             Design: {
               update: {
                 where: { id: collage.designId, userId: ctx.session.user.id },
@@ -69,7 +71,7 @@ export const designRouter = createTRPCRouter({
         console.log("Getting collage" + input.id);
         const collage = await ctx.db.collage.findFirst({
           where: { id: input.id },
-          include: { Design: { include: { ActivitiesOnDesign: true } } },
+          include: { Design: true },
         });
 
         return { status: "success", collage: collage };
@@ -81,88 +83,6 @@ export const designRouter = createTRPCRouter({
         };
       }
     }),
-
-  save: protectedProcedure
-    .input(
-      z.object({
-        activityIds: z.array(
-          z.object({ id: z.bigint(), canvasIndex: z.number() }),
-        ),
-        id: z.number(),
-        aspectRatioRow: z.number(),
-        aspectRatioColumn: z.number(),
-        activityTypes: z.string(),
-        stroke: z.number(),
-        padding: z.number(),
-        backgroundColor: z.string(),
-        strokeColor: z.string(),
-        previewSvg: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      try {
-        console.log("Saving design", input.id);
-        await ctx.db.activitiesOnDesign.deleteMany({
-          where: {
-            design: {
-              userId: ctx.session.user.id,
-              id: input.id,
-            },
-          },
-        });
-
-        const createOperations = input.activityIds.map((activity) => {
-          return ctx.db.activitiesOnDesign.create({
-            data: {
-              activity: { connect: { id: activity.id } },
-              design: { connect: { id: input.id } },
-              canvasIndex: activity.canvasIndex,
-            },
-          });
-        });
-
-        await Promise.all(createOperations);
-
-        await ctx.db.design.update({
-          data: {
-            activityTypes: input.activityTypes,
-            backgroundColor: input.backgroundColor,
-            strokeColor: input.strokeColor,
-            previewSvg: input.previewSvg,
-          },
-          where: { id: input.id, userId: ctx.session.user.id },
-        });
-
-        return { status: "success" };
-      } catch (error) {
-        console.log(error);
-        return {
-          status: "error",
-          message: "Something went wrong. Please try again later",
-        };
-      }
-    }),
-
-  getOne: protectedProcedure
-    .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      try {
-        console.log("Getting design" + input.id);
-        const design = await ctx.db.design.findFirst({
-          where: { userId: ctx.session.user.id, id: input.id },
-          include: { ActivitiesOnDesign: true },
-        });
-
-        return { status: "success", design: design };
-      } catch (error) {
-        console.log(error);
-        return {
-          status: "error",
-          message: "Something went wrong. Please try again later",
-        };
-      }
-    }),
-
   getCollage: protectedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -233,9 +153,7 @@ export const designRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        productType: z.string(),
         designType: z.string(),
-        collageType: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -260,15 +178,16 @@ export const designRouter = createTRPCRouter({
 
         const name = `Untitled-${highestNumber + 1}`;
 
-        if (input.designType === "collage" || input.designType === "heatmap") {
+        if (input.designType === "Collage" || input.designType === "Heatmap") {
           const design = await ctx.db.collage.create({
             data: {
               primaryText: "",
               secondaryText: "",
-              collageType: input.collageType,
+              collageType: input.designType,
+              useText: true,
               Design: {
                 create: {
-                  productType: input.productType,
+                  productType: input.designType,
                   name: name,
                   activityTypes: "Run Ride",
                   backgroundColor: "#FFFFFF", // Example: White color
@@ -282,6 +201,8 @@ export const designRouter = createTRPCRouter({
 
           return { status: "success", id: design.id };
         }
+
+        return { status: "error", message: "Invalid design type" };
       } catch (error) {
         console.log(error);
         return {

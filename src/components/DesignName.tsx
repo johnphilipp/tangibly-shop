@@ -31,7 +31,7 @@ export default function DesignName() {
 
     console.log("activeDesign", activeDesign);
     void saveName.mutateAsync({
-      id: activeDesign.id,
+      id: activeDesign.designId,
       name: designName,
     });
   };

@@ -150,6 +150,8 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
   const designId = searchParams.get("designId");
 
   const handleSaveDesignData = async () => {
+    if (!user) return;
+
     await saveDesign.mutateAsync({
       id: Number(designId) ?? 0,
       activityTypes: selectedActivityTypes.join(","),
@@ -158,7 +160,8 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
       previewSvg: getSVGBase64(svgRef.current) ?? "",
       primaryText: primaryText,
       secondaryText: secondaryText,
-      name: activeDesign?.name ?? currentDesign?.Design.name ?? "Untitled-1",
+      useText: useText,
+      name: activeDesign?.name ?? "Untitled-1",
     });
   };
 
@@ -180,7 +183,12 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
       setBackgroundColor(foundDesign.Design.backgroundColor);
       setStrokeColor(foundDesign.Design.strokeColor);
       setCurrentDesign(foundDesign);
-      setActiveDesign({ id: foundDesign.id, name: foundDesign.Design.name });
+      setUseText(foundDesign.useText);
+      setActiveDesign({
+        id: foundDesign.id,
+        name: foundDesign.Design.name,
+        designId: foundDesign.Design.id,
+      });
     } else {
       // Handle the case where the design is not found
       console.error("Design not found");

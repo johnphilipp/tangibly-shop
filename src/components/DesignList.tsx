@@ -6,6 +6,7 @@ import { demoData1 } from "~/data/demoData1";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 import { designRouter } from "~/server/api/routers/design";
 import Link from "next/link";
+import { products } from "~/components/utils/products";
 
 const orders = [
   {
@@ -82,7 +83,11 @@ export default function DesignList() {
                       />
                       <div className="min-w-0 flex-1 pt-1.5 sm:pt-0">
                         <h3 className="text-sm font-medium text-gray-900">
-                          <Link href={`/editor?designId${design.id}`}>
+                          <Link
+                            href={`${products.find(
+                              (product) => product.name === design.productType,
+                            )?.href}?designId=${design.id}`}
+                          >
                             {design.name}
                           </Link>
                         </h3>
@@ -101,7 +106,9 @@ export default function DesignList() {
                     </div>
                     <div className="mt-6 space-y-4 sm:ml-6 sm:mt-0 sm:w-40 sm:flex-none">
                       <Link
-                        href={"/editor?designId=" + design.id}
+                        href={`${products.find(
+                          (product) => product.name === design.productType,
+                        )?.href}?designId=${design.id}`}
                         className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-2.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-full sm:flex-grow-0"
                       >
                         Edit Design
