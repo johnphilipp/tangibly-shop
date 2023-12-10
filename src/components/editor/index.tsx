@@ -1,4 +1,4 @@
-import type { Activity, Design } from "@prisma/client";
+import type { Activity } from "@prisma/client";
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineDownload } from "react-icons/ai";
 import { BsEmojiHeartEyes, BsEyeFill } from "react-icons/bs";
@@ -15,8 +15,6 @@ import ActivityTypeSelector from "./ActivityTypeSelector";
 import SVGCanvas from "./SVGCanvas";
 import { InterestedModal } from "~/components/editor/InterestedModal";
 import { DownloadModal } from "./DownloadModal";
-import { FaBasketShopping } from "react-icons/fa6";
-import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 

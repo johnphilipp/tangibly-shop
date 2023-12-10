@@ -87,7 +87,7 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
   }, [activitiesFilteredByYears, activeDesign]);
 
   useEffect(() => {
-    if (activeDesign) return;
+    if (secondaryText || primaryText) return;
 
     const totalMovingTime = Math.round(
       selectedActivities.reduce(
@@ -103,7 +103,13 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
     const userName = `${session?.user?.name?.split(" ")[0]}'s` ?? "Your";
     setPrimaryText(`${userName} ${yearText} Wrapped`);
     setSecondaryText(`Total moving time: ${totalMovingTime} hours`);
-  }, [selectedYears, session?.user?.name, selectedActivities]);
+  }, [
+    selectedYears,
+    session?.user?.name,
+    selectedActivities,
+    secondaryText,
+    primaryText,
+  ]);
 
   const handleToggleActivityType = (sportType: string) => {
     setSelectedActivityTypes((prev) =>

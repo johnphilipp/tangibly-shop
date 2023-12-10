@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import { Activity, Design } from "@prisma/client";
+import { type Design } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-import { demoData1 } from "~/data/demoData1";
-import { fromStravaActivity } from "~/utils/fromStravaActivity";
-import { designRouter } from "~/server/api/routers/design";
 import Link from "next/link";
 import { products } from "~/components/utils/products";
 
