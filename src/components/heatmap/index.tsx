@@ -87,6 +87,8 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
   }, [activitiesFilteredByYears, activeDesign]);
 
   useEffect(() => {
+    if (activeDesign) return;
+
     const totalMovingTime = Math.round(
       selectedActivities.reduce(
         (acc, activity) => acc + activity.moving_time,
@@ -179,6 +181,9 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
       setStrokeColor(foundDesign.Design.strokeColor);
       setCurrentDesign(foundDesign);
       setUseText(foundDesign.useText);
+      setPrimaryText(foundDesign.primaryText);
+      setSecondaryText(foundDesign.secondaryText);
+
       setActiveDesign({
         id: foundDesign.id,
         name: foundDesign.Design.name,
@@ -188,7 +193,13 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
       // Handle the case where the design is not found
       console.error("Design not found");
     }
-  }, [activities, fetchedDesign]);
+  }, [
+    activities,
+    currentDesign,
+    fetchedDesign,
+    setActiveDesign,
+    selectedActivities,
+  ]);
 
   return (
     <div className="m-4 sm:m-6">
