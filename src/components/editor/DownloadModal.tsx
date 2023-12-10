@@ -22,15 +22,14 @@ export function DownloadModal({ onClose, svg }: DownloadModalProps) {
     setEmail(e.target.value);
   };
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-
     const data = register.mutateAsync({ email: email, svg: svg });
     e.preventDefault();
 
-    void data.then(value => {
+    void data.then((value) => {
       if (!emailRegex.test(email) || !email) {
-      setError("Please use a valid e-mail address.");
-    } else {
-      setError(null);
+        setError("Please use a valid e-mail address.");
+      } else {
+        setError(null);
         if (value.status === "success") {
           setSuccess(value.message);
           setError(null);
@@ -43,10 +42,10 @@ export function DownloadModal({ onClose, svg }: DownloadModalProps) {
           setError(value.message);
           setSuccess(null);
         }
-      };
+      }
     });
     //const result = data;
-    }
+  };
 
   return (
     <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">

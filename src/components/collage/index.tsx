@@ -13,10 +13,13 @@ import WarningBanner from "../WarningBanner";
 import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
 import { InterestedModal } from "./modals/InterestedModal";
 import { getSVGBase64 } from "../utils/editor-utils";
-import { BiMailSend } from "react-icons/bi";
 import MugColorSelector from "./selectors/MugColorSelector";
 import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
+import { ShoppingCartIcon } from "@heroicons/react/20/solid";
+import { FaEye } from "react-icons/fa";
+import Overlay from "../3d/Overlay";
+import { getSVGDataURL } from "../utils/getSVGDataURL";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -32,6 +35,7 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
   const { data: session } = useSession();
 
   const svgRef = useRef<SVGSVGElement>(null);
+  const [isOverlayOpen, setOverlayOpen] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [selectedYears, setSelectedYears] = useState<number[]>([
@@ -240,32 +244,24 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="flex w-full gap-4 sm:gap-6">
-          {/* <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-800">
-            <BsCupFill
-              className="mr-2 inline-block h-6 w-6"
-              aria-hidden="true"
-            />
-            Visualize
-          </Button> */}
-
           <Button
-            onClick={() => setIsInterestedModalVisible(true)}
-            className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700"
+            onClick={() => setOverlayOpen(true)}
+            className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-700"
           >
-            <BiMailSend
-              className="mr-2 inline-block h-6 w-6"
-              aria-hidden="true"
-            />
-            Pre-order
+            <FaEye className="mr-2 inline-block h-6 w-6" aria-hidden="true" />
+            Preview
           </Button>
 
-          {/* <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
+          <Button
+            onClick={() => void 0}
+            className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700"
+          >
             <ShoppingCartIcon
               className="mr-2 inline-block h-6 w-6"
               aria-hidden="true"
             />
-            Checkout
-          </Button> */}
+            Add to Cart
+          </Button>
         </div>
       )}
 
@@ -309,6 +305,12 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
             label="Secondary Text"
             text={secondaryText}
             onTextChange={handleSecondaryTextChange}
+          />
+
+          <Overlay
+            svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
+            isOpen={isOverlayOpen}
+            onClose={() => setOverlayOpen(false)}
           />
         </div>
       )}
