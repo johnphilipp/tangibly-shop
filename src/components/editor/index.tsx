@@ -98,48 +98,6 @@ export default function Editor() {
     });
   };
 
-  const handleSaveDesignData = async () => {
-    if (activeDesign) {
-      const nonNullActivitiesWithIndex = selectedActivities
-        .map((activity, index) =>
-          activity !== null && activity !== undefined
-            ? { id: activity.id, canvasIndex: index }
-            : null,
-        )
-        .filter(
-          (item): item is { id: bigint; canvasIndex: number } => item !== null,
-        );
-
-      console.log("nonNullActivitiesWithIndex", nonNullActivitiesWithIndex);
-
-      await saveDesign.mutateAsync({
-        id: activeDesign.id,
-        activityTypes: selectedActivityTypes.join(","),
-        aspectRatioRow: currentAspectRatio.rows,
-        aspectRatioColumn: currentAspectRatio.cols,
-        stroke: strokeWidth,
-        padding: padding,
-        backgroundColor: backgroundColor,
-        strokeColor: strokeColor,
-        previewSvg: getSVGBase64() ?? "",
-        activityIds: nonNullActivitiesWithIndex,
-      });
-    }
-  };
-
-  const cart = api.cart.add.useMutation();
-
-  const handleAddToCart = async () => {
-    await cart.mutateAsync({
-      designId: activeDesign.id,
-      amount: 1,
-    });
-
-    //const result = data;
-  };
-
-  const saveDesign = api.design.save.useMutation();
-
   const getSVGDataURL = () => {
     const svgNode = svgRef.current;
     if (!svgNode) return;
@@ -171,47 +129,6 @@ export default function Editor() {
 
   const router = useRouter();
   const { designId } = router.query;
-
-  const { data: fetchedDesign } = api.design.getOne.useQuery(
-    { id: Number(designId) },
-    {
-      enabled: user !== undefined,
-    },
-  );
-
-  useEffect(() => {
-    if (!fetchedDesign) return;
-
-    console.log("foundDesign", designId);
-
-    const foundDesign = fetchedDesign.design;
-
-    if (foundDesign) {
-      setActiveDesign(foundDesign);
-      const newActivities: Activity[] = [];
-      foundDesign.ActivitiesOnDesign.forEach((activityOnDesign) => {
-        const foundActivity = activities.find(
-          (activity) => activity.id === activityOnDesign.activityId,
-        );
-        if (foundActivity) {
-          newActivities[activityOnDesign.canvasIndex] = foundActivity;
-        }
-      });
-      setSelectedActivities(newActivities);
-
-      setCurrentAspectRatio({
-        rows: foundDesign.aspectRatioRow,
-        cols: foundDesign.aspectRatioColumn,
-      });
-      setStrokeWidth(foundDesign.stroke);
-      setPadding(foundDesign.padding);
-      setBackgroundColor(foundDesign.backgroundColor);
-      setStrokeColor(foundDesign.strokeColor);
-    } else {
-      // Handle the case where the design is not found
-      console.error("Design not found");
-    }
-  }, [activities, fetchedDesign, setActiveDesign]);
 
   // Hooks
   useEffect(() => {
@@ -245,13 +162,6 @@ export default function Editor() {
 
   return (
     <div className="m-4 space-y-4">
-      {/* Floating Save Button */}
-      <button
-        onClick={handleSaveDesignData}
-        className="fixed bottom-5 right-5 z-50 rounded-full bg-green-500 p-3 text-lg text-white shadow-lg hover:bg-green-600 focus:outline-none"
-      >
-        Save
-      </button>
       {/* CANVAS */}
       <div className="min-w-[300px] bg-white text-center shadow-lg sm:min-w-[800px]">
         <SVGCanvas
@@ -358,13 +268,6 @@ export default function Editor() {
             >
               <BsEmojiHeartEyes className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
               <span className="hidden sm:block">I am interested</span>
-            </Button>
-            <Button
-              onClick={handleAddToCart}
-              className="w-full bg-gray-900 text-white hover:bg-gray-700"
-            >
-              <FaBasketShopping className="mr-2 inline-block h-5 w-5 sm:h-6 sm:w-6" />{" "}
-              <span className="hidden sm:block">Add to cart</span>
             </Button>
           </div>
         </div>

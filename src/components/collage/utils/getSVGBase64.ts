@@ -1,12 +1,9 @@
 export const getSVGBase64 = (svgRef: SVGSVGElement) => {
-  const svgNode = svgRef.current;
-  if (!svgNode) return;
+  if (!svgRef) return;
 
   const serializer = new XMLSerializer();
-  const svgString = serializer.serializeToString(svgNode);
+  const svgString = serializer.serializeToString(svgRef);
 
   // Convert to Base64
-  const base64 = btoa(unescape(encodeURIComponent(svgString)));
-
-  return base64;
+  return btoa(unescape(encodeURIComponent(svgString)));
 };
