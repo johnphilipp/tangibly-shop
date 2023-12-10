@@ -168,12 +168,12 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
   const { data: fetchedDesign } = api.design.getCollage.useQuery(
     { id: Number(designId) },
     {
-      enabled: user !== undefined,
+      enabled: user !== undefined && !currentDesign,
     },
   );
 
   useEffect(() => {
-    if (!fetchedDesign) return;
+    if (!fetchedDesign || currentDesign) return;
 
     console.log("foundDesign", designId);
 

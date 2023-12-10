@@ -103,9 +103,8 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         </text>,
       );
     });
-
     setElements(newElements);
-  }, [activities, squareSize, startY, strokeColor, elements]);
+  }, [activities, squareSize, startY, strokeColor]);
 
   // Repositioned Free Text and Metric
   const textYPosition = startY + totalGridHeight + TEXT_SPACING;

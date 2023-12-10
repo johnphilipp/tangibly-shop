@@ -3,7 +3,7 @@ import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./canvas/SVGCanvas";
 import ActivityTypeSelector from "./selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
-import type { Activity } from "@prisma/client";
+import type { Activity, Collage } from "@prisma/client";
 import YearSelector from "./selectors/YearSelector";
 import StrokeColorSelector from "./selectors/StrokeColorSelector";
 import TextSelector from "./selectors/TextSelector";
@@ -13,6 +13,8 @@ import { InterestedModal } from "./modals/InterestedModal";
 import { getSVGBase64 } from "./utils/getSVGBase64";
 import { BiMailSend } from "react-icons/bi";
 import MugColorSelector from "./selectors/MugColorSelector";
+import { api } from "~/utils/api";
+import { useSearchParams } from "next/navigation";
 
 const getUniqueSportTypes = (activities: Activity[]): string[] =>
   activities.reduce<string[]>((acc, activity) => {
@@ -34,6 +36,12 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
   const [secondaryText, setSecondaryText] = useState("");
   const [isInterestedModalVisible, setIsInterestedModalVisible] =
     useState(false);
+
+  const [currentDesign, setCurrentDesign] = useState<Collage>();
+  const { activeDesign, setActiveDesign } = useData();
+
+  const searchParams = useSearchParams();
+  const user = useSession().data?.user;
 
   const availableYears = useMemo(() => {
     const years = new Set(
@@ -76,7 +84,7 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
         selectedActivityTypes.includes(activity.sport_type),
       ),
     );
-  }, [selectedActivityTypes, activitiesFilteredByYears]);
+  }, [activitiesFilteredByYears, activeDesign]);
 
   useEffect(() => {
     const totalMovingTime = Math.round(
@@ -134,11 +142,67 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
     setBackgroundColor(newColor);
   };
 
+  const saveDesign = api.design.saveCollage.useMutation();
+
+  const designId = searchParams.get("designId");
+
+  const handleSaveDesignData = async () => {
+    if (!user) return;
+
+    await saveDesign.mutateAsync({
+      id: Number(designId) ?? 0,
+      activityTypes: selectedActivityTypes.join(","),
+      backgroundColor: backgroundColor,
+      strokeColor: strokeColor,
+      previewSvg: getSVGBase64(svgRef) ?? "",
+      primaryText: primaryText,
+      secondaryText: secondaryText,
+      useText: useText,
+      name: activeDesign?.name ?? "Untitled-1",
+    });
+  };
+
+  const { data: fetchedDesign } = api.design.getCollage.useQuery(
+    { id: Number(designId) },
+    {
+      enabled: user !== undefined,
+    },
+  );
+
+  useEffect(() => {
+    if (!fetchedDesign || currentDesign) return;
+
+    const foundDesign = fetchedDesign.design;
+
+    if (foundDesign) {
+      setBackgroundColor(foundDesign.Design.backgroundColor);
+      setStrokeColor(foundDesign.Design.strokeColor);
+      setCurrentDesign(foundDesign);
+      setUseText(foundDesign.useText);
+      setActiveDesign({
+        id: foundDesign.id,
+        name: foundDesign.Design.name,
+        designId: foundDesign.Design.id,
+      });
+    } else {
+      // Handle the case where the design is not found
+      console.error("Design not found");
+    }
+  }, [activities, fetchedDesign]);
+
   return (
     <div className="m-4 sm:m-6">
       <h1 className="mt-4 text-2xl font-bold sm:mt-6 sm:text-4xl">
         Create Your Own Mug
       </h1>
+
+      {/* Floating Save Button */}
+      <button
+        onClick={handleSaveDesignData}
+        className="fixed bottom-5 right-5 z-50 rounded-full bg-green-500 p-3 text-lg text-white shadow-lg hover:bg-green-600 focus:outline-none"
+      >
+        Save
+      </button>
 
       {isInterestedModalVisible && (
         <InterestedModal
