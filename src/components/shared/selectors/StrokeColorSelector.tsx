@@ -1,12 +1,10 @@
-import React, { FC } from "react";
-
 interface StrokeColorSelectorProps {
   label: string;
   color: string;
   onColorChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const StrokeColorSelector: FC<StrokeColorSelectorProps> = ({
+const StrokeColorSelector: React.FC<StrokeColorSelectorProps> = ({
   label,
   color,
   onColorChange,

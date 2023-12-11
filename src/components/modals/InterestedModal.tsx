@@ -1,4 +1,4 @@
-import Button from "../../Button";
+import Button from "../Button";
 import { useState } from "react";
 import { LoadingSpinner } from "~/components/Loading";
 import { api } from "~/utils/api";

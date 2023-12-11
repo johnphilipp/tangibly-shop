@@ -1,4 +1,3 @@
-import React from "react";
 import SelectorButton from "~/components/SelectorButton";
 
 interface YearSelectorProps {
@@ -14,8 +13,7 @@ const YearSelector: React.FC<YearSelectorProps> = ({
 }) => {
   return (
     <div className="flex-col space-y-1">
-      <p className="text-left font-semibold">Select Year(s)</p>{" "}
-      {/* Updated text */}
+      <p className="text-left font-semibold">Select Year(s)</p>
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
         {availableYears.map((year, index) => {
           const isActive = selectedYears.includes(year);

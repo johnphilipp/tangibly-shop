@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./canvas/SVGCanvas";
-import ActivityTypeSelector from "./selectors/ActivityTypeSelector";
+import ActivityTypeSelector from "../shared/selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
 import type { Activity, Collage } from "@prisma/client";
-import YearSelector from "./selectors/YearSelector";
-import StrokeColorSelector from "./selectors/StrokeColorSelector";
-import TextSelector from "./selectors/TextSelector";
-import Button from "../Button";
-import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
-import { InterestedModal } from "./modals/InterestedModal";
-import { getSVGBase64 } from "./utils/getSVGBase64";
-import { BiMailSend } from "react-icons/bi";
-import MugColorSelector from "./selectors/MugColorSelector";
+import YearSelector from "../shared/selectors/YearSelector";
+import StrokeColorSelector from "../shared/selectors/StrokeColorSelector";
+import TextSelector from "../shared/selectors/TextSelector";
+import ToggleTextDisplay from "../shared/selectors/ToggleTextDisplay";
+import MugColorSelector from "../shared/selectors/MugColorSelector";
 import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
+import { getSVGBase64 } from "~/utils/editor-utils";
+import { PreviewButton } from "../shared/actions/PreviewButton";
+import { CheckoutButton } from "../shared/actions/CheckoutButton";
+import { getSVGDataURL } from "~/utils/getSVGDataURL";
+import Overlay from "../3d/Overlay";
 
 const getUniqueSportTypes = (activities: Activity[]): string[] =>
   activities.reduce<string[]>((acc, activity) => {
@@ -26,16 +27,15 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
   const { data: session } = useSession();
   const svgRef = useRef<SVGSVGElement>(null);
+  const [isOverlayOpen, setOverlayOpen] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
-  const [selectedYears, setSelectedYears] = useState<number[]>([
+  const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear(),
-  ]);
+  );
   const [useText, setUseText] = useState(true);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
-  const [isInterestedModalVisible, setIsInterestedModalVisible] =
-    useState(false);
 
   const [currentDesign, setCurrentDesign] = useState<Collage>();
   const { activeDesign, setActiveDesign } = useData();
@@ -54,12 +54,11 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
 
   const activitiesFilteredByYears = useMemo(
     () =>
-      activities.filter((activity) =>
-        selectedYears.includes(
-          new Date(activity.start_date_local).getFullYear(),
-        ),
+      activities.filter(
+        (activity) =>
+          new Date(activity.start_date_local).getFullYear() === selectedYear,
       ),
-    [activities, selectedYears],
+    [activities, selectedYear],
   );
 
   const sportTypes = useMemo(
@@ -84,7 +83,7 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
         selectedActivityTypes.includes(activity.sport_type),
       ),
     );
-  }, [activitiesFilteredByYears, activeDesign]);
+  }, [activitiesFilteredByYears, selectedActivityTypes, activeDesign]);
 
   useEffect(() => {
     if (secondaryText || primaryText) return;
@@ -98,13 +97,12 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
         60,
     );
     // Check if selectedYears array is not empty, otherwise -Infinity bug
-    if (selectedActivities.length === 0 || selectedYears.length === 0) return;
-    const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
+    if (selectedActivities.length === 0) return;
     const userName = `${session?.user?.name?.split(" ")[0]}'s` ?? "Your";
-    setPrimaryText(`${userName} ${yearText} Wrapped`);
+    setPrimaryText(`${userName} ${selectedYear} Wrapped`);
     setSecondaryText(`Total moving time: ${totalMovingTime} hours`);
   }, [
-    selectedYears,
+    selectedYear,
     session?.user?.name,
     selectedActivities,
     secondaryText,
@@ -120,11 +118,7 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
   };
 
   const handleYearChange = (year: number) => {
-    setSelectedYears((prevYears) =>
-      prevYears.includes(year)
-        ? prevYears.filter((y) => y !== year)
-        : [...prevYears, year],
-    );
+    setSelectedYear(year);
   };
 
   const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,7 +156,7 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
       activityTypes: selectedActivityTypes.join(","),
       backgroundColor: backgroundColor,
       strokeColor: strokeColor,
-      previewSvg: getSVGBase64(svgRef) ?? "",
+      previewSvg: getSVGBase64(svgRef.current) ?? "",
       primaryText: primaryText,
       secondaryText: secondaryText,
       useText: useText,
@@ -221,13 +215,6 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
         Save
       </button>
 
-      {isInterestedModalVisible && (
-        <InterestedModal
-          onClose={() => setIsInterestedModalVisible(false)}
-          svg={getSVGBase64(svgRef) ?? ""}
-        />
-      )}
-
       {/* Sticky SVGCanvas */}
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
         <div className="bg-white shadow-2xl">
@@ -245,32 +232,8 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="flex w-full gap-4 sm:gap-6">
-          {/* <Button className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-800">
-            <BsCupFill
-              className="mr-2 inline-block h-6 w-6"
-              aria-hidden="true"
-            />
-            Visualize
-          </Button> */}
-
-          <Button
-            onClick={() => setIsInterestedModalVisible(true)}
-            className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700"
-          >
-            <BiMailSend
-              className="mr-2 inline-block h-6 w-6"
-              aria-hidden="true"
-            />
-            Pre-order
-          </Button>
-
-          {/* <Button className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700">
-            <ShoppingCartIcon
-              className="mr-2 inline-block h-6 w-6"
-              aria-hidden="true"
-            />
-            Checkout
-          </Button> */}
+          <PreviewButton onClick={() => setOverlayOpen(true)} />
+          <CheckoutButton onClick={() => void 0} />
         </div>
       )}
 
@@ -279,7 +242,7 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
         <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
           <YearSelector
             availableYears={availableYears}
-            selectedYears={selectedYears}
+            selectedYears={[selectedYear]}
             onSelectYear={handleYearChange}
           />
 
@@ -314,6 +277,12 @@ export default function Heatmap({ isLoading }: { isLoading: boolean }) {
             label="Secondary Text"
             text={secondaryText}
             onTextChange={handleSecondaryTextChange}
+          />
+
+          <Overlay
+            svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
+            isOpen={isOverlayOpen}
+            onClose={() => setOverlayOpen(false)}
           />
         </div>
       )}

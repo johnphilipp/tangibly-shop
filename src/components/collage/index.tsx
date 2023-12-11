@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./canvas/SVGCanvas";
-import ActivityTypeSelector from "./selectors/ActivityTypeSelector";
+import ActivityTypeSelector from "../shared/selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
 import type { Activity } from "@prisma/client";
 import type { Collage } from "@prisma/client";
-import YearSelector from "./selectors/YearSelector";
-import StrokeColorSelector from "./selectors/StrokeColorSelector";
-import TextSelector from "./selectors/TextSelector";
-import Button from "../Button";
+import YearSelector from "../shared/selectors/YearSelector";
+import StrokeColorSelector from "../shared/selectors/StrokeColorSelector";
+import TextSelector from "../shared/selectors/TextSelector";
 import WarningBanner from "../WarningBanner";
-import ToggleTextDisplay from "./selectors/ToggleTextDisplay";
-import { InterestedModal } from "./modals/InterestedModal";
-import { getSVGBase64 } from "../utils/editor-utils";
-import MugColorSelector from "./selectors/MugColorSelector";
+import ToggleTextDisplay from "../shared/selectors/ToggleTextDisplay";
+import MugColorSelector from "../shared/selectors/MugColorSelector";
 import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
-import { ShoppingCartIcon } from "@heroicons/react/20/solid";
-import { FaEye } from "react-icons/fa";
 import Overlay from "../3d/Overlay";
-import { getSVGDataURL } from "../utils/getSVGDataURL";
+import { getSVGDataURL } from "../../utils/getSVGDataURL";
+import { getSVGBase64 } from "~/utils/getSVGBase64";
+import { PreviewButton } from "../shared/actions/PreviewButton";
+import { CheckoutButton } from "../shared/actions/CheckoutButton";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -44,8 +42,6 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
   const [useText, setUseText] = useState(true);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
-  const [isInterestedModalVisible, setIsInterestedModalVisible] =
-    useState(false);
 
   const [currentDesign, setCurrentDesign] = useState<Collage>();
   const { activeDesign, setActiveDesign } = useData();
@@ -127,11 +123,15 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
   };
 
   const handleYearChange = (year: number) => {
-    setSelectedYears((prevYears) =>
-      prevYears.includes(year)
-        ? prevYears.filter((y) => y !== year)
-        : [...prevYears, year],
-    );
+    setSelectedYears((prevYears) => {
+      if (prevYears.includes(year)) {
+        // Remove the year if it's already selected
+        return prevYears.filter((y) => y !== year);
+      } else {
+        // Add the year if it's not already selected
+        return [...prevYears, year];
+      }
+    });
   };
 
   const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,7 +205,14 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
       // Handle the case where the design is not found
       console.error("Design not found");
     }
-  }, [activities, fetchedDesign]);
+  }, [
+    activities,
+    fetchedDesign,
+    currentDesign,
+    designId,
+    user,
+    setActiveDesign,
+  ]);
 
   return (
     <div className="m-4 sm:m-6">
@@ -228,13 +235,6 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
         />
       )}
 
-      {isInterestedModalVisible && (
-        <InterestedModal
-          onClose={() => setIsInterestedModalVisible(false)}
-          svg={getSVGBase64(svgRef.current) ?? ""}
-        />
-      )}
-
       {/* Sticky SVGCanvas */}
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
         <div className="bg-white shadow-2xl">
@@ -252,24 +252,8 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="flex w-full gap-4 sm:gap-6">
-          <Button
-            onClick={() => setOverlayOpen(true)}
-            className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-700"
-          >
-            <FaEye className="mr-2 inline-block h-6 w-6" aria-hidden="true" />
-            Preview
-          </Button>
-
-          <Button
-            onClick={() => void 0}
-            className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700"
-          >
-            <ShoppingCartIcon
-              className="mr-2 inline-block h-6 w-6"
-              aria-hidden="true"
-            />
-            Add to Cart
-          </Button>
+          <PreviewButton onClick={() => setOverlayOpen(true)} />
+          <CheckoutButton onClick={() => void 0} />
         </div>
       )}
 

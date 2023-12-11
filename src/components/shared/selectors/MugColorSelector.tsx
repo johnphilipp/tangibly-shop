@@ -1,11 +1,9 @@
-import React, { FC } from "react";
-
 interface MugColorSelectorProps {
   label: string;
   onColorChange: (color: string) => void; // Updated type
 }
 
-const MugColorSelector: FC<MugColorSelectorProps> = ({
+const MugColorSelector: React.FC<MugColorSelectorProps> = ({
   label,
   onColorChange,
 }) => {

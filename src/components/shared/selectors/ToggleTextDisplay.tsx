@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ToggleTextDisplayProps {
   useText: boolean;
   setUseText: React.Dispatch<React.SetStateAction<boolean>>;

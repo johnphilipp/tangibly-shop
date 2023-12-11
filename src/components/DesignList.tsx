@@ -3,7 +3,7 @@ import { type Design } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import Link from "next/link";
-import { products } from "~/components/utils/products";
+import { products } from "~/utils/products";
 
 const orders = [
   {

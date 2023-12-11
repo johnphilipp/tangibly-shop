@@ -4,8 +4,8 @@ import Layout from "~/components/Layout";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import DesignList from "~/components/DesignList";
-import type { Product } from "~/components/utils/products";
-import { products } from "~/components/utils/products";
+import type { Product } from "~/utils/products";
+import { products } from "~/utils/products";
 
 export default function Dashboard() {
   const router = useRouter();

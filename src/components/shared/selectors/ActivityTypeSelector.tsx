@@ -1,5 +1,3 @@
-// ActivityTypeSelector.tsx
-import React from "react";
 import SelectorButton from "~/components/SelectorButton";
 
 interface ActivityTypeSelectorProps {

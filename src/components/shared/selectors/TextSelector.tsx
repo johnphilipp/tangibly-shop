@@ -1,13 +1,14 @@
-// TextSelector.tsx
-import React, { FC } from "react";
-
 interface TextSelectorProps {
   label: string;
   text: string;
   onTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const TextSelector: FC<TextSelectorProps> = ({ label, text, onTextChange }) => {
+const TextSelector: React.FC<TextSelectorProps> = ({
+  label,
+  text,
+  onTextChange,
+}) => {
   return (
     <div className="flex-col space-y-1">
       <label className="text-left font-semibold">{label}</label>
