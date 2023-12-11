@@ -67,7 +67,7 @@ export function ActivityModal({
               <div className="rounded-md border bg-white p-4">
                 <svg width="100%" viewBox={`0 0 ${100} ${100}`}>
                   <path
-                    d={activityPath[0]!}
+                    d={activityPath[0]}
                     fill="none"
                     stroke="black"
                     strokeWidth="3"
