@@ -1,34 +1,32 @@
-import type { AspectRatio } from "../aspectRatios";
 import { decodePolyline } from "./decodePolyline";
 
 export function getQuadrantCoordinates(
   polylineData: string,
   index: number,
-  padding: number,
-  aspectRatio: AspectRatio,
+  CELL_MARGIN: number,
+  cols: number,
   SVG_WIDTH: number,
   SVG_HEIGHT: number,
 ): [number, number][] {
   const coordinates = decodePolyline(polylineData);
   const scaledCoordinates = scaleCoordinates(
     coordinates,
-    padding,
-    aspectRatio,
+    CELL_MARGIN,
+    cols,
     SVG_WIDTH,
     SVG_HEIGHT,
   );
+
   const [minX, maxX, minY, maxY] = findBoundingBox(scaledCoordinates);
 
-  const row = Math.floor(index / aspectRatio.cols);
-  const col = index % aspectRatio.cols;
+  const row = Math.floor(index / cols);
+  const col = index % cols;
 
-  const quadrantWidth =
-    (SVG_WIDTH - padding * (aspectRatio.cols + 1)) / aspectRatio.cols;
-  const quadrantHeight =
-    (SVG_HEIGHT - padding * (aspectRatio.rows + 1)) / aspectRatio.rows;
+  const quadrantWidth = SVG_WIDTH / cols;
+  const quadrantHeight = SVG_HEIGHT;
 
-  const offsetX = col * (quadrantWidth + padding) + padding;
-  const offsetY = row * (quadrantHeight + padding) + padding;
+  const offsetX = col * quadrantWidth;
+  const offsetY = row * quadrantHeight;
 
   const pathCenterX = (minX + maxX) / 2;
   const pathCenterY = (minY + maxY) / 2;
@@ -45,10 +43,10 @@ export function getQuadrantCoordinates(
   ]);
 }
 
-function scaleCoordinates(
+export function scaleCoordinates(
   coordinates: [number, number][],
-  padding: number,
-  aspectRatio: AspectRatio,
+  margin: number,
+  cols: number,
   SVG_WIDTH: number,
   SVG_HEIGHT: number,
 ): [number, number][] {
@@ -66,10 +64,8 @@ function scaleCoordinates(
     if (latitude > maxY) maxY = latitude;
   }
 
-  const quadrantWidth =
-    (SVG_WIDTH - padding * (aspectRatio.cols + 1)) / aspectRatio.cols;
-  const quadrantHeight =
-    (SVG_HEIGHT - padding * (aspectRatio.rows + 1)) / aspectRatio.rows;
+  const quadrantWidth = SVG_WIDTH / cols;
+  const quadrantHeight = SVG_HEIGHT;
 
   const avgLat = sumLat / coordinates.length;
   const latCorrection = Math.cos((avgLat * Math.PI) / 180);
@@ -77,12 +73,16 @@ function scaleCoordinates(
   const xRange = (maxX - minX) * latCorrection;
   const yRange = maxY - minY;
 
-  // Maintain aspect ratio
-  const scale = Math.min(quadrantWidth / xRange, quadrantHeight / yRange);
+  const adjustedQuadrantWidth = quadrantWidth - 2 * margin;
+  const adjustedQuadrantHeight = quadrantHeight - 2 * margin;
+
+  const xScale = adjustedQuadrantWidth / xRange;
+  const yScale = adjustedQuadrantHeight / yRange;
+  const scale = Math.min(xScale, yScale);
 
   return coordinates.map((coord) => [
     (coord[1] - minX) * latCorrection * scale,
-    quadrantHeight - (coord[0] - minY) * scale,
+    adjustedQuadrantHeight - (coord[0] - minY) * scale, // Adjust the y-coordinate scaling
   ]);
 }
 

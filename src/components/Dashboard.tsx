@@ -1,106 +1,109 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
-import { api } from "~/utils/api";
-import { useRouter } from "next/router";
-import DesignList from "~/components/DesignList";
-import type { Product } from "~/utils/products";
-import { products } from "~/utils/products";
-
-type ProductMapping = Record<string, Product[]>;
 
 export default function Dashboard() {
-  const router = useRouter();
-  const mutation = api.design.create.useMutation();
-
-  const handleDesignCreation = async (product: Product) => {
-    try {
-      // Trigger the mutation and wait for the result
-      const data = await mutation.mutateAsync({
-        designType: product.name,
-      });
-
-      if (!data) {
-        alert("Error creating design");
-        return;
-      }
-
-      void router.push(`${product.href}?designId=${data.id}`);
-      // Navigate based on product id
-
-      // Set the active design (if design is available)
-    } catch (error) {
-      console.error("Error creating design:", error);
-      // Handle the error appropriately
-    }
-  };
-
-  const getProductMapping = (products: Product[]): ProductMapping => {
-    return products.reduce<ProductMapping>((acc, product) => {
-      if (!acc[product.kind]) {
-        acc[product.kind] = [];
-      }
-
-      acc[product.kind]!.push(product);
-      return acc;
-    }, {});
-  };
-
-  const productMapping = getProductMapping(products);
+  const { data } = useSession();
+  const user = data?.user;
 
   return (
     <Layout>
       <div className="relative isolate">
         <Background />
         <div className="mx-auto max-w-4xl overflow-hidden">
-          <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+          <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-16 lg:max-w-7xl lg:px-8">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              One click away – Your personalized sports activities
+              Welcome, {user!.name!.split(" ")[0]}!
             </h1>
 
-            {Object.entries(productMapping).map(([kind, productsOfKind]) => (
-              <div key={kind}>
-                <h2 className="mt-12 text-2xl font-bold tracking-tight text-gray-900">
-                  {kind[0]?.toUpperCase() + kind.slice(1)}s
-                </h2>
+            <div className="sm:flex sm:items-baseline sm:justify-between">
+              <h2 className="mt-12 text-2xl font-bold tracking-tight text-gray-900">
+                Let&apos;s get started
+              </h2>
+            </div>
 
-                <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 xl:gap-x-8">
-                  {productsOfKind.map((product: Product) => (
-                    <div key={product.id} className="group relative">
-                      <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-                        <Image
-                          src={product.imageSrc}
-                          alt={product.imageAlt}
-                          className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                          width={1000}
-                          height={1000}
-                        />
-                      </div>
-                      <div className="mt-4 flex justify-between">
-                        <div>
-                          <h3 className="text-sm text-gray-700">
-                            <a onClick={() => handleDesignCreation(product)}>
-                              <span
-                                aria-hidden="true"
-                                className="absolute inset-0"
-                              />
-                              {product.name}
-                            </a>
-                          </h3>
-                          <p className="mt-1 text-sm text-gray-500">
-                            {product.color}
-                          </p>
-                        </div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {product.price}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+            <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:grid-rows-2 sm:gap-x-6 lg:gap-8">
+              <div className="group aspect-h-1 aspect-w-2 overflow-hidden rounded-lg sm:aspect-h-1 sm:aspect-w-1 sm:row-span-2">
+                <Image
+                  src="/products/collage/mug.png"
+                  alt="Two models wearing women's black cotton crewneck tee and off-white cotton crewneck tee."
+                  className="object-cover object-center group-hover:opacity-75"
+                  width={1000}
+                  height={1000}
+                />
+                <div
+                  aria-hidden="true"
+                  className="bg-gradient-to-b from-transparent to-black opacity-50"
+                />
+                <div className="flex items-end p-6">
+                  <div>
+                    <h3 className="font-semibold text-white">
+                      <Link href="/shop">
+                        <span className="absolute inset-0" />
+                        Shop
+                      </Link>
+                    </h3>
+                    <p aria-hidden="true" className="mt-1 text-sm text-white">
+                      Create and shop your personalized sports gear
+                    </p>
+                  </div>
                 </div>
               </div>
-            ))}
-            <DesignList />
+              <div className="group aspect-h-1 aspect-w-2 overflow-hidden rounded-lg sm:aspect-none sm:relative sm:h-full">
+                <Image
+                  src="/products/heatmap/poster.png"
+                  alt="Wooden shelf with gray and olive drab green baseball caps, next to wooden clothes hanger with sweaters."
+                  className="object-cover object-center group-hover:opacity-75 sm:absolute sm:inset-0 sm:h-full sm:w-full"
+                  width={1000}
+                  height={1000}
+                />
+                <div
+                  aria-hidden="true"
+                  className="bg-gradient-to-b from-transparent to-black opacity-50 sm:absolute sm:inset-0"
+                />
+                <div className="flex items-end p-6 sm:absolute sm:inset-0">
+                  <div>
+                    <h3 className="font-semibold text-white">
+                      <Link href="/saved">
+                        <span className="absolute inset-0" />
+                        Saved
+                      </Link>
+                    </h3>
+                    <p aria-hidden="true" className="mt-1 text-sm text-white">
+                      Jump right back in where you left off
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="group aspect-h-1 aspect-w-2 overflow-hidden rounded-lg sm:aspect-none sm:relative sm:h-full">
+                <Image
+                  src="/gift.jpg"
+                  alt="Walnut desk organizer set with white modular trays, next to porcelain mug on wooden desk."
+                  className="object-cover object-center group-hover:opacity-75 sm:absolute sm:inset-0 sm:h-full sm:w-full"
+                  width={1000}
+                  height={1000}
+                />
+                <div
+                  aria-hidden="true"
+                  className="bg-gradient-to-b from-transparent to-black opacity-50 sm:absolute sm:inset-0"
+                />
+                <div className="flex items-end p-6 sm:absolute sm:inset-0">
+                  <div>
+                    <h3 className="font-semibold text-white">
+                      <Link href="/gifting">
+                        <span className="absolute inset-0" />
+                        Gifting
+                      </Link>
+                    </h3>
+                    <p aria-hidden="true" className="mt-1 text-sm text-white">
+                      Send a personalized gift to your loved ones
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

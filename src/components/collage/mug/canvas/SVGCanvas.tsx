@@ -1,9 +1,9 @@
 import type { Activity } from "@prisma/client";
 import React from "react";
-import { getQuadrantCoordinates } from "./utils/getQuadrantCoordinates";
-import { convertToSVGPath } from "./utils/convertToSVGPath";
-import { calculateGridDimensions } from "./utils/calculateGridDimensions";
-import { getProperties } from "./utils/getProperties";
+import { getQuadrantCoordinates } from "../../../shared/utils/getQuadrantCoordinates";
+import { convertToSVGPath } from "../../../shared/utils/convertToSVGPath";
+import { calculateGridDimensions } from "../../../shared/utils/calculateGridDimensions";
+import { getProperties } from "../../../shared/utils/getProperties";
 
 const SVG_WIDTH = 2000; // 200 mm
 const SVG_HEIGHT = 960; // 96 mm
@@ -27,6 +27,7 @@ interface SVGCanvasProps {
   primaryText: string;
   secondaryText: string;
   svgRef: React.RefObject<SVGSVGElement>;
+  onClickActivity: (index: number) => void;
 }
 
 const SVGCanvas: React.FC<SVGCanvasProps> = ({
@@ -37,6 +38,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
   primaryText,
   secondaryText,
   svgRef,
+  onClickActivity,
 }) => {
   const numActivities = activities.length;
 
@@ -79,6 +81,30 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
       >
         {/* BACKGROUND COLOR */}
         <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
+
+        {/* TRANSPARENT RECTANGLES */}
+        {Array.from({ length: numActivities }).map((_, index) => {
+          const row = Math.floor(index / cols);
+          const col = index % cols;
+          const quadrantWidth = SVG_WIDTH / cols;
+          const quadrantHeight = FREE_AREA_HEIGHT / rows;
+          const x = col * quadrantWidth;
+          const y = row * quadrantHeight;
+
+          return (
+            <g key={index} onClick={() => onClickActivity(index)}>
+              <rect
+                x={x}
+                y={y}
+                width={quadrantWidth}
+                height={quadrantHeight}
+                className="hoverable-rect"
+                fill="transparent"
+                style={{ cursor: "pointer" }}
+              />
+            </g>
+          );
+        })}
 
         {/* POLYLINES */}
         {activityPaths.map(
