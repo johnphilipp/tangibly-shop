@@ -169,7 +169,7 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
       activityTypes: selectedActivityTypes.join(","),
       backgroundColor: backgroundColor,
       strokeColor: strokeColor,
-      previewSvg: getSVGBase64(svgRef.current) ?? "",
+      previewSvg: getSVGBase64(svgRef) ?? "",
       primaryText: primaryText,
       secondaryText: secondaryText,
       useText: useText,
@@ -216,8 +216,8 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
 
   return (
     <div className="m-4 sm:m-6">
-      <h1 className="mt-4 text-2xl font-bold sm:mt-6 sm:text-4xl">
-        Create Your Own Mug
+      <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
+        Create Your <span className="font-bold">Collage Mug</span>
       </h1>
 
       {/* Floating Save Button */}
