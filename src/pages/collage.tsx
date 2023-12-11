@@ -55,7 +55,7 @@ export default function CollagePage() {
   // Render editor
   return (
     <Layout>
-      <div className="relative isolate mx-auto max-w-4xl">
+      <div className="relative isolate mx-auto max-w-3xl">
         <Background />
 
         {/* {!user && <DemoBanner />} */}
