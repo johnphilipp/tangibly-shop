@@ -43,7 +43,7 @@ export function getQuadrantCoordinates(
   ]);
 }
 
-function scaleCoordinates(
+export function scaleCoordinates(
   coordinates: [number, number][],
   margin: number,
   cols: number,

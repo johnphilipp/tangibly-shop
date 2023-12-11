@@ -1,6 +1,6 @@
 import humanFormat from "human-format";
-import Button from "../Button";
-import type { Activity } from "@prisma/client"
+import Button from "../../Button";
+import type { Activity } from "@prisma/client";
 
 export const timeScale = new humanFormat.Scale({
   seconds: 1,
