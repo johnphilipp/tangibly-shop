@@ -94,6 +94,7 @@ export default function Saved() {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               Saved
             </h1>
+
             <h2 className="mt-12 text-2xl font-bold tracking-tight text-gray-900">
               Manage your Designs
             </h2>
