@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
-import Collage from "~/components/collage";
+import CollageMug from "~/components/collage/mug";
 import { useData } from "~/contexts/DataContext";
 import { demoData1 } from "~/data/demoData1";
 import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
-export default function CollagePage() {
+export default function CollageMugPage() {
   let activityData;
   const { setActivities } = useData();
   const user = useSession().data?.user;
@@ -72,7 +72,7 @@ export default function CollagePage() {
           </div>
         )}
 
-        <Collage isLoading={activityDataLoading} />
+        <CollageMug isLoading={activityDataLoading} />
       </div>
       {/* <Alert /> */}
     </Layout>

@@ -1,4 +1,3 @@
-// SVGCanvas.tsx
 import React from "react";
 import type { Activity } from "@prisma/client";
 import { convertToSVGPath } from "./utils/canvas/convertToSVGPath";

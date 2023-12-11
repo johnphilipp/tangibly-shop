@@ -1,23 +1,25 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./canvas/SVGCanvas";
-import ActivityTypeSelector from "../shared/selectors/ActivityTypeSelector";
+import ActivityTypeSelector from "../../shared/selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
 import type { Activity } from "@prisma/client";
 import type { Collage } from "@prisma/client";
-import YearSelector from "../shared/selectors/YearSelector";
-import StrokeColorSelector from "../shared/selectors/StrokeColorSelector";
-import TextSelector from "../shared/selectors/TextSelector";
-import WarningBanner from "../WarningBanner";
-import ToggleTextDisplay from "../shared/selectors/ToggleTextDisplay";
-import MugColorSelector from "../shared/selectors/MugColorSelector";
+import YearSelector from "../../shared/selectors/YearSelector";
+import StrokeColorSelector from "../../shared/selectors/StrokeColorSelector";
+import TextSelector from "../../shared/selectors/TextSelector";
+import WarningBanner from "../../WarningBanner";
+import ToggleTextDisplay from "../../shared/selectors/ToggleTextDisplay";
+import MugColorSelector from "../../shared/selectors/MugColorSelector";
 import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
-import Overlay from "../3d/Overlay";
-import { getSVGDataURL } from "../../utils/getSVGDataURL";
+import Overlay from "../../3d/Overlay";
+import { getSVGDataURL } from "../../../utils/getSVGDataURL";
 import { getSVGBase64 } from "~/utils/getSVGBase64";
-import { PreviewButton } from "../shared/actions/PreviewButton";
-import { CheckoutButton } from "../shared/actions/CheckoutButton";
+import { PreviewButton } from "../../shared/actions/PreviewButton";
+import { CheckoutButton } from "../../shared/actions/CheckoutButton";
+import SizeSelector from "~/components/shared/selectors/SizeSelector";
+import type { AvailableSize } from "~/components/shared/selectors/SizeSelector";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -28,12 +30,13 @@ const getUniqueSportTypes = (activities: Activity[]): string[] =>
     return acc;
   }, []);
 
-export default function Collage({ isLoading }: { isLoading: boolean }) {
+export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
   const { data: session } = useSession();
 
   const svgRef = useRef<SVGSVGElement>(null);
   const [isOverlayOpen, setOverlayOpen] = useState(false);
+  const [size, setSize] = useState({ width: 3000, height: 3000 });
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [selectedYears, setSelectedYears] = useState<number[]>([
@@ -157,6 +160,10 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
     setBackgroundColor(newColor);
   };
 
+  const handleSizeChange = (newSize: AvailableSize) => {
+    setSize(newSize);
+  };
+
   const saveDesign = api.design.saveCollage.useMutation();
 
   const designId = searchParams.get("designId");
@@ -217,7 +224,7 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
   return (
     <div className="m-4 sm:m-6">
       <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
-        Create Your <span className="font-bold">Collage Mug</span>
+        Create Your <span className="font-bold">Collage Poster</span>
       </h1>
 
       {/* Floating Save Button */}
@@ -232,6 +239,8 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
         <div className="bg-white shadow-2xl">
           <SVGCanvas
+            SVG_WIDTH={size.width}
+            SVG_HEIGHT={size.height}
             activities={selectedActivities}
             backgroundColor={backgroundColor}
             strokeColor={strokeColor}
@@ -260,6 +269,8 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
       {/* Right-side selectors */}
       {!isLoading && (
         <div className="grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
+          <SizeSelector selectedSize={size} onSelectedSize={handleSizeChange} />
+
           <YearSelector
             availableYears={availableYears}
             selectedYears={selectedYears}

@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
-import Heatmap from "~/components/heatmap";
+import HeatmapMug from "~/components/heatmap/mug";
 import { useData } from "~/contexts/DataContext";
 import { demoData1 } from "~/data/demoData1";
 import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
-export default function HeatmapPage() {
+export default function HeatmapMugPage() {
   let activityData;
   const { setActivities } = useData();
   const user = useSession().data?.user;
@@ -72,7 +72,7 @@ export default function HeatmapPage() {
           </div>
         )}
 
-        <Heatmap isLoading={activityDataLoading} />
+        <HeatmapMug isLoading={activityDataLoading} />
       </div>
       {/* <Alert /> */}
     </Layout>
