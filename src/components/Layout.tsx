@@ -1,4 +1,4 @@
-import { Dialog, Menu, Popover, Tab, Transition } from "@headlessui/react";
+import { Dialog, Menu, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
   ShoppingCartIcon,
@@ -19,45 +19,12 @@ interface LayoutProps {
   title?: string;
 }
 
-interface Category {
-  name: string;
-  featured: { name: string; href: string }[];
-  categories: { name: string; href: string }[];
-}
-
-const userNavigation = [{ name: "Sign out", href: "/api/auth/signout" }];
-
-const navigation = {
-  categories: [
-    // {
-    //   name: "Products",
-    //   featured: [
-    //     { name: "Coffee Cup", href: "#" },
-    //     { name: "Poster", href: "#" },
-    //     // { name: "Underwear", href: "#" },
-    //   ],
-    //   // categories: [
-    //   //   { name: "Basic Tees", href: "#" },
-    //   //   { name: "Artwork Tees", href: "#" },
-    //   //   { name: "Bottoms", href: "#" },
-    //   // ],
-    // },
-    // {
-    //   name: "Men",
-    //   featured: [
-    //     { name: "Casual", href: "#" },
-    //     { name: "Boxers", href: "#" },
-    //     { name: "Outdoor", href: "#" },
-    //   ],
-    //   categories: [
-    //     { name: "Artwork Tees", href: "#" },
-    //     { name: "Pants", href: "#" },
-    //     { name: "Accessories", href: "#" },
-    //   ],
-    // },
-  ],
-  pages: [{ name: "Store", href: "/dashboard" }],
-};
+const navigation = [
+  { name: "Home", href: "/home" },
+  { name: "Shop", href: "/shop" },
+  { name: "Saved", href: "/saved" },
+  { name: "Gifting", href: "/gifting" },
+];
 
 export function classNames(...classes: string[] | undefined[]) {
   return classes.filter(Boolean).join(" ");
@@ -75,6 +42,13 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   const user = useSession().data?.user;
 
   const router = useRouter();
+
+  const isTabActive = (href: string, tabName: string) => {
+    if (tabName === "Home") {
+      return router.pathname === href || router.pathname === "/";
+    }
+    return router.pathname === href;
+  };
 
   return (
     <div className="bg-white">
@@ -108,7 +82,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
               leaveTo="-translate-x-full"
             >
               <Dialog.Panel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl">
-                <div className="flex px-4 pb-2 pt-5">
+                <div className="mb-2 flex px-4 pb-2 pt-5">
                   <button
                     type="button"
                     className="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
@@ -119,100 +93,14 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                   </button>
                 </div>
 
-                {/* Links */}
-                <Tab.Group as="div" className="mt-2">
-                  <div className="border-b border-gray-200">
-                    <Tab.List className="-mb-px flex space-x-8 px-4">
-                      {navigation.categories.map((category: Category) => (
-                        <Tab
-                          key={category.name}
-                          className={({ selected }) =>
-                            classNames(
-                              selected
-                                ? "border-indigo-600 text-indigo-600"
-                                : "border-transparent text-gray-900",
-                              "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium",
-                            )
-                          }
-                        >
-                          {category.name}
-                        </Tab>
-                      ))}
-                    </Tab.List>
-                  </div>
-                  <Tab.Panels as={Fragment}>
-                    {navigation.categories.map(
-                      (category: Category, categoryIdx) => (
-                        <Tab.Panel
-                          key={category.name}
-                          className="space-y-12 px-4 pb-6 pt-10"
-                        >
-                          <div className="grid grid-cols-1 items-start gap-x-6 gap-y-10">
-                            <div className="grid grid-cols-1 gap-x-6 gap-y-10">
-                              <div>
-                                <p
-                                  id={`mobile-featured-heading-${categoryIdx}`}
-                                  className="font-medium text-gray-900"
-                                >
-                                  Featured
-                                </p>
-                                <ul
-                                  role="list"
-                                  aria-labelledby={`mobile-featured-heading-${categoryIdx}`}
-                                  className="mt-6 space-y-6"
-                                >
-                                  {category.featured.map((item) => (
-                                    <li key={item.name} className="flex">
-                                      <Link
-                                        href={item.href}
-                                        className="text-gray-500"
-                                      >
-                                        {item.name}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                              {/* <div>
-                              <p
-                                id="mobile-categories-heading"
-                                className="font-medium text-gray-900"
-                              >
-                                Categories
-                              </p>
-                              <ul
-                                role="list"
-                                aria-labelledby="mobile-categories-heading"
-                                className="mt-6 space-y-6"
-                              >
-                                {category.categories.map((item) => (
-                                  <li key={item.name} className="flex">
-                                    <Link
-                                      href={item.href}
-                                      className="text-gray-500"
-                                    >
-                                      {item.name}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div> */}
-                            </div>
-                          </div>
-                        </Tab.Panel>
-                      ),
-                    )}
-                  </Tab.Panels>
-                </Tab.Group>
-
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  {navigation.pages.map((page) => (
-                    <div key={page.name} className="flow-root">
+                  {navigation.map((item) => (
+                    <div key={item.name} className="flow-root">
                       <Link
-                        href={page.href}
+                        href={item.href}
                         className="-m-2 block p-2 font-medium text-gray-900"
                       >
-                        {page.name}
+                        {item.name}
                       </Link>
                     </div>
                   ))}
@@ -258,117 +146,23 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                     </Link>
                   </div>
 
-                  <div className="hidden h-full lg:flex">
-                    {/* Mega menus */}
-                    <Popover.Group className="ml-8">
+                  <div className="ml-8 hidden h-full lg:flex">
+                    <Tab.Group>
                       <div className="flex h-full justify-center space-x-8">
-                        {navigation.categories.map(
-                          (category: Category, categoryIdx) => (
-                            <Popover key={category.name} className="flex">
-                              {({ open }) => (
-                                <>
-                                  <div className="relative flex">
-                                    <Popover.Button
-                                      className={classNames(
-                                        open
-                                          ? "border-indigo-600 text-indigo-600"
-                                          : "border-transparent text-gray-700 hover:text-gray-800",
-                                        "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out",
-                                      )}
-                                    >
-                                      {category.name}
-                                    </Popover.Button>
-                                  </div>
-
-                                  <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-200"
-                                    enterFrom="opacity-0"
-                                    enterTo="opacity-100"
-                                    leave="transition ease-in duration-150"
-                                    leaveFrom="opacity-100"
-                                    leaveTo="opacity-0"
-                                  >
-                                    <Popover.Panel className="absolute inset-x-0 top-full text-gray-500 sm:text-sm">
-                                      {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
-                                      <div
-                                        className="absolute inset-0 top-1/2 bg-white shadow"
-                                        aria-hidden="true"
-                                      />
-
-                                      <div className="relative bg-white">
-                                        <div className="mx-auto max-w-7xl px-8">
-                                          <div className="grid grid-cols-2 items-start gap-x-8 gap-y-10 pb-12 pt-10">
-                                            <div className="grid grid-cols-2 gap-x-8 gap-y-10">
-                                              <div>
-                                                <p
-                                                  id={`desktop-featured-heading-${categoryIdx}`}
-                                                  className="font-medium text-gray-900"
-                                                >
-                                                  Featured
-                                                </p>
-                                                <ul
-                                                  role="list"
-                                                  aria-labelledby={`desktop-featured-heading-${categoryIdx}`}
-                                                  className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
-                                                >
-                                                  {category.featured.map(
-                                                    (item) => (
-                                                      <li
-                                                        key={item.name}
-                                                        className="flex"
-                                                      >
-                                                        <Link
-                                                          href={item.href}
-                                                          className="hover:text-gray-800"
-                                                        >
-                                                          {item.name}
-                                                        </Link>
-                                                      </li>
-                                                    ),
-                                                  )}
-                                                </ul>
-                                              </div>
-                                              {/* <div>
-                                              <p
-                                                id="desktop-categories-heading"
-                                                className="font-medium text-gray-900"
-                                              >
-                                                Categories
-                                              </p>
-                                              <ul
-                                                role="list"
-                                                aria-labelledby="desktop-categories-heading"
-                                                className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
-                                              >
-                                                {category.categories.map(
-                                                  (item) => (
-                                                    <li
-                                                      key={item.name}
-                                                      className="flex"
-                                                    >
-                                                      <Link
-                                                        href={item.href}
-                                                        className="hover:text-gray-800"
-                                                      >
-                                                        {item.name}
-                                                      </Link>
-                                                    </li>
-                                                  ),
-                                                )}
-                                              </ul>
-                                            </div> */}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </Popover.Panel>
-                                  </Transition>
-                                </>
-                              )}
-                            </Popover>
-                          ),
-                        )}
+                        {navigation.map((item) => (
+                          <Tab
+                            key={item.name}
+                            className={classNames(
+                              isTabActive(item.href, item.name)
+                                ? "border-blue-600 text-blue-600"
+                                : "border-transparent text-gray-700 hover:text-gray-800",
+                              "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium",
+                            )}
+                            onClick={() => router.push(item.href)}
+                          >
+                            {item.name}
+                          </Tab>
+                        ))}
 
                         {user &&
                         (router.pathname === "/collage/mug" ||
@@ -378,7 +172,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                           <DesignName />
                         ) : null}
                       </div>
-                    </Popover.Group>
+                    </Tab.Group>
                   </div>
 
                   {/* Mobile menu and search (lg-) */}
@@ -412,7 +206,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                             <div className="hidden sm:ml-6 sm:flex sm:items-center">
                               <Menu as="div" className="relative ml-3">
                                 <div>
-                                  <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                  <Menu.Button className="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                     <span className="sr-only">
                                       Open user menu
                                     </span>
@@ -435,20 +229,12 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                   leaveTo="transform opacity-0 scale-95"
                                 >
                                   <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    {userNavigation.map((item) => (
-                                      <Menu.Item key={item.name}>
-                                        {({ active }) => (
-                                          <Link
-                                            href={item.href}
-                                            className={`${
-                                              active ? "bg-gray-100" : ""
-                                            } block px-4 py-2 text-sm text-gray-700`}
-                                          >
-                                            {item.name}
-                                          </Link>
-                                        )}
-                                      </Menu.Item>
-                                    ))}
+                                    <Link
+                                      href="/api/auth/signout"
+                                      className={`block px-4 py-2 text-sm text-gray-700`}
+                                    >
+                                      Sign out
+                                    </Link>
                                   </Menu.Items>
                                 </Transition>
                               </Menu>

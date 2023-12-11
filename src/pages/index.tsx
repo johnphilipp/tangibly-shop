@@ -1,9 +1,9 @@
 import { useSession } from "next-auth/react";
-import Dashboard from "~/components/Dashboard";
+import Home from "~/components/Home";
 import LandingPage from "~/components/LandingPage";
 
-export default function Home() {
+export default function Main() {
   const { status } = useSession();
 
-  return status === "authenticated" ? <Dashboard /> : <LandingPage />;
+  return status === "authenticated" ? <Home /> : <LandingPage />;
 }

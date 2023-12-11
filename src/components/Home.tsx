@@ -4,7 +4,7 @@ import Link from "next/link";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 
-export default function Dashboard() {
+export default function Home() {
   const { data } = useSession();
   const user = data?.user;
 
