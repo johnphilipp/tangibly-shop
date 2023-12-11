@@ -20,6 +20,7 @@ import { PreviewButton } from "../../shared/actions/PreviewButton";
 import { CheckoutButton } from "../../shared/actions/CheckoutButton";
 import SizeSelector from "~/components/shared/selectors/SizeSelector";
 import type { AvailableSize } from "~/components/shared/selectors/SizeSelector";
+import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -36,6 +37,10 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
 
   const svgRef = useRef<SVGSVGElement>(null);
   const [isOverlayOpen, setOverlayOpen] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedActivityIndex, setSelectedActivityIndex] = useState<
+    number | null
+  >(null);
   const [size, setSize] = useState({ width: 3000, height: 3000 });
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
@@ -164,6 +169,23 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
     setSize(newSize);
   };
 
+  const handleClickActivity = (index: number) => {
+    setSelectedActivityIndex(index);
+    const activity = selectedActivities[index];
+    if (activity) {
+      setIsModalVisible(true);
+    }
+  };
+
+  const handleDeleteActivity = (index: number) => {
+    setSelectedActivities((prev) => {
+      const newActivities = [...prev];
+      newActivities.splice(index, 1);
+      return newActivities;
+    });
+    setIsModalVisible(false);
+  };
+
   const saveDesign = api.design.saveCollage.useMutation();
 
   const designId = searchParams.get("designId");
@@ -248,6 +270,7 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
             primaryText={primaryText}
             secondaryText={secondaryText}
             svgRef={svgRef}
+            onClickActivity={handleClickActivity}
           />
         </div>
       </div>
@@ -314,6 +337,13 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
             svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
             isOpen={isOverlayOpen}
             onClose={() => setOverlayOpen(false)}
+          />
+
+          <ActivityModal
+            isOpen={isModalVisible}
+            activity={selectedActivities[selectedActivityIndex!]!}
+            onClose={() => setIsModalVisible(false)}
+            onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
           />
         </div>
       )}

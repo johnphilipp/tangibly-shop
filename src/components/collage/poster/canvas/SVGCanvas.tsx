@@ -23,6 +23,7 @@ interface SVGCanvasProps {
   primaryText: string;
   secondaryText: string;
   svgRef: React.RefObject<SVGSVGElement>;
+  onClickActivity: (index: number) => void;
 }
 
 const SVGCanvas: React.FC<SVGCanvasProps> = ({
@@ -35,6 +36,7 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
   primaryText,
   secondaryText,
   svgRef,
+  onClickActivity,
 }) => {
   const FREE_AREA_HEIGHT = SVG_HEIGHT - FREETEXT_HEIGHT - SPACER;
   const METRIC_X = SVG_WIDTH - METRIC_WIDTH;
@@ -81,6 +83,30 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
         >
           {/* BACKGROUND COLOR */}
           <rect width={SVG_WIDTH} height={SVG_HEIGHT} fill={backgroundColor} />
+
+          {/* TRANSPARENT RECTANGLES */}
+          {Array.from({ length: numActivities }).map((_, index) => {
+            const row = Math.floor(index / cols);
+            const col = index % cols;
+            const quadrantWidth = SVG_WIDTH / cols;
+            const quadrantHeight = FREE_AREA_HEIGHT / rows;
+            const x = col * quadrantWidth;
+            const y = row * quadrantHeight;
+
+            return (
+              <g key={index} onClick={() => onClickActivity(index)}>
+                <rect
+                  x={x}
+                  y={y}
+                  width={quadrantWidth}
+                  height={quadrantHeight}
+                  className="hoverable-rect"
+                  fill="transparent"
+                  style={{ cursor: "pointer" }}
+                />
+              </g>
+            );
+          })}
 
           {/* POLYLINES */}
           {activityPaths.map(
