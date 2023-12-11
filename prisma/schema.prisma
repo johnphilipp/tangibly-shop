@@ -175,7 +175,7 @@ model Collage {
   secondaryText String
   useText       Boolean
   collageType   String
-  Design        Design  @relation(fields: [designId], references: [id])
+  Design        Design  @relation(fields: [designId], references: [id], onDelete: Cascade)
 
   @@index([designId])
 }

@@ -46,6 +46,33 @@ export default function DesignList() {
     }
   }, [designData]);
 
+  const deleteDesign = api.design.delete.useMutation();
+
+  const handleDesignDeletion = async (design: Design) => {
+    try {
+      // Trigger the mutation and wait for the result
+      const data = await deleteDesign.mutateAsync({
+        id: design.id,
+      });
+
+      if (!data) {
+        alert("Error deleting design");
+        return;
+      }
+
+      if (data.status === "success" && allDesigns) {
+        setAllDesigns(allDesigns.filter((item) => item.id !== design.id));
+      }
+
+      // Navigate based on product id
+
+      // Set the active design (if design is available)
+    } catch (error) {
+      console.error("Error deleting design:", error);
+      // Handle the error appropriately
+    }
+  };
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
@@ -112,6 +139,7 @@ export default function DesignList() {
                       </Link>
                       <button
                         type="button"
+                        onClick={() => handleDesignDeletion(design)}
                         className="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-full sm:flex-grow-0"
                       >
                         Delete Design
