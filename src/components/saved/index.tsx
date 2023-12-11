@@ -104,7 +104,13 @@ export default function Saved() {
                   key={order.number}
                   aria-labelledby={`${order.number}-heading`}
                 >
-                  <div className="-mb-6 mt-6 flow-root divide-y divide-gray-200 border-t border-gray-200">
+                  <div className="flow-root divide-y divide-gray-200 border-t border-gray-200">
+                    {allDesigns?.length === 0 && (
+                      <p className="-mt-6 text-sm text-gray-500">
+                        You have no saved designs.
+                      </p>
+                    )}
+
                     {allDesigns?.map((design) => (
                       <div key={design.id} className="py-6 sm:flex">
                         <div className="flex space-x-4 sm:min-w-0 sm:flex-1 sm:space-x-6 lg:space-x-8">
