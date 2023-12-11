@@ -7,6 +7,7 @@ import { products } from "~/utils/products";
 import Layout from "../Layout";
 import Background from "../Background";
 import Image from "next/image";
+import { LoadingSpinner } from "../Loading";
 
 const orders = [
   {
@@ -35,15 +36,16 @@ const orders = [
 
 export default function Saved() {
   const [allDesigns, setAllDesigns] = useState<Design[] | undefined>(undefined);
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
 
-  const user = useSession().data?.user;
+  const { data: sessionData } = useSession();
+  const user = sessionData?.user;
 
   const { data: designData } = api.design.getAll.useQuery({
     enabled: user !== undefined,
   });
 
   useEffect(() => {
-    // Set activity data
     if (designData) {
       setAllDesigns(designData.designs);
     }
@@ -52,8 +54,13 @@ export default function Saved() {
   const deleteDesign = api.design.delete.useMutation();
 
   const handleDesignDeletion = async (design: Design) => {
+    if (deletingIds.has(design.id)) {
+      return; // Already deleting this design, so do nothing
+    }
+
+    setDeletingIds(new Set([...deletingIds, design.id]));
+
     try {
-      // Trigger the mutation and wait for the result
       const data = await deleteDesign.mutateAsync({
         id: design.id,
       });
@@ -66,14 +73,16 @@ export default function Saved() {
       if (data.status === "success" && allDesigns) {
         setAllDesigns(allDesigns.filter((item) => item.id !== design.id));
       }
-
-      // Navigate based on product id
-
-      // Set the active design (if design is available)
     } catch (error) {
       console.error("Error deleting design:", error);
       // Handle the error appropriately
     }
+
+    setDeletingIds((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(design.id);
+      return newSet;
+    });
   };
 
   return (
@@ -146,7 +155,11 @@ export default function Saved() {
                             onClick={() => handleDesignDeletion(design)}
                             className="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-2.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-full sm:flex-grow-0"
                           >
-                            Delete Design
+                            {deletingIds.has(design.id) ? (
+                              <LoadingSpinner />
+                            ) : (
+                              "Delete Design"
+                            )}
                           </button>
                         </div>
                       </div>
