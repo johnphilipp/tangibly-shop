@@ -228,13 +228,6 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
         Save
       </button>
 
-      {selectedActivities.length > 200 && (
-        <WarningBanner
-          title="Warning"
-          text="Selecting >200 activities makes for a tough print"
-        />
-      )}
-
       {/* Sticky SVGCanvas */}
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
         <div className="bg-white shadow-2xl">
@@ -257,9 +250,16 @@ export default function Collage({ isLoading }: { isLoading: boolean }) {
         </div>
       )}
 
+      {selectedActivities.length > 200 && (
+        <WarningBanner
+          title="Warning"
+          text="Selecting >200 activities makes for a tough print"
+        />
+      )}
+
       {/* Right-side selectors */}
       {!isLoading && (
-        <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
+        <div className="grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
           <YearSelector
             availableYears={availableYears}
             selectedYears={selectedYears}

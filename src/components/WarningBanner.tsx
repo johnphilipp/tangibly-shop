@@ -11,9 +11,11 @@ export default function WarningBanner({
   const [showBanner, setShowBanner] = useState(true);
   if (!showBanner) return null;
 
+  // px-2 py-2 font-semibold text-gray-900 no-underline transition hover:bg-gray-100 sm:px-4 md:px-6
+
   return (
-    <div className="pointer-events-none my-4 sm:flex sm:justify-center">
-      <div className="pointer-events-auto flex items-center justify-between gap-x-6 rounded-md border border-red-100 bg-red-50 px-6 py-2.5 sm:rounded-xl sm:py-3 sm:pl-4 sm:pr-3.5">
+    <div className="pointer-events-none my-4 sm:justify-center">
+      <div className="pointer-events-auto flex items-center justify-between rounded-md border border-red-100 bg-red-50 px-2 py-2 sm:px-4 md:px-6">
         <p className="text-sm leading-6 text-red-800">
           <strong className="font-semibold">{title}</strong>
           <svg
