@@ -16,11 +16,10 @@ export function ActivityModal({
   onClose: () => void;
   onDelete?: () => void;
 }) {
+  console.log("ActivityModal", activity);
   if (!isOpen) return null;
 
   const activityPath = [activity].map((activity, index) => {
-    if (!activity || typeof activity.summaryPolyline !== "string") return null;
-
     const quadrantCoordinates = getQuadrantCoordinates(
       activity.summaryPolyline,
       index,

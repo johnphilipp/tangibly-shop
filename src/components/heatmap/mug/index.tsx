@@ -16,18 +16,18 @@ import { PreviewButton } from "../../shared/actions/PreviewButton";
 import { CheckoutButton } from "../../shared/actions/CheckoutButton";
 import { getSVGDataURL } from "~/utils/getSVGDataURL";
 import Overlay from "../../3d/Overlay";
-
-const getUniqueSportTypes = (activities: Activity[]): string[] =>
-  activities.reduce<string[]>((acc, activity) => {
-    if (!acc.includes(activity.sport_type)) acc.push(activity.sport_type);
-    return acc;
-  }, []);
+import { ActivityModal } from "~/components/shared/modals/ActivityModal";
+import { getUniqueSportTypes } from "../utils/getUniqueSportTypes";
 
 export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
   const { data: session } = useSession();
   const svgRef = useRef<SVGSVGElement>(null);
   const [isOverlayOpen, setOverlayOpen] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedActivityIndex, setSelectedActivityIndex] = useState<
+    number | null
+  >(null);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [selectedYear, setSelectedYear] = useState<number>(
@@ -144,6 +144,24 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
     setBackgroundColor(newColor);
   };
 
+  const handleClickActivity = (index: number) => {
+    console.log("Clicked activity", index);
+    setSelectedActivityIndex(index);
+    const activity = selectedActivities[index];
+    if (activity) {
+      setIsModalVisible(true);
+    }
+  };
+
+  const handleDeleteActivity = (index: number) => {
+    setSelectedActivities((prev) => {
+      const newActivities = [...prev];
+      newActivities.splice(index, 1);
+      return newActivities;
+    });
+    setIsModalVisible(false);
+  };
+
   const saveDesign = api.design.saveCollage.useMutation();
 
   const designId = searchParams.get("designId");
@@ -226,6 +244,7 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
             primaryText={primaryText}
             secondaryText={secondaryText}
             svgRef={svgRef}
+            onClickActivity={handleClickActivity}
           />
         </div>
       </div>
@@ -283,6 +302,13 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
             svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
             isOpen={isOverlayOpen}
             onClose={() => setOverlayOpen(false)}
+          />
+
+          <ActivityModal
+            isOpen={isModalVisible}
+            activity={selectedActivities[selectedActivityIndex!]!}
+            onClose={() => setIsModalVisible(false)}
+            onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
           />
         </div>
       )}

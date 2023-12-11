@@ -18,18 +18,18 @@ import { getSVGDataURL } from "~/utils/getSVGDataURL";
 import Overlay from "../../3d/Overlay";
 import SizeSelector from "~/components/shared/selectors/SizeSelector";
 import type { AvailableSize } from "~/components/shared/selectors/SizeSelector";
-
-const getUniqueSportTypes = (activities: Activity[]): string[] =>
-  activities.reduce<string[]>((acc, activity) => {
-    if (!acc.includes(activity.sport_type)) acc.push(activity.sport_type);
-    return acc;
-  }, []);
+import { getUniqueSportTypes } from "../utils/getUniqueSportTypes";
+import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 
 export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
   const { data: session } = useSession();
   const svgRef = useRef<SVGSVGElement>(null);
   const [isOverlayOpen, setOverlayOpen] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedActivityIndex, setSelectedActivityIndex] = useState<
+    number | null
+  >(null);
   const [size, setSize] = useState({ width: 3000, height: 3000 });
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
@@ -151,6 +151,24 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
     setSize(newSize);
   };
 
+  const handleClickActivity = (index: number) => {
+    console.log("Clicked activity", index);
+    setSelectedActivityIndex(index);
+    const activity = selectedActivities[index];
+    if (activity) {
+      setIsModalVisible(true);
+    }
+  };
+
+  const handleDeleteActivity = (index: number) => {
+    setSelectedActivities((prev) => {
+      const newActivities = [...prev];
+      newActivities.splice(index, 1);
+      return newActivities;
+    });
+    setIsModalVisible(false);
+  };
+
   const saveDesign = api.design.saveCollage.useMutation();
 
   const designId = searchParams.get("designId");
@@ -235,6 +253,7 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
             primaryText={primaryText}
             secondaryText={secondaryText}
             svgRef={svgRef}
+            onClickActivity={handleClickActivity}
           />
         </div>
       </div>
@@ -294,6 +313,13 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
             svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
             isOpen={isOverlayOpen}
             onClose={() => setOverlayOpen(false)}
+          />
+
+          <ActivityModal
+            isOpen={isModalVisible}
+            activity={selectedActivities[selectedActivityIndex!]!}
+            onClose={() => setIsModalVisible(false)}
+            onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
           />
         </div>
       )}
