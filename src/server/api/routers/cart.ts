@@ -14,15 +14,16 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         console.log("Adding to cart", input.designId);
-        await ctx.db.cartItem.create({
+        const item = await ctx.db.cartItem.create({
           data: {
             user: { connect: { id: ctx.session.user.id } },
             design: { connect: { id: input.designId } },
             amount: input.amount,
           },
+          include: { design: true },
         });
 
-        return { status: "success", message: "Success! Thank you." };
+        return { status: "success", item: item };
       } catch (error) {
         console.log(error);
         return {

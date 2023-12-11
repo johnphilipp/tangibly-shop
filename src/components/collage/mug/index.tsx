@@ -3,7 +3,7 @@ import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./canvas/SVGCanvas";
 import ActivityTypeSelector from "../../shared/selectors/ActivityTypeSelector";
 import { useSession } from "next-auth/react";
-import type { Activity } from "@prisma/client";
+import type { Activity, Design } from "@prisma/client";
 import type { Collage } from "@prisma/client";
 import YearSelector from "../../shared/selectors/YearSelector";
 import StrokeColorSelector from "../../shared/selectors/StrokeColorSelector";
@@ -43,7 +43,8 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
 
-  const [currentDesign, setCurrentDesign] = useState<Collage>();
+  const [currentCollage, setCurrentCollage] = useState<Collage>();
+  const [currentDesign, setCurrentDesign] = useState<Design>();
   const { activeDesign, setActiveDesign } = useData();
 
   const searchParams = useSearchParams();
@@ -194,13 +195,15 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     if (foundDesign) {
       setBackgroundColor(foundDesign.Design.backgroundColor);
       setStrokeColor(foundDesign.Design.strokeColor);
-      setCurrentDesign(foundDesign);
+      setCurrentCollage(foundDesign);
       setUseText(foundDesign.useText);
       setActiveDesign({
         id: foundDesign.id,
         name: foundDesign.Design.name,
         designId: foundDesign.Design.id,
       });
+
+      setCurrentDesign(foundDesign.Design);
     } else {
       // Handle the case where the design is not found
       console.error("Design not found");
@@ -246,7 +249,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       {!isLoading && (
         <div className="flex w-full gap-4 sm:gap-6">
           <PreviewButton onClick={() => setOverlayOpen(true)} />
-          <CheckoutButton onClick={() => void 0} />
+          <CheckoutButton design={currentDesign} />
         </div>
       )}
 

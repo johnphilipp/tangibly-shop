@@ -4,11 +4,12 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
-import {ExtendedCartItem, useData} from "~/contexts/DataContext";
-import {pricing} from "~/utils/pricing";
+import { ExtendedCartItem, useData } from "~/contexts/DataContext";
+import { pricing } from "~/utils/pricing";
+import { Signal, signal } from "@preact/signals-react";
 
-const product = 'CoffeeMug'; // or 'Bubbles'
-const currency = 'CHF'; // or 'EUR'
+const product = "CoffeeMug"; // or 'Bubbles'
+const currency = "CHF"; // or 'EUR'
 
 /**
 const dasdad = [
@@ -38,6 +39,8 @@ const dasdad = [
   },
 ]; **/
 
+export const cartSignal: Signal<ExtendedCartItem[]> = signal([]);
+
 export default function ShoppingCartSidebar({
   open,
   setOpen,
@@ -58,6 +61,8 @@ export default function ShoppingCartSidebar({
     if (cartData?.items) {
       setCartItems(cartData.items);
       console.log("cartData", cartData.items);
+
+      cartSignal.value = cartData.items;
     }
   }, [cartData, setCartItems, user]);
 
@@ -68,6 +73,10 @@ export default function ShoppingCartSidebar({
     });
     setCartItems((currentCartItems) =>
       currentCartItems.filter((cartItem) => cartItem.id !== id),
+    );
+
+    cartSignal.value = cartSignal.value.filter(
+      (cartItem) => cartItem.id !== id,
     );
   };
 
@@ -81,16 +90,15 @@ export default function ShoppingCartSidebar({
       }
     }
     if (cartItem.design.productType === "Bubbles") {
-        if (currency === "CHF") {
-            return pricing.products.Bubbles.CHF;
-        }
-        if (currency === "EUR") {
-            return pricing.products.Bubbles.EUR;
-        }
+      if (currency === "CHF") {
+        return pricing.products.Bubbles.CHF;
+      }
+      if (currency === "EUR") {
+        return pricing.products.Bubbles.EUR;
+      }
     }
-    return
-
-  }
+    return;
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -145,7 +153,7 @@ export default function ShoppingCartSidebar({
                             role="list"
                             className="-my-6 divide-y divide-gray-200"
                           >
-                            {cartItems.map((cartItem) => (
+                            {cartSignal.value.map((cartItem) => (
                               <li key={cartItem.id} className="flex py-6">
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                   <img
@@ -162,7 +170,9 @@ export default function ShoppingCartSidebar({
                                         {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
                                         <a href={"#"}>{cartItem.design.name}</a>
                                       </h3>
-                                      <p className="ml-4">{currency} {getPrice(cartItem)}</p>
+                                      <p className="ml-4">
+                                        {currency} {getPrice(cartItem)}
+                                      </p>
                                     </div>
                                     <p className="mt-1 text-sm text-gray-500">
                                       {cartItem.design.productType}
@@ -202,9 +212,14 @@ export default function ShoppingCartSidebar({
                     <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Subtotal</p>
-                        <p>{currency} {cartItems.map(value => getPrice(value)).reduce((total, current) => {
-                          return (total ?? 0) + (current ?? 0);
-                        }, 0)}</p>
+                        <p>
+                          {currency}{" "}
+                          {cartItems
+                            .map((value) => getPrice(value))
+                            .reduce((total, current) => {
+                              return (total ?? 0) + (current ?? 0);
+                            }, 0)}
+                        </p>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">
                         Shipping and taxes calculated at checkout.

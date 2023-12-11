@@ -8,13 +8,11 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
 import { Fragment, useState } from "react";
-import ShoppingCartSidebar from "./ShoppingCartSidebar";
+import ShoppingCartSidebar, { cartSignal } from "./ShoppingCartSidebar";
 import DesignName from "~/components/DesignName";
 import { useRouter } from "next/router";
-import { useData } from "~/contexts/DataContext";
 import { Logo } from "./Logo";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 
 interface LayoutProps {
   children: ReactNode;
@@ -73,8 +71,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [ShoppingCartOpen, setShoppingCartOpen] = useState(false);
-
-  const { cartItems } = useData();
 
   const user = useSession().data?.user;
 
@@ -476,7 +472,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                             aria-hidden="true"
                           />
                           <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                            {cartItems.length}
+                            {cartSignal.value.length}
                           </span>
                           <span className="sr-only">
                             items in cart, view bag
