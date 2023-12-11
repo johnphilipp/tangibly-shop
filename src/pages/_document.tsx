@@ -4,7 +4,7 @@ import Script from "next/script";
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html className="h-full">
         <Head>
           {/* Add the Google Font link here */}
           <link
@@ -30,7 +30,7 @@ class MyDocument extends Document {
             }}
           />
         </Head>
-        <body>
+        <body className="h-full">
           <Main />
           <NextScript />
         </body>
