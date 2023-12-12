@@ -27,7 +27,7 @@ export default function Footer() {
           <div className="space-y-8">
             <Logo />
             <p className="text-sm leading-6 text-gray-600">
-              Your adventures. Make tangible.
+              Your adventures. Made tangible.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
