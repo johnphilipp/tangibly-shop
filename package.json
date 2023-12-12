@@ -41,6 +41,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
+    "sharp": "^0.32.6",
     "stripe": "^14.5.0",
     "styled-components": "^6.1.0",
     "superjson": "^1.13.1",
