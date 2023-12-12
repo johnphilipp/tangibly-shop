@@ -13,6 +13,7 @@ import DesignName from "~/components/DesignName";
 import { useRouter } from "next/router";
 import { Logo } from "./Logo";
 import Image from "next/image";
+import Footer from "./Footer";
 
 interface LayoutProps {
   children: ReactNode;
@@ -276,7 +277,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
 
       <main className="mx-auto max-w-7xl">{children}</main>
 
-      <footer>{/* ...footer content... */}</footer>
+      <Footer />
 
       <ShoppingCartSidebar
         open={ShoppingCartOpen}
