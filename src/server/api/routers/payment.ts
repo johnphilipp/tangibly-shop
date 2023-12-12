@@ -3,9 +3,6 @@ import { z } from "zod";
 import axios from "axios";
 import sharp from "sharp";
 import * as process from "process";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import LineItem = module;
 
 const prices = {
   mug: "price_1OJyuwBYeZI73kv1Kj5oyOmJ",
@@ -86,7 +83,7 @@ export const paymentRouter = createTRPCRouter({
         });
 
         const lineItems = (await Promise.all(lineItemsPromises)).filter(
-          (item): item is LineItem => item !== null,
+          (item) => item !== null,
         );
 
         if (!lineItems) {
@@ -99,6 +96,8 @@ export const paymentRouter = createTRPCRouter({
 
         console.log("Creating checkout session", lineItems);
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const session = await ctx.stripe.checkout.sessions.create({
           ui_mode: "embedded",
           line_items: lineItems,
