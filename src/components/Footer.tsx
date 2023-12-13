@@ -30,7 +30,7 @@ export default function Footer() {
               Your adventures. Made tangible.
             </p>
           </div>
-          <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
+          <div className="mt-16 grid-cols-2 gap-8 sm:grid xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div className="mt-10 md:mt-0">
                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
@@ -50,7 +50,7 @@ export default function Footer() {
                 </ul>
               </div>
               <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
+                <h3 className="mt-10 text-sm font-semibold leading-6 text-gray-900 md:mt-0">
                   Shop
                 </h3>
                 <ul role="list" className="mt-6 space-y-4">
@@ -76,7 +76,7 @@ export default function Footer() {
                   Saved
                 </Link>
               </div>
-              <div>
+              <div className="mt-10 md:mt-0">
                 <Link
                   href="/gifting"
                   className="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600"
