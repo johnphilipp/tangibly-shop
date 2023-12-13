@@ -1,3 +1,6 @@
+import Background from "./Background";
+import Layout from "./Layout";
+
 export const LoadingSpinner = (props: { size?: number }) => {
   return (
     <div role="status">
@@ -32,5 +35,24 @@ export const LoadingPage = () => {
     >
       <LoadingSpinner size={60} />
     </div>
+  );
+};
+
+export const LoadingLayout = () => {
+  return (
+    <Layout>
+      <div className="relative isolate">
+        <Background />
+        <div className="mx-auto max-w-4xl overflow-hidden">
+          <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-16 lg:max-w-7xl lg:px-8">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+              Shop
+            </h1>
+            <div className="h12" />
+            <LoadingSpinner />
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };

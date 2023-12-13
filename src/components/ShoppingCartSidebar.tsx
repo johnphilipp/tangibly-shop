@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { ExtendedCartItem, useData } from "~/contexts/DataContext";
 import { pricing } from "~/utils/pricing";
 import { Signal, signal } from "@preact/signals-react";
+import { useRouter } from "next/router";
 
 const product = "CoffeeMug"; // or 'Bubbles'
 const currency = "CHF"; // or 'EUR'
@@ -50,18 +51,17 @@ export default function ShoppingCartSidebar({
 }) {
   const { cartItems, setCartItems } = useData();
   const user = useSession().data?.user;
+  const router = useRouter();
 
   const { data: cartData } = api.cart.get.useQuery({
-    enabled: user !== undefined,
+    enabled: user !== undefined && router.pathname !== "/demo",
   });
 
-  console.log(cartData);
-
   useEffect(() => {
-    if (cartData?.items) {
+    if (user !== undefined && cartData?.items) {
       setCartItems(cartData.items);
       console.log("cartData", cartData.items);
-
+      console.log(user);
       cartSignal.value = cartData.items;
     }
   }, [cartData, setCartItems, user]);

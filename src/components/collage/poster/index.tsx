@@ -106,8 +106,6 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
   }, [selectedActivityTypes, activitiesWithGPS]);
 
   useEffect(() => {
-    if (primaryText || secondaryText) return;
-
     // Check if selectedYears array is not empty, otherwise -Infinity bug
     if (selectedActivities.length === 0 || selectedYears.length === 0) return;
     const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
@@ -332,21 +330,21 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
             text={secondaryText}
             onTextChange={handleSecondaryTextChange}
           />
-
-          <Overlay
-            svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
-            isOpen={isOverlayOpen}
-            onClose={() => setOverlayOpen(false)}
-          />
-
-          <ActivityModal
-            isOpen={isModalVisible}
-            activity={selectedActivities[selectedActivityIndex!]!}
-            onClose={() => setIsModalVisible(false)}
-            onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
-          />
         </div>
       )}
+
+      <Overlay
+        svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
+        isOpen={isOverlayOpen}
+        onClose={() => setOverlayOpen(false)}
+      />
+
+      <ActivityModal
+        isOpen={isModalVisible}
+        activity={selectedActivities[selectedActivityIndex!]!}
+        onClose={() => setIsModalVisible(false)}
+        onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
+      />
     </div>
   );
 }

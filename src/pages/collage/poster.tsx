@@ -1,19 +1,15 @@
-import type { Activity } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
-import CollageMug from "~/components/collage/mug";
 import CollagePoster from "~/components/collage/poster";
 import { useData } from "~/contexts/DataContext";
-import { demoData1 } from "~/data/demoData1";
 import { api } from "~/utils/api";
-import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
 export default function CollagePosterPage() {
-  let activityData;
   const { setActivities } = useData();
+
   const user = useSession().data?.user;
 
   // Fetch user account data to get access token
@@ -41,25 +37,18 @@ export default function CollagePosterPage() {
   );
 
   useEffect(() => {
-    // Set activity data
     if (activityDataFetched) {
-      activityData = activityDataFetched;
-    } else if (user !== undefined) {
-      // Use demo data if user is not logged in
-      activityData = demoData1.map((activity) => fromStravaActivity(activity));
+      setActivities(activityDataFetched);
     } else {
-      activityData = [] as Activity[];
+      setActivities([]);
     }
-    setActivities(activityData);
-  }, [activityDataFetched]);
+  }, [activityDataFetched, setActivities]);
 
   // Render editor
   return (
     <Layout>
       <div className="relative isolate mx-auto max-w-3xl">
         <Background />
-
-        {/* {!user && <DemoBanner />} */}
 
         {user && activityDataLoading && (
           <div className="mt-4 flex justify-center">
@@ -75,7 +64,6 @@ export default function CollagePosterPage() {
 
         <CollagePoster isLoading={activityDataLoading} />
       </div>
-      {/* <Alert /> */}
     </Layout>
   );
 }
