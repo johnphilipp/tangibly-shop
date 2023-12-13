@@ -3,6 +3,7 @@ import { z } from "zod";
 import axios from "axios";
 import sharp from "sharp";
 import * as process from "process";
+import { router } from "next/client";
 
 const prices = {
   mug: "price_1OJyuwBYeZI73kv1Kj5oyOmJ",
@@ -114,7 +115,7 @@ export const paymentRouter = createTRPCRouter({
                 "I agree to the [Terms of Service](https://example.com/terms)",
             },
           },
-          return_url: `http://localhost:3000/return?session_id={CHECKOUT_SESSION_ID}`,
+          return_url: `${process.env.NEXTAUTH_URL}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
         });
 
         return { status: "success", clientSecret: session.client_secret };
