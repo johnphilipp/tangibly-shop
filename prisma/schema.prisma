@@ -160,7 +160,7 @@ model Design {
   activityTypes   String    @db.Text
   backgroundColor String
   strokeColor     String
-  previewSvg      String    @db.Text
+  previewSvg      String    @db.MediumText
   CartItem        CartItem?
   Collage         Collage?
   Heatmap         Heatmap?
