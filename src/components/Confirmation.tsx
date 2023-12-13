@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Background from "./Background";
 import Layout from "./Layout";
 
 const products = [

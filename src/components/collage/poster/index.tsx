@@ -289,7 +289,7 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
 
       {/* Right-side selectors */}
       {!isLoading && (
-        <div className="grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
+        <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
           <SizeSelector selectedSize={size} onSelectedSize={handleSizeChange} />
 
           <YearSelector

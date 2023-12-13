@@ -285,7 +285,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
       {/* Right-side selectors */}
       {!isLoading && (
-        <div className="grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
+        <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
           <YearSelector
             availableYears={availableYears}
             selectedYears={selectedYears}
