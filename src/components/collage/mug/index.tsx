@@ -107,7 +107,9 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     // Check if selectedYears array is not empty, otherwise -Infinity bug
     if (selectedActivities.length === 0 || selectedYears.length === 0) return;
     const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
-    const userName = `${session?.user?.name?.split(" ")[0]}'s` ?? "Your";
+    const user =
+      session?.user?.name === undefined ? "Your" : session?.user?.name;
+    const userName = user === "Your" ? user : user?.split(" ")[0] + "'s";
     setPrimaryText(`${userName} ${yearText} Wrapped`);
     setSecondaryText(`${selectedActivities.length} Activities`);
   }, [
@@ -322,21 +324,21 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
             text={secondaryText}
             onTextChange={handleSecondaryTextChange}
           />
-
-          <Overlay
-            svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
-            isOpen={isOverlayOpen}
-            onClose={() => setOverlayOpen(false)}
-          />
-
-          <ActivityModal
-            isOpen={isModalVisible}
-            activity={selectedActivities[selectedActivityIndex!]!}
-            onClose={() => setIsModalVisible(false)}
-            onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
-          />
         </div>
       )}
+
+      <ActivityModal
+        isOpen={isModalVisible}
+        activity={selectedActivities[selectedActivityIndex!]!}
+        onClose={() => setIsModalVisible(false)}
+        onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
+      />
+
+      <Overlay
+        svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
+        isOpen={isOverlayOpen}
+        onClose={() => setOverlayOpen(false)}
+      />
     </div>
   );
 }

@@ -57,8 +57,6 @@ export default function ShoppingCartSidebar({
     enabled: user !== undefined && router.pathname !== "/demo",
   });
 
-  console.log(user);
-
   useEffect(() => {
     if (user !== undefined && cartData?.items) {
       setCartItems(cartData.items);

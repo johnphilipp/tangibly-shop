@@ -306,21 +306,21 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
             text={secondaryText}
             onTextChange={handleSecondaryTextChange}
           />
-
-          <Overlay
-            svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
-            isOpen={isOverlayOpen}
-            onClose={() => setOverlayOpen(false)}
-          />
-
-          <ActivityModal
-            isOpen={isModalVisible}
-            activity={selectedActivities[selectedActivityIndex!]!}
-            onClose={() => setIsModalVisible(false)}
-            onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
-          />
         </div>
       )}
+
+      <Overlay
+        svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
+        isOpen={isOverlayOpen}
+        onClose={() => setOverlayOpen(false)}
+      />
+
+      <ActivityModal
+        isOpen={isModalVisible}
+        activity={selectedActivities[selectedActivityIndex!]!}
+        onClose={() => setIsModalVisible(false)}
+        onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
+      />
     </div>
   );
 }
