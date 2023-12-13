@@ -9,7 +9,7 @@ export const PreviewButton = ({
   return (
     <Button
       onClick={() => onClick(true)}
-      className="flex w-full items-center justify-center bg-blue-600 text-white shadow-lg hover:bg-blue-500"
+      className="flex w-full items-center justify-center bg-white shadow-lg"
     >
       <FaEye className="mr-2 inline-block h-6 w-6" aria-hidden="true" />
       Preview
