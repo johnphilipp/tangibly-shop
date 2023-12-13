@@ -1,6 +1,6 @@
 import type { Activity } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
@@ -11,7 +11,7 @@ import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
 export default function CollageMugPage() {
-  let activityData;
+  const activityDataRef = useRef<Activity[]>([]);
   const { setActivities } = useData();
   const user = useSession().data?.user;
 
@@ -40,19 +40,20 @@ export default function CollageMugPage() {
   );
 
   useEffect(() => {
-    // Set activity data
-    if (activityDataFetched) {
-      activityData = activityDataFetched;
-    } else if (user !== undefined) {
-      // Use demo data if user is not logged in
-      activityData = demoData1.map((activity) => fromStravaActivity(activity));
-    } else {
-      activityData = [] as Activity[];
-    }
-    setActivities(activityData);
-  }, [activityDataFetched]);
+    let activityData = [] as Activity[];
 
-  // Render editor
+    if (activityDataLoading) {
+      activityData = [];
+    } else if (activityDataFetched) {
+      activityData = activityDataFetched;
+    } else if (user === undefined) {
+      activityData = demoData1.map((activity) => fromStravaActivity(activity));
+    }
+
+    activityDataRef.current = activityData;
+    setActivities(activityData);
+  }, [activityDataFetched, activityDataLoading, user, setActivities]);
+
   return (
     <Layout>
       <div className="relative isolate mx-auto max-w-3xl">

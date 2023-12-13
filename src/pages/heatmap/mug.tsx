@@ -1,6 +1,6 @@
 import type { Activity } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
 import { LoadingSpinner } from "~/components/Loading";
@@ -11,7 +11,7 @@ import { api } from "~/utils/api";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
 
 export default function HeatmapMugPage() {
-  let activityData;
+  const activityDataRef = useRef<Activity[]>([]);
   const { setActivities } = useData();
   const user = useSession().data?.user;
 
@@ -40,17 +40,19 @@ export default function HeatmapMugPage() {
   );
 
   useEffect(() => {
-    // Set activity data
-    if (activityDataFetched) {
+    let activityData = [] as Activity[];
+
+    if (activityDataLoading) {
+      activityData = [];
+    } else if (activityDataFetched) {
       activityData = activityDataFetched;
-    } else if (user !== undefined) {
-      // Use demo data if user is not logged in
+    } else if (user === undefined) {
       activityData = demoData1.map((activity) => fromStravaActivity(activity));
-    } else {
-      activityData = [] as Activity[];
     }
+
+    activityDataRef.current = activityData;
     setActivities(activityData);
-  }, [activityDataFetched]);
+  }, [activityDataFetched, activityDataLoading, user, setActivities]);
 
   // Render editor
   return (
