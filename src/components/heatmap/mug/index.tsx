@@ -88,8 +88,6 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
   }, [activitiesFilteredByYears, selectedActivityTypes, activeDesign]);
 
   useEffect(() => {
-    if (secondaryText || primaryText) return;
-
     const totalMovingTime = Math.round(
       selectedActivities.reduce(
         (acc, activity) => acc + activity.moving_time,
