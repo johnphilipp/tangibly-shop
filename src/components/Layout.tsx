@@ -230,12 +230,21 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                   leaveTo="transform opacity-0 scale-95"
                                 >
                                   <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    <Link
-                                      href="/api/auth/signout"
-                                      className={`block px-4 py-2 text-sm text-gray-700`}
-                                    >
-                                      Sign out
-                                    </Link>
+                                    {status === "authenticated" ? (
+                                      <Link
+                                        href="/api/auth/signout"
+                                        className="block px-4 py-2 text-sm text-gray-700"
+                                      >
+                                        Sign out
+                                      </Link>
+                                    ) : (
+                                      <Link
+                                        href="/api/auth/signin"
+                                        className="block px-4 py-2 text-sm text-gray-700"
+                                      >
+                                        Sign in
+                                      </Link>
+                                    )}
                                   </Menu.Items>
                                 </Transition>
                               </Menu>
