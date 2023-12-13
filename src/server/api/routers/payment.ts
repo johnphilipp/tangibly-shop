@@ -67,24 +67,24 @@ export const paymentRouter = createTRPCRouter({
           include: { design: true },
         });
 
-        const lineItemsPromises = items.map(async (item) => {
-          const image = await convertSvgToJpgAndUpload(item.design.previewSvg);
+        const lineItems = items
+          .map((item) => {
+            console.log(item);
+            switch (item.design.productType) {
+              case "Collage":
+              case "Poster":
+              case "Heatmap":
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+                return { price: prices.mug, quantity: item.amount };
+              case "poster":
+                return { price: prices.poster, quantity: item.amount };
+              default:
+                return null;
+            }
+          })
+          .filter((item) => item !== null);
 
-          switch (item.design.productType) {
-            case "Heatmap":
-            case "Collage":
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-              return createLineItem(item.amount, image.data.url);
-            case "poster":
-              return { price: prices.poster, quantity: item.amount };
-            default:
-              return null;
-          }
-        });
-
-        const lineItems = (await Promise.all(lineItemsPromises)).filter(
-          (item) => item !== null,
-        );
+        console.log(lineItems);
 
         if (!lineItems) {
           console.log("Cart is empty");
@@ -102,6 +102,18 @@ export const paymentRouter = createTRPCRouter({
           ui_mode: "embedded",
           line_items: lineItems,
           mode: "payment",
+          shipping_address_collection: {
+            allowed_countries: ["CH", "DE", "AT"],
+          },
+          consent_collection: {
+            terms_of_service: "required",
+          },
+          custom_text: {
+            terms_of_service_acceptance: {
+              message:
+                "I agree to the [Terms of Service](https://example.com/terms)",
+            },
+          },
           return_url: `http://localhost:3000/return?session_id={CHECKOUT_SESSION_ID}`,
         });
 
