@@ -35,7 +35,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   const { status } = useSession();
   const { data } = useSession();
 
-  const userImage = data?.user?.image ?? "";
+  const userImage = data?.user?.image ?? "/blank-user.png";
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [ShoppingCartOpen, setShoppingCartOpen] = useState(false);
