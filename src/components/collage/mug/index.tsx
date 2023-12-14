@@ -20,6 +20,7 @@ import { PreviewButton } from "../../shared/actions/PreviewButton";
 import { CheckoutButton } from "../../shared/actions/CheckoutButton";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 import { SaveButton } from "~/components/shared/actions/SaveButton";
+import DesignName from "~/components/DesignName";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -127,6 +128,8 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
         ? prev.filter((type) => type !== sportType)
         : [...prev, sportType],
     );
+
+    handleSaveDesignData();
   };
 
   const handleYearChange = (year: number) => {
@@ -139,16 +142,22 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
         return [...prevYears, year];
       }
     });
+
+    handleSaveDesignData();
   };
 
   const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPrimaryText(e.target.value);
+
+    handleSaveDesignData();
   };
 
   const handleSecondaryTextChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setSecondaryText(e.target.value);
+
+    handleSaveDesignData();
   };
 
   const handleColorChange = (newColor: string) => {
@@ -162,6 +171,8 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     }
     // Update the background color
     setBackgroundColor(newColor);
+
+    handleSaveDesignData();
   };
 
   const handleClickActivity = (index: number) => {
@@ -170,6 +181,8 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     if (activity) {
       setIsModalVisible(true);
     }
+
+    handleSaveDesignData();
   };
 
   const handleDeleteActivity = (index: number) => {
@@ -179,16 +192,18 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       return newActivities;
     });
     setIsModalVisible(false);
+
+    handleSaveDesignData();
   };
 
   const saveDesign = api.design.saveCollage.useMutation();
 
   const designId = searchParams.get("designId");
 
-  const handleSaveDesignData = async () => {
+  const handleSaveDesignData = () => {
     if (!user) return;
 
-    await saveDesign.mutateAsync({
+    void saveDesign.mutateAsync({
       id: Number(designId) ?? 0,
       activityTypes: selectedActivityTypes.join(","),
       backgroundColor: backgroundColor,
@@ -245,7 +260,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
         Create Your <span className="font-bold">Collage Mug</span>
       </h1>
-
+      <DesignName />
       {/* Floating Save Button */}
       <button
         onClick={handleSaveDesignData}

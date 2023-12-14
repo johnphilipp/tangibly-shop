@@ -16,7 +16,6 @@ export function ActivityModal({
   onClose: () => void;
   onDelete?: () => void;
 }) {
-  console.log("ActivityModal", activity);
   if (!isOpen) return null;
 
   const activityPath = [activity].map((activity, index) => {

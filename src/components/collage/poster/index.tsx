@@ -126,6 +126,8 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
         ? prev.filter((type) => type !== sportType)
         : [...prev, sportType],
     );
+
+    handleSaveDesignData();
   };
 
   const handleYearChange = (year: number) => {
@@ -138,6 +140,8 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
         return [...prevYears, year];
       }
     });
+
+    handleSaveDesignData();
   };
 
   const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,6 +165,8 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
     }
     // Update the background color
     setBackgroundColor(newColor);
+
+    handleSaveDesignData();
   };
 
   const handleSizeChange = (newSize: AvailableSize) => {
@@ -188,10 +194,12 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
 
   const designId = searchParams.get("designId");
 
-  const handleSaveDesignData = async () => {
+  const handleSaveDesignData = () => {
+    console.log("handleSaveDesignData");
     if (!user) return;
 
-    await saveDesign.mutateAsync({
+    console.log("saveDesign.mutateAsync");
+    void saveDesign.mutateAsync({
       id: Number(designId) ?? 0,
       activityTypes: selectedActivityTypes.join(","),
       backgroundColor: backgroundColor,

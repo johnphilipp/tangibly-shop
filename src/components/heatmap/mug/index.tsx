@@ -117,20 +117,28 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
         ? prev.filter((type) => type !== sportType)
         : [...prev, sportType],
     );
+
+    handleSaveDesignData();
   };
 
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
+
+    handleSaveDesignData();
   };
 
   const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPrimaryText(e.target.value);
+
+    handleSaveDesignData();
   };
 
   const handleSecondaryTextChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setSecondaryText(e.target.value);
+
+    handleSaveDesignData();
   };
 
   const handleColorChange = (newColor: string) => {
@@ -147,7 +155,6 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
   };
 
   const handleClickActivity = (index: number) => {
-    console.log("Clicked activity", index);
     setSelectedActivityIndex(index);
     const activity = selectedActivities[index];
     if (activity) {
@@ -162,16 +169,18 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
       return newActivities;
     });
     setIsModalVisible(false);
+
+    handleSaveDesignData();
   };
 
   const saveDesign = api.design.saveCollage.useMutation();
 
   const designId = searchParams.get("designId");
 
-  const handleSaveDesignData = async () => {
+  const handleSaveDesignData = () => {
     if (!user) return;
 
-    await saveDesign.mutateAsync({
+    void saveDesign.mutateAsync({
       id: Number(designId) ?? 0,
       activityTypes: selectedActivityTypes.join(","),
       backgroundColor: backgroundColor,
