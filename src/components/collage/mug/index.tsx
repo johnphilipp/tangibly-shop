@@ -20,6 +20,7 @@ import { PreviewButton } from "../../shared/actions/PreviewButton";
 import { CheckoutButton } from "../../shared/actions/CheckoutButton";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 import { SaveButton } from "~/components/shared/actions/SaveButton";
+import DesignName from "~/components/DesignName";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -245,6 +246,8 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
         Create Your <span className="font-bold">Collage Mug</span>
       </h1>
+
+      <DesignName />
 
       {/* Floating Save Button */}
       <button

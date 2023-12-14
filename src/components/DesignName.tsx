@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { BiEdit } from "react-icons/bi";
 import { useData } from "~/contexts/DataContext";
 import { api } from "~/utils/api";
+import Button from "./Button";
 
 export default function DesignName() {
   const [editDesignName, setEditDesignName] = useState<boolean>(false);
@@ -42,42 +42,34 @@ export default function DesignName() {
   }, [activeDesign]);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex max-w-sm items-center space-x-4"
-    >
-      <input
-        type="text"
-        name="designName"
-        id="designName"
-        value={designName}
-        onChange={handleChange}
-        onClick={(e) => {
-          e.currentTarget.select();
-          setEditDesignName(true);
-        }}
-        className="mt-5 block w-full rounded-md border-0 text-xl text-black placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 "
-        placeholder={designName ? designName : "Set a title"}
-        required
-      />
-      {editDesignName ? (
-        <>
-          <button
-            type="submit"
-            className="rounded bg-blue-500 pl-2 pr-2 text-white"
-          >
-            Save
-          </button>
-          <button
-            onClick={handleCancel}
-            className="rounded bg-gray-600 pl-2 pr-2 text-white"
-          >
-            Cancel
-          </button>
-        </>
-      ) : (
-        <></>
-      )}
-    </form>
+    <div className="mt-4 rounded-xl border pl-2">
+      <form onSubmit={handleSubmit} className="flex items-center space-x-4 p-2">
+        <input
+          type="text"
+          name="designName"
+          id="designName"
+          value={designName}
+          onChange={handleChange}
+          onClick={(e) => {
+            e.currentTarget.select();
+            setEditDesignName(true);
+          }}
+          className="block w-full rounded-md border-0 text-xl text-black placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 "
+          placeholder={designName ? designName : "Set a title"}
+          required
+        />
+        {editDesignName && (
+          <>
+            <Button
+              type="submit"
+              className="bg-black text-white hover:bg-gray-700"
+            >
+              Save
+            </Button>
+            <Button onClick={handleCancel}>Cancel</Button>
+          </>
+        )}
+      </form>
+    </div>
   );
 }
