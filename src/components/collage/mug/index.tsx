@@ -261,13 +261,6 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
         Create Your <span className="font-bold">Collage Mug</span>
       </h1>
       <DesignName />
-      {/* Floating Save Button */}
-      <button
-        onClick={handleSaveDesignData}
-        className="fixed bottom-5 right-5 z-50 rounded-full bg-green-500 p-3 text-lg text-white shadow-lg hover:bg-green-600 focus:outline-none"
-      >
-        Save
-      </button>
 
       {/* Sticky SVGCanvas */}
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
