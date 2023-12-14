@@ -18,6 +18,7 @@ import { getSVGDataURL } from "~/utils/getSVGDataURL";
 import Overlay from "../../3d/Overlay";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 import { getUniqueSportTypes } from "../utils/getUniqueSportTypes";
+import DesignName from "~/components/DesignName";
 
 export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
@@ -225,6 +226,7 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
       <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
         Create Your <span className="font-bold">Heatmap Mug</span>
       </h1>
+      <DesignName />
 
       {/* Floating Save Button */}
       <button

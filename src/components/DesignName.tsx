@@ -28,6 +28,7 @@ export default function DesignName() {
     activeDesign.name = designName;
     setActiveDesign(activeDesign);
     setEditDesignName(false);
+    e.currentTarget.reset();
 
     console.log("activeDesign", activeDesign);
     void saveName.mutateAsync({
@@ -43,36 +44,39 @@ export default function DesignName() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex max-w-sm items-center space-x-4 pb-2 pt-4"
+      className="flex max-w-sm items-center space-x-4"
     >
-      Design Name:
       <input
         type="text"
         name="designName"
         id="designName"
-        disabled={!editDesignName}
         value={designName}
         onChange={handleChange}
-        className="block w-full rounded-md border-gray-200 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-400 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 enabled:ml-2 disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400 sm:text-sm sm:leading-6"
+        onClick={(e) => {
+          e.currentTarget.select();
+          setEditDesignName(true);
+        }}
+        className="mt-5 block w-full rounded-md border-0 text-xl text-black placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 "
         placeholder={designName ? designName : "Set a title"}
         required
       />
       {editDesignName ? (
         <>
-          <button type="submit" className="rounded bg-blue-500 p-2 text-white">
+          <button
+            type="submit"
+            className="rounded bg-blue-500 pl-2 pr-2 text-white"
+          >
             Save
           </button>
           <button
             onClick={handleCancel}
-            className="rounded bg-gray-600 p-2 text-white"
+            className="rounded bg-gray-600 pl-2 pr-2 text-white"
           >
             Cancel
           </button>
         </>
       ) : (
-        <button onClick={() => setEditDesignName(true)}>
-          <BiEdit></BiEdit>
-        </button>
+        <></>
       )}
     </form>
   );

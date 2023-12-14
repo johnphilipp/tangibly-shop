@@ -24,7 +24,7 @@ const config = {
       "images.unsplash.com",
       "tailwindui.com",
       "dgalywyr863hv.cloudfront.net",
-        "d3nn82uaxijpm6.cloudfront.net"
+      "d3nn82uaxijpm6.cloudfront.net"
     ],
   },
 };

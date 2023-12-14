@@ -8,6 +8,7 @@ import { ExtendedCartItem, useData } from "~/contexts/DataContext";
 import { pricing } from "~/utils/pricing";
 import { Signal, signal } from "@preact/signals-react";
 import { useRouter } from "next/router";
+import { products } from "~/utils/products";
 
 const product = "CoffeeMug"; // or 'Bubbles'
 const currency = "CHF"; // or 'EUR'
@@ -60,8 +61,6 @@ export default function ShoppingCartSidebar({
   useEffect(() => {
     if (user !== undefined && cartData?.items) {
       setCartItems(cartData.items);
-      console.log("cartData", cartData.items);
-      console.log(user);
       cartSignal.value = cartData.items;
     }
   }, [cartData, setCartItems, user]);
@@ -185,7 +184,13 @@ export default function ShoppingCartSidebar({
 
                                     <div className="flex">
                                       <Link
-                                        href={"/editor?designId=" + cartItem.id}
+                                        href={
+                                          `${products.find(
+                                            (value) =>
+                                              (value.name =
+                                                cartItem.design.productType),
+                                          )?.href}?designId=` + cartItem.id
+                                        }
                                         className="mr-2 font-medium text-indigo-600 hover:text-indigo-500"
                                       >
                                         Edit

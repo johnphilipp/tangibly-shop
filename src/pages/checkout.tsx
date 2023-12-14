@@ -8,6 +8,7 @@ import {
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import { useSession } from "next-auth/react";
+import Layout from "~/components/Layout";
 
 export default function Checkout() {
   const stripe = getStripe();
@@ -37,13 +38,19 @@ export default function Checkout() {
 
   return (
     <>
-      <div id="checkout">
-        {clientSecret && (
-          <EmbeddedCheckoutProvider stripe={stripe} options={{ clientSecret }}>
-            <EmbeddedCheckout />
-          </EmbeddedCheckoutProvider>
-        )}
-      </div>
+      <Layout>
+        <div className="h-12" />
+        <div id="checkout">
+          {clientSecret && (
+            <EmbeddedCheckoutProvider
+              stripe={stripe}
+              options={{ clientSecret }}
+            >
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+          )}
+        </div>
+      </Layout>
     </>
   );
 }

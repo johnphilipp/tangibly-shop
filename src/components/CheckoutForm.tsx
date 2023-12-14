@@ -1,9 +1,17 @@
-import React, { useState, FormEvent } from 'react';
-import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
-import { CardElement, Elements, useStripe, useElements } from '@stripe/react-stripe-js';
+import React, { useState, FormEvent } from "react";
+import { loadStripe, Stripe, StripeElements } from "@stripe/stripe-js";
+import {
+  CardElement,
+  Elements,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import Layout from "~/components/Layout";
 
 // Load your Stripe publishable key
-const stripePromise = loadStripe('pk_test_51OBI5RBYeZI73kv1TxJvhGGozP0UlR5KaMrpFeFewTVGo7zBhehY4BqNUsfLQ975vrHh2h5MCw3gnZGrXCMYeppR00S8jxb8Bl');
+const stripePromise = loadStripe(
+  "pk_test_51OBI5RBYeZI73kv1TxJvhGGozP0UlR5KaMrpFeFewTVGo7zBhehY4BqNUsfLQ975vrHh2h5MCw3gnZGrXCMYeppR00S8jxb8Bl",
+);
 
 const CheckoutForm: React.FC = () => {
   const stripe: Stripe | null = useStripe();
@@ -23,12 +31,12 @@ const CheckoutForm: React.FC = () => {
 
     if (cardElement) {
       const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
+        type: "card",
         card: cardElement,
       });
 
       if (error) {
-        setError(error.message??'Unknown error');
+        setError(error.message ?? "Unknown error");
         setLoading(false);
       } else {
         console.log(paymentMethod);
@@ -42,7 +50,9 @@ const CheckoutForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit}>
       <CardElement />
-      <button type="submit" disabled={!stripe || loading}>Pay</button>
+      <button type="submit" disabled={!stripe || loading}>
+        Pay
+      </button>
       {error && <div>{error}</div>}
     </form>
   );
