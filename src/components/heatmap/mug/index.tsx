@@ -197,7 +197,7 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
 
   useEffect(() => {
     handleSaveDesignData();
-  }, [activities, handleSaveDesignData]);
+  }, []);
 
   const { data: fetchedDesign } = api.design.getCollage.useQuery(
     { id: Number(designId) },

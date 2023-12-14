@@ -224,6 +224,10 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
   );
 
   useEffect(() => {
+    handleSaveDesignData();
+  }, []);
+
+  useEffect(() => {
     if (!fetchedDesign || currentDesign) return;
 
     console.log("foundDesign", designId);
