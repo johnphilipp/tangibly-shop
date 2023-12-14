@@ -3,6 +3,7 @@ import Button from "~/components/Button";
 import { api } from "~/utils/api";
 import { cartSignal } from "~/components/ShoppingCartSidebar";
 import { Design } from "@prisma/client";
+import { sidebarSignal } from "~/components/Layout";
 
 export const CheckoutButton = ({ design }: { design: Design | undefined }) => {
   const addProductToCart = api.cart.add.useMutation();
@@ -21,6 +22,8 @@ export const CheckoutButton = ({ design }: { design: Design | undefined }) => {
 
       items.push(item?.item);
       cartSignal.value = items;
+
+      sidebarSignal.value = true;
     });
   };
 
