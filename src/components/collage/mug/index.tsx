@@ -19,6 +19,7 @@ import { getSVGBase64 } from "~/utils/getSVGBase64";
 import { PreviewButton } from "../../shared/actions/PreviewButton";
 import { CheckoutButton } from "../../shared/actions/CheckoutButton";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
+import { SaveButton } from "~/components/shared/actions/SaveButton";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -270,9 +271,12 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       </div>
 
       {!isLoading && (
-        <div className="flex w-full gap-4 sm:gap-6">
-          <PreviewButton onClick={() => setOverlayOpen(true)} />
+        <div className="space-y-4">
           <CheckoutButton design={currentDesign} />
+          <div className="flex w-full gap-4 sm:gap-6">
+            <SaveButton />
+            <PreviewButton onClick={() => setOverlayOpen(true)} />
+          </div>
         </div>
       )}
 
@@ -285,7 +289,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
       {/* Right-side selectors */}
       {!isLoading && (
-        <div className="grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
+        <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">
           <YearSelector
             availableYears={availableYears}
             selectedYears={selectedYears}
