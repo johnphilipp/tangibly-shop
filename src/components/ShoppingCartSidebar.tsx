@@ -9,6 +9,7 @@ import { pricing } from "~/utils/pricing";
 import { Signal, signal } from "@preact/signals-react";
 import { useRouter } from "next/router";
 import { products } from "~/utils/products";
+import { sidebarSignal } from "./Layout";
 
 const product = "CoffeeMug"; // or 'Bubbles'
 const currency = "CHF"; // or 'EUR'
@@ -43,13 +44,7 @@ const dasdad = [
 
 export const cartSignal: Signal<ExtendedCartItem[]> = signal([]);
 
-export default function ShoppingCartSidebar({
-  open,
-  setOpen,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}) {
+export default function ShoppingCartSidebar({ open }: { open: boolean }) {
   const { cartItems, setCartItems } = useData();
   const user = useSession().data?.user;
   const router = useRouter();
@@ -101,7 +96,11 @@ export default function ShoppingCartSidebar({
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={() => setOpen(false)}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => (sidebarSignal.value = false)}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -137,7 +136,7 @@ export default function ShoppingCartSidebar({
                           <button
                             type="button"
                             className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
-                            onClick={() => setOpen(false)}
+                            onClick={() => (sidebarSignal.value = false)}
                           >
                             <span className="absolute -inset-0.5" />
                             <span className="sr-only">Close panel</span>
@@ -243,7 +242,7 @@ export default function ShoppingCartSidebar({
                           <button
                             type="button"
                             className="font-medium text-indigo-600 hover:text-indigo-500"
-                            onClick={() => setOpen(false)}
+                            onClick={() => (sidebarSignal.value = false)}
                           >
                             Continue Shopping
                             <span aria-hidden="true"> &rarr;</span>

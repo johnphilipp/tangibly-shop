@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { Logo } from "./Logo";
 import Image from "next/image";
 import Footer from "./Footer";
+import { signal } from "@preact/signals-react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -31,6 +32,8 @@ export function classNames(...classes: string[] | undefined[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+export const sidebarSignal = signal(false);
+
 export const Layout: FC<LayoutProps> = ({ children }) => {
   const { status } = useSession();
   const { data } = useSession();
@@ -38,7 +41,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   const userImage = data?.user?.image ?? "/blank-user.png";
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [ShoppingCartOpen, setShoppingCartOpen] = useState(false);
 
   const user = useSession().data?.user;
 
@@ -254,7 +256,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                           <div className="flow-root">
                             <button
                               className="group -m-2 flex items-center p-2"
-                              onClick={() => setShoppingCartOpen(true)}
+                              onClick={() => (sidebarSignal.value = true)}
                             >
                               <ShoppingCartIcon
                                 className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -285,10 +287,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
 
       <Footer />
 
-      <ShoppingCartSidebar
-        open={ShoppingCartOpen}
-        setOpen={setShoppingCartOpen}
-      />
+      <ShoppingCartSidebar open={sidebarSignal.value} />
     </div>
   );
 };
