@@ -152,6 +152,8 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
     }
     // Update the background color
     setBackgroundColor(newColor);
+
+    handleSaveDesignData();
   };
 
   const handleClickActivity = (index: number) => {
@@ -192,6 +194,10 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
       name: activeDesign?.name ?? "Untitled-1",
     });
   };
+
+  useEffect(() => {
+    handleSaveDesignData();
+  }, [activities, handleSaveDesignData]);
 
   const { data: fetchedDesign } = api.design.getCollage.useQuery(
     { id: Number(designId) },
