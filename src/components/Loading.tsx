@@ -48,8 +48,8 @@ export const LoadingLayout = () => {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               Shop
             </h1>
-            <div className="h12" />
-            <LoadingSpinner />
+            <div className="h-12" />
+            <LoadingSpinner size={32} />
           </div>
         </div>
       </div>

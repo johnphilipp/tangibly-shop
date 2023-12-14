@@ -236,6 +236,7 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
       <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
         Create Your <span className="font-bold">Heatmap Mug</span>
       </h1>
+
       <DesignName />
 
       {/* Floating Save Button */}

@@ -20,6 +20,7 @@ import SizeSelector from "~/components/shared/selectors/SizeSelector";
 import type { AvailableSize } from "~/components/shared/selectors/SizeSelector";
 import { getUniqueSportTypes } from "../utils/getUniqueSportTypes";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
+import DesignName from "~/components/DesignName";
 
 export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
@@ -229,6 +230,8 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
       <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
         Create Your <span className="font-bold">Heatmap Poster</span>
       </h1>
+
+      <DesignName />
 
       {/* Floating Save Button */}
       <button

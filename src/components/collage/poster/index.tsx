@@ -21,6 +21,7 @@ import { CheckoutButton } from "../../shared/actions/CheckoutButton";
 import SizeSelector from "~/components/shared/selectors/SizeSelector";
 import type { AvailableSize } from "~/components/shared/selectors/SizeSelector";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
+import DesignName from "~/components/DesignName";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -254,6 +255,8 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
       <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
         Create Your <span className="font-bold">Collage Poster</span>
       </h1>
+
+      <DesignName />
 
       {/* Floating Save Button */}
       <button
