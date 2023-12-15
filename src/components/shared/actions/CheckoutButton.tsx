@@ -5,11 +5,55 @@ import { cartSignal } from "~/components/ShoppingCartSidebar";
 import { Design } from "@prisma/client";
 import { sidebarSignal } from "~/components/Layout";
 
-export const CheckoutButton = ({ design }: { design: Design | undefined }) => {
+interface CheckoutButtonProps {
+  design: Design | undefined;
+  id: number;
+  activityTypes: string[];
+  backgroundColor: string;
+  strokeColor: string;
+  previewSvg: string;
+  primaryText: string;
+  secondaryText: string;
+  useText: boolean;
+  name: string;
+}
+
+export const CheckoutButton = ({
+  design,
+  id,
+  activityTypes,
+  backgroundColor,
+  strokeColor,
+  previewSvg,
+  primaryText,
+  secondaryText,
+  useText,
+  name,
+}: CheckoutButtonProps) => {
   const addProductToCart = api.cart.add.useMutation();
+
+  const saveDesign = api.design.saveCollage.useMutation();
+
+  const handleSaveDesignData = () => {
+    if (!design) return;
+
+    void saveDesign.mutateAsync({
+      id: id,
+      activityTypes: activityTypes.join(","),
+      backgroundColor: backgroundColor,
+      strokeColor: strokeColor,
+      previewSvg: previewSvg,
+      primaryText: primaryText,
+      secondaryText: secondaryText,
+      useText: useText,
+      name: name,
+    });
+  };
   const handleClick = () => {
     console.log("design", design);
     if (!design) return;
+
+    handleSaveDesignData();
 
     const item = addProductToCart.mutateAsync({
       designId: design.id,

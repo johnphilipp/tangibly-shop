@@ -262,10 +262,21 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="space-y-4">
+          <CheckoutButton
+            design={currentDesign}
+            name={activeDesign?.name ?? "Untitled"}
+            id={Number(designId)}
+            primaryText={primaryText}
+            secondaryText={secondaryText}
+            backgroundColor={backgroundColor}
+            strokeColor={backgroundColor}
+            useText={useText}
+            activityTypes={selectedActivityTypes}
+            previewSvg={getSVGBase64(svgRef) ?? ""}
+          />
           <div className="flex w-full gap-4 sm:gap-6">
             {/* <SaveButton /> */}
             <PreviewButton onClick={() => setOverlayOpen(true)} />
-            <CheckoutButton design={currentDesign} />
           </div>
         </div>
       )}

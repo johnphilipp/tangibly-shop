@@ -287,7 +287,18 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
           <div className="flex w-full gap-4 sm:gap-6">
             {/* <SaveButton /> */}
             <PreviewButton onClick={() => setOverlayOpen(true)} />
-            <CheckoutButton design={currentDesign} />
+            <CheckoutButton
+              design={currentDesign}
+              name={activeDesign?.name ?? "Untitled"}
+              id={Number(designId)}
+              primaryText={primaryText}
+              secondaryText={secondaryText}
+              backgroundColor={backgroundColor}
+              strokeColor={backgroundColor}
+              useText={useText}
+              activityTypes={selectedActivityTypes}
+              previewSvg={getSVGBase64(svgRef) ?? ""}
+            />
           </div>
         </div>
       )}
