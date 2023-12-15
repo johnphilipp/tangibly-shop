@@ -18,7 +18,6 @@ import { getSVGDataURL } from "~/utils/getSVGDataURL";
 import Overlay from "../../3d/Overlay";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 import { getUniqueSportTypes } from "../utils/getUniqueSportTypes";
-import { SaveButton } from "~/components/shared/actions/SaveButton";
 import DesignName from "~/components/DesignName";
 
 export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
@@ -263,10 +262,10 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="space-y-4">
-          <CheckoutButton design={currentDesign} />
           <div className="flex w-full gap-4 sm:gap-6">
-            <SaveButton />
+            {/* <SaveButton /> */}
             <PreviewButton onClick={() => setOverlayOpen(true)} />
+            <CheckoutButton design={currentDesign} />
           </div>
         </div>
       )}

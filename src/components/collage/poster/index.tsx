@@ -284,13 +284,6 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
         </div>
       </div>
 
-      {!isLoading && (
-        <div className="flex w-full gap-4 sm:gap-6">
-          <PreviewButton onClick={() => setOverlayOpen(true)} />
-          {/*<CheckoutButton onClick={() => void 0} /> Temp disabled*/}
-        </div>
-      )}
-
       {selectedActivities.length > 200 && (
         <WarningBanner
           title="Warning"

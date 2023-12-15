@@ -284,14 +284,13 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="space-y-4">
-          <CheckoutButton design={currentDesign} />
           <div className="flex w-full gap-4 sm:gap-6">
-            <SaveButton />
+            {/* <SaveButton /> */}
             <PreviewButton onClick={() => setOverlayOpen(true)} />
+            <CheckoutButton design={currentDesign} />
           </div>
         </div>
       )}
-
       {selectedActivities.length > 200 && (
         <WarningBanner
           title="Warning"

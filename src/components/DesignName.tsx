@@ -58,7 +58,7 @@ export default function DesignName() {
         setEditDesignName(false);
         handleSubmit();
       }}
-      className="mt-5 block w-full rounded-md border-0 text-xl text-black placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 "
+      className="mt-5 block w-full border border-gray-200 text-lg text-black placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 "
       placeholder={designName ? designName : "Set a title"}
       required
     />

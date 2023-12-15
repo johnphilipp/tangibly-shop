@@ -259,13 +259,6 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
         </div>
       </div>
 
-      {!isLoading && (
-        <div className="flex w-full gap-4 sm:gap-6">
-          <PreviewButton onClick={() => setOverlayOpen(true)} />
-          {/*<CheckoutButton design={} Temporary disabled*/}
-        </div>
-      )}
-
       {/* Right-side selectors */}
       {!isLoading && (
         <div className="mt-4 grid gap-4 border bg-white p-4 shadow-lg sm:mt-6 sm:p-6 lg:col-span-1">

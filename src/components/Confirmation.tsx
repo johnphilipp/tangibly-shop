@@ -4,12 +4,12 @@ import Layout from "./Layout";
 const products = [
   {
     id: 1,
-    name: "Mug with Collage",
-    description: "Your GPS tracks merged into a unique collage",
+    name: "Mug with Heatmap",
+    description: "Your GPS tracks merged into a unique heatmap",
     href: "#",
     quantity: 1,
     price: "15€",
-    imageSrc: "/collage-2.png",
+    imageSrc: "/heatmap.png",
     imageAlt: "Glass bottle with black plastic pour top and mesh insert.",
   },
 ];

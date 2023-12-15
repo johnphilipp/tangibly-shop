@@ -17,7 +17,7 @@ export const products: Product[] = [
     kind: "mug",
     imageSrc: "/products/collage/mug.png",
     imageAlt: "Your GPS tracks merged into a collage",
-    price: "€15",
+    price: "€19.99",
     color: "Your GPS tracks merged into a unique collage",
   },
   {
@@ -27,7 +27,7 @@ export const products: Product[] = [
     href: "/heatmap/mug",
     imageSrc: "/products/heatmap/mug.png",
     imageAlt: "Your activity time plotted as a heatmap",
-    price: "€15",
+    price: "€19.99",
     color: "Your activity time plotted as a unique heatmap",
   },
   {
@@ -37,7 +37,7 @@ export const products: Product[] = [
     kind: "poster",
     imageSrc: "/products/collage/poster.png",
     imageAlt: "Your GPS tracks merged into a collage",
-    price: "€15",
+    price: "€19.99",
     color: "Your GPS tracks merged into a unique collage",
   },
   {
@@ -47,7 +47,7 @@ export const products: Product[] = [
     href: "/heatmap/poster",
     imageSrc: "/products/heatmap/poster.png",
     imageAlt: "Your activity time plotted as a heatmap",
-    price: "€15",
+    price: "€19.99",
     color: "Your activity time plotted as a unique heatmap",
   },
 ];
