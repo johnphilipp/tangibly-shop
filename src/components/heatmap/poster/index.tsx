@@ -21,6 +21,9 @@ import type { AvailableSize } from "~/components/shared/selectors/SizeSelector";
 import { getUniqueSportTypes } from "../utils/getUniqueSportTypes";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 import DesignName from "~/components/DesignName";
+import { InterestedModal } from "~/components/modals/InterestedModal";
+import Button from "~/components/Button";
+import { BiMailSend } from "react-icons/bi";
 
 export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
   const { activities } = useData();
@@ -40,6 +43,8 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
   const [useText, setUseText] = useState(true);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
+  const [isInterestedModalVisible, setIsInterestedModalVisible] =
+    useState(false);
 
   const [currentDesign, setCurrentDesign] = useState<Collage>();
   const { activeDesign, setActiveDesign } = useData();
@@ -233,13 +238,12 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
 
       <DesignName />
 
-      {/* Floating Save Button */}
-      <button
-        onClick={handleSaveDesignData}
-        className="fixed bottom-5 right-5 z-50 rounded-full bg-green-500 p-3 text-lg text-white shadow-lg hover:bg-green-600 focus:outline-none"
-      >
-        Save
-      </button>
+      {isInterestedModalVisible && (
+        <InterestedModal
+          onClose={() => setIsInterestedModalVisible(false)}
+          svg={getSVGBase64(svgRef) ?? ""}
+        />
+      )}
 
       {/* Sticky SVGCanvas */}
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
@@ -258,6 +262,14 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
           />
         </div>
       </div>
+
+      <Button
+        onClick={() => setIsInterestedModalVisible(true)}
+        className="flex w-full items-center justify-center bg-purple-600 text-white shadow-lg hover:bg-purple-700"
+      >
+        <BiMailSend className="mr-2 inline-block h-6 w-6" aria-hidden="true" />
+        Pre-order
+      </Button>
 
       {/* Right-side selectors */}
       {!isLoading && (
