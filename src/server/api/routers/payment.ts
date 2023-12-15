@@ -1,13 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
-import axios from "axios";
-import sharp from "sharp";
 import * as process from "process";
 
 const prices = {
-  collage_mug: "price_1ONZXQBYeZI73kv1sb2WU0md",
-  collage_heatmap: "price_1ONZZ5BYeZI73kv1XbJUQ5Ki",
-  shipping: "price_1ONaMWBYeZI73kv1vDJQuDqZ",
+  collage_mug: "price_1ONZXYBYeZI73kv1hzk7PDpL",
+  collage_heatmap: "price_1ONbfWBYeZI73kv1NA82Xw98",
+  shipping: "price_1ONaMeBYeZI73kv1VedZhY5s",
   poster: "price_1OJz1rBYeZI73kv1UatLIZDv",
 };
 
