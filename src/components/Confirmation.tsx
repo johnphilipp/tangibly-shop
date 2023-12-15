@@ -1,5 +1,10 @@
 import Image from "next/image";
 import Layout from "./Layout";
+import { signal } from "@preact/signals-react";
+import { api } from "~/utils/api";
+import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 const products = [
   {
@@ -14,7 +19,135 @@ const products = [
   },
 ];
 
+const stripe_response = {
+  id: "cs_test_b1H1fiZNbFHGv7JcS1g1lSJiJs1tYK146YVPv2EGgnI4nzH5O6HdDVgrsx",
+  object: "checkout.session",
+  after_expiration: null,
+  allow_promotion_codes: null,
+  amount_subtotal: 5197,
+  amount_total: 5197,
+  automatic_tax: {
+    enabled: false,
+    status: null,
+  },
+  billing_address_collection: null,
+  cancel_url: null,
+  client_reference_id: null,
+  client_secret: null,
+  consent: null,
+  consent_collection: null,
+  created: 1702644166,
+  currency: "chf",
+  currency_conversion: null,
+  custom_fields: [],
+  custom_text: {
+    after_submit: null,
+    shipping_address: null,
+    submit: null,
+    terms_of_service_acceptance: null,
+  },
+  customer: null,
+  customer_creation: "if_required",
+  customer_details: {
+    address: {
+      city: "St. Gallen",
+      country: "CH",
+      line1: "Torstrasse 20",
+      line2: null,
+      postal_code: "9000",
+      state: null,
+    },
+    email: "johanneswenz98@gmail.com",
+    name: "Johannes Wenz",
+    phone: null,
+    tax_exempt: "none",
+    tax_ids: [],
+  },
+  customer_email: null,
+  expires_at: 1702730565,
+  invoice: null,
+  invoice_creation: {
+    enabled: false,
+    invoice_data: {
+      account_tax_ids: null,
+      custom_fields: null,
+      description: null,
+      footer: null,
+      metadata: {},
+      rendering_options: null,
+    },
+  },
+  livemode: false,
+  locale: null,
+  metadata: {},
+  mode: "payment",
+  payment_intent: "pi_3ONak4BYeZI73kv10ZaBAbai",
+  payment_link: null,
+  payment_method_collection: "if_required",
+  payment_method_configuration_details: {
+    id: "pmc_1OMftYBYeZI73kv1suxiyRae",
+    parent: null,
+  },
+  payment_method_options: {},
+  payment_method_types: ["card", "link", "klarna"],
+  payment_status: "paid",
+  phone_number_collection: {
+    enabled: false,
+  },
+  recovered_from: null,
+  redirect_on_completion: "always",
+  return_url:
+    "http://localhost:3000/confirmation?session_id={CHECKOUT_SESSION_ID}",
+  setup_intent: null,
+  shipping_address_collection: {
+    allowed_countries: ["CH"],
+  },
+  shipping_cost: null,
+  shipping_details: {
+    address: {
+      city: "St. Gallen",
+      country: "CH",
+      line1: "Torstrasse 20",
+      line2: null,
+      postal_code: "9000",
+      state: "",
+    },
+    name: "Johannes Wenz",
+  },
+  shipping_options: [],
+  status: "complete",
+  submit_type: null,
+  subscription: null,
+  success_url: null,
+  total_details: {
+    amount_discount: 0,
+    amount_shipping: 0,
+    amount_tax: 0,
+  },
+  ui_mode: "embedded",
+  url: null,
+};
+
 export default function Confirmation() {
+  const confirmationSignal = signal(null);
+
+  const searchParams = useSearchParams();
+
+  const user = useSession().data?.user;
+
+  const sessionData = api.payment.getCheckoutSession.useQuery(
+    {
+      sessionId: searchParams.get("session_id") ?? "",
+    },
+    {
+      enabled: !!searchParams.get("session_id") && user !== undefined,
+    },
+  );
+
+  useEffect(() => {
+    console.log("sessionData", sessionData);
+  }, [sessionData]);
+
   return (
     <>
       <Layout>

@@ -75,20 +75,20 @@ export default function ShoppingCartSidebar({ open }: { open: boolean }) {
   };
 
   const getPrice = (cartItem: ExtendedCartItem) => {
-    if (cartItem.design.productType === "CoffeeMug") {
+    if (cartItem.design.productType === "Heatmap") {
       if (currency === "CHF") {
-        return pricing.products.CoffeeMug.CHF;
+        return pricing.products.Heatmap.CHF;
       }
       if (currency === "EUR") {
-        return pricing.products.CoffeeMug.EUR;
+        return pricing.products.Heatmap.EUR;
       }
     }
-    if (cartItem.design.productType === "Bubbles") {
+    if (cartItem.design.productType === "Collage") {
       if (currency === "CHF") {
-        return pricing.products.Bubbles.CHF;
+        return pricing.products.Collage.CHF;
       }
       if (currency === "EUR") {
-        return pricing.products.Bubbles.EUR;
+        return pricing.products.Collage.EUR;
       }
     }
     return;

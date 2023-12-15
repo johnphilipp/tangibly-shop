@@ -3,10 +3,11 @@ import { z } from "zod";
 import axios from "axios";
 import sharp from "sharp";
 import * as process from "process";
-import { router } from "next/client";
 
 const prices = {
-  mug: "price_1OJyuwBYeZI73kv1Kj5oyOmJ",
+  collage_mug: "price_1ONZXQBYeZI73kv1sb2WU0md",
+  collage_heatmap: "price_1ONZZ5BYeZI73kv1XbJUQ5Ki",
+  shipping: "price_1ONaMWBYeZI73kv1vDJQuDqZ",
   poster: "price_1OJz1rBYeZI73kv1UatLIZDv",
 };
 
@@ -73,10 +74,10 @@ export const paymentRouter = createTRPCRouter({
             console.log(item);
             switch (item.design.productType) {
               case "Collage":
-              case "Poster":
+                return { price: prices.collage_mug, quantity: item.amount };
               case "Heatmap":
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-                return { price: prices.mug, quantity: item.amount };
+                return { price: prices.collage_heatmap, quantity: item.amount };
               case "poster":
                 return { price: prices.poster, quantity: item.amount };
               default:
@@ -86,6 +87,8 @@ export const paymentRouter = createTRPCRouter({
           .filter((item) => item !== null);
 
         console.log(lineItems);
+
+        lineItems.push({ price: prices.shipping, quantity: 1 });
 
         if (!lineItems) {
           console.log("Cart is empty");
@@ -104,16 +107,7 @@ export const paymentRouter = createTRPCRouter({
           line_items: lineItems,
           mode: "payment",
           shipping_address_collection: {
-            allowed_countries: ["CH", "DE", "AT"],
-          },
-          consent_collection: {
-            terms_of_service: "required",
-          },
-          custom_text: {
-            terms_of_service_acceptance: {
-              message:
-                "I agree to the [Terms of Service](https://example.com/terms)",
-            },
+            allowed_countries: ["CH"],
           },
           return_url: `${process.env.NEXTAUTH_URL}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
         });
@@ -139,7 +133,7 @@ export const paymentRouter = createTRPCRouter({
           input.sessionId,
         );
         return {
-          status: session.status,
+          status: session,
         };
       } catch (error) {
         console.log(error);
