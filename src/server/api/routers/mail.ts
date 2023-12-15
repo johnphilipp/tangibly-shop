@@ -57,9 +57,7 @@ async function sendEmail(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   const gmail_transporter = nodemailer.createTransport({
-    host: "smtp.strato.de",
-    port: 465,
-    secure: true,
+    service: "gmail",
     auth: {
       user: process.env.EMAIL_USER, // your Gmail address from environment variables
       pass: process.env.EMAIL_PASSWORD, // your Gmail password from environment variables
