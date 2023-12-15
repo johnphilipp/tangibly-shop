@@ -229,9 +229,27 @@ export default function Confirmation() {
                       </dt>
                       <dd className="mt-2 text-gray-700">
                         <address className="not-italic">
-                          <span className="block">Kristin Watson</span>
-                          <span className="block">7363 Cynthia Pass</span>
-                          <span className="block">Toronto, ON N3Y 4H8</span>
+                          <span className="block">
+                            {stripe_response.customer_details.name}
+                          </span>
+                          <span className="block">
+                            {stripe_response.shipping_details.address.line1}
+                          </span>
+                          {stripe_response.shipping_details.address.line2 && (
+                            <span className="block">
+                              {stripe_response.shipping_details.address.line2}
+                            </span>
+                          )}
+                          <span className="block">
+                            {
+                              stripe_response.shipping_details.address
+                                .postal_code
+                            }{" "}
+                            {stripe_response.shipping_details.address.city}
+                          </span>
+                          <span className="block">
+                            {stripe_response.shipping_details.address.country}
+                          </span>
                         </address>
                       </dd>
                     </div>
@@ -241,9 +259,27 @@ export default function Confirmation() {
                       </dt>
                       <dd className="mt-2 text-gray-700">
                         <address className="not-italic">
-                          <span className="block">Kristin Watson</span>
-                          <span className="block">7363 Cynthia Pass</span>
-                          <span className="block">Toronto, ON N3Y 4H8</span>
+                          <span className="block">
+                            {stripe_response.customer_details.name}
+                          </span>
+                          <span className="block">
+                            {stripe_response.customer_details.address.line1}
+                          </span>
+                          {stripe_response.customer_details.address.line2 && (
+                            <span className="block">
+                              {stripe_response.customer_details.address.line2}
+                            </span>
+                          )}
+                          <span className="block">
+                            {
+                              stripe_response.customer_details.address
+                                .postal_code
+                            }{" "}
+                            {stripe_response.customer_details.address.city}
+                          </span>
+                          <span className="block">
+                            {stripe_response.customer_details.address.country}
+                          </span>
                         </address>
                       </dd>
                     </div>
@@ -275,7 +311,7 @@ export default function Confirmation() {
                     </div>
                   </dl>
 
-                  <h3 className="sr-only">Summary</h3>
+                  {/* <h3 className="sr-only">Summary</h3>
 
                   <dl className="space-y-6 border-t border-gray-200 pt-10 text-sm">
                     <div className="flex justify-between">
@@ -299,7 +335,7 @@ export default function Confirmation() {
                       <dt className="font-medium text-gray-900">Total</dt>
                       <dd className="text-gray-900">€12.50</dd>
                     </div>
-                  </dl>
+                          </dl> */}
                 </div>
               </div>
             </div>
