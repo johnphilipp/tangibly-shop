@@ -190,3 +190,15 @@ model Heatmap {
 
   @@index([designId])
 }
+
+model CheckoutProduct {
+  id          Int    @id @default(autoincrement())
+  previewSvg  String @db.MediumText
+  productType String
+  name        String
+  quantity    Int
+  checkoutId  String
+  price       Float
+
+  @@index([checkoutId])
+}

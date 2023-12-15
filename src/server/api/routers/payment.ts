@@ -11,45 +11,6 @@ const prices = {
   poster: "price_1OJz1rBYeZI73kv1UatLIZDv",
 };
 
-function createLineItem(quantity: number, image_url: string) {
-  return {
-    price_data: {
-      currency: "CHF",
-      unit_amount: 20,
-      product_data: {
-        name: "Personal Mug",
-        images: [image_url],
-      },
-    },
-    quantity: quantity,
-    description: "A mug with your personal runs",
-  };
-}
-
-async function convertSvgToJpgAndUpload(base64Svg: string) {
-  // Step 1: Decode Base64 SVG
-  const svgBuffer = Buffer.from(base64Svg, "base64");
-
-  try {
-    // Step 2: Convert SVG to JPG
-    const jpgBuffer = await sharp(svgBuffer).toFormat("jpg").toBuffer();
-
-    // Step 3: Upload to ImgBB
-    const form = new FormData();
-
-    form.append("image", jpgBuffer.toString("base64"));
-    form.append("expiration", "60000");
-
-    return await axios.post(
-      `https://api.imgbb.com/1/upload?key=${process.env.IMAGE_UPLOAD_KEY}`,
-      form,
-    );
-  } catch (error) {
-    console.error("Error converting or uploading image:", error);
-    throw error;
-  }
-}
-
 export const paymentRouter = createTRPCRouter({
   createCheckoutSession: protectedProcedure
     .input(
@@ -106,11 +67,29 @@ export const paymentRouter = createTRPCRouter({
           ui_mode: "embedded",
           line_items: lineItems,
           mode: "payment",
+          client_reference_id: ctx.session.user.id,
           shipping_address_collection: {
             allowed_countries: ["CH"],
           },
           return_url: `${process.env.NEXTAUTH_URL}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
         });
+
+        const saveItems = items.map((item) => {
+          return {
+            previewSvg: item.design.previewSvg ?? "",
+            productType: item.design.productType,
+            name: item.design.name,
+            quantity: item.amount,
+            checkoutId: session.id,
+            price: 14.99,
+          };
+        });
+
+        const saveResult = await ctx.db.checkoutProduct.createMany({
+          data: saveItems,
+        });
+
+        console.log(saveResult);
 
         return { status: "success", clientSecret: session.client_secret };
       } catch (error) {
@@ -132,8 +111,26 @@ export const paymentRouter = createTRPCRouter({
         const session = await ctx.stripe.checkout.sessions.retrieve(
           input.sessionId,
         );
+
+        if (session.client_reference_id !== ctx.session.user.id.toString()) {
+          return {
+            status: "error",
+            message: "Session does not belong to user",
+          };
+        }
+
+        const checkoutData = await ctx.db.checkoutProduct.findMany({
+          where: {
+            checkoutId: session.id,
+          },
+        });
+
+        console.log(checkoutData);
+
         return {
-          status: session,
+          status: "success",
+          checkoutSession: session,
+          checkoutData: checkoutData,
         };
       } catch (error) {
         console.log(error);
