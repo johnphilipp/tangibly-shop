@@ -114,13 +114,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     const userName = user === "Your" ? user : user?.split(" ")[0] + "'s";
     setPrimaryText(`${userName} ${yearText} Wrapped`);
     setSecondaryText(`${selectedActivities.length} Activities`);
-  }, [
-    selectedYears,
-    session?.user?.name,
-    selectedActivities,
-    primaryText,
-    secondaryText,
-  ]);
+  }, [selectedYears, session?.user?.name, selectedActivities]);
 
   const handleToggleActivityType = (sportType: string) => {
     setSelectedActivityTypes((prev) =>

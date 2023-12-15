@@ -108,13 +108,7 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
     const userName = `${session?.user?.name?.split(" ")[0]}'s` ?? "Your";
     setPrimaryText(`${userName} ${selectedYear} Wrapped`);
     setSecondaryText(`Total moving time: ${totalMovingTime} hours`);
-  }, [
-    selectedYear,
-    session?.user?.name,
-    selectedActivities,
-    secondaryText,
-    primaryText,
-  ]);
+  }, [selectedYear, session?.user?.name, selectedActivities]);
 
   const handleToggleActivityType = (sportType: string) => {
     setSelectedActivityTypes((prev) =>
