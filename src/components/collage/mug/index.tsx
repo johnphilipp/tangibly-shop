@@ -43,9 +43,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
   >(null);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [strokeColor, setStrokeColor] = useState("#000000");
-  const [selectedYears, setSelectedYears] = useState<number[]>([
-    new Date().getFullYear(),
-  ]);
+
   const [useText, setUseText] = useState(true);
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
@@ -65,6 +63,10 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     );
     return Array.from(years).sort((a, b) => b - a);
   }, [activities]);
+
+  const [selectedYears, setSelectedYears] = useState<number[]>(
+      [availableYears[0] ?? new Date().getFullYear()]
+  );
 
   const activitiesFilteredByYears = useMemo(
     () =>
