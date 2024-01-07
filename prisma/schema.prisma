@@ -158,6 +158,7 @@ model Design {
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String
   activityTypes   String    @db.Text
+  years           String    @default("2023")
   backgroundColor String
   strokeColor     String
   previewSvg      String    @db.MediumText

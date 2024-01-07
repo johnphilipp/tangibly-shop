@@ -1,13 +1,7 @@
-import { type Stripe, loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { signal } from "@preact/signals-react";
 
-let stripePromise: Stripe | null;
-const getStripe = async () => {
-  if (!stripePromise) {
-    stripePromise = await loadStripe(
-      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-    );
-  }
-  return stripePromise;
-};
-
-export default getStripe;
+const stripeSignal = signal(() =>
+  loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!),
+);
+export default stripeSignal;

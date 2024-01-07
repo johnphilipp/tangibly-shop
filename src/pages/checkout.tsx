@@ -9,10 +9,14 @@ import {
 } from "@stripe/react-stripe-js";
 import { useSession } from "next-auth/react";
 import Layout from "~/components/Layout";
+import stripeSignal from "~/utils/get-stripe";
+import { loadStripe } from "@stripe/stripe-js";
 
 export default function Checkout() {
-  const stripe = getStripe();
   const [clientSecret, setClientSecret] = useState("");
+  const [stripePromise, setStripePromise] = useState(() =>
+    loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""),
+  );
 
   const getCheckout = api.payment.createCheckoutSession.useMutation();
 
@@ -32,6 +36,7 @@ export default function Checkout() {
           })) ?? [],
       })
       .then((value) => {
+        if (value.clientSecret === clientSecret) return;
         setClientSecret(value.clientSecret ?? "");
       });
   }, [cartData?.items]);
@@ -41,13 +46,15 @@ export default function Checkout() {
       <Layout>
         <div className="h-12" />
         <div id="checkout">
-          {clientSecret && (
+          {clientSecret && clientSecret != "" ? (
             <EmbeddedCheckoutProvider
-              stripe={stripe}
+              stripe={stripePromise}
               options={{ clientSecret }}
             >
               <EmbeddedCheckout />
             </EmbeddedCheckoutProvider>
+          ) : (
+            "Loading..."
           )}
         </div>
       </Layout>

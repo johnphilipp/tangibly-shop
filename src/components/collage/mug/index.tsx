@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { useData } from "~/contexts/DataContext";
 import SVGCanvas from "./canvas/SVGCanvas";
 import ActivityTypeSelector from "../../shared/selectors/ActivityTypeSelector";
@@ -13,14 +19,14 @@ import ToggleTextDisplay from "../../shared/selectors/ToggleTextDisplay";
 import MugColorSelector from "../../shared/selectors/MugColorSelector";
 import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
-import Overlay from "../../3d/Overlay";
-import { getSVGDataURL } from "../../../utils/getSVGDataURL";
 import { getSVGBase64 } from "~/utils/getSVGBase64";
-import { PreviewButton } from "../../shared/actions/PreviewButton";
-import { CheckoutButton } from "../../shared/actions/CheckoutButton";
+import { CartAddButton } from "../../shared/actions/CartAddButton";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
-import { SaveButton } from "~/components/shared/actions/SaveButton";
 import DesignName from "~/components/DesignName";
+import { useRouter } from "next/router";
+import { activeDesign } from "~/components/shared/utils/data";
+import { cartSignal } from "~/components/ShoppingCartSidebar";
+import { DebouncedFunc, debounce } from "lodash";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -48,12 +54,20 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
   const [primaryText, setPrimaryText] = useState("");
   const [secondaryText, setSecondaryText] = useState("");
 
+  const [originalPrimaryText, setOriginalPrimaryText] = useState("");
+  const [originalSecondaryText, setOriginalSecondaryText] = useState("");
+
   const [currentCollage, setCurrentCollage] = useState<Collage>();
   const [currentDesign, setCurrentDesign] = useState<Design>();
-  const { activeDesign, setActiveDesign } = useData();
+
+  const [showResetPrimary, setShowResetPrimary] = useState(false);
+  const [showResetSecondary, setShowResetSeconday] = useState(false);
 
   const searchParams = useSearchParams();
   const user = useSession().data?.user;
+
+  const router = useRouter();
+  const designParameter = router.query.designId;
 
   const availableYears = useMemo(() => {
     const years = new Set(
@@ -64,9 +78,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     return Array.from(years).sort((a, b) => b - a);
   }, [activities]);
 
-  const [selectedYears, setSelectedYears] = useState<number[]>(
-      [availableYears[0] ?? new Date().getFullYear()]
-  );
+  const [selectedYears, setSelectedYears] = useState<number[]>([]);
 
   const activitiesFilteredByYears = useMemo(
     () =>
@@ -77,6 +89,16 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       ),
     [activities, selectedYears],
   );
+
+  const designId = searchParams.get("designId");
+
+  const { data: fetchedDesign, isLoading: loading } =
+    api.design.getCollage.useQuery(
+      { id: Number(designId) },
+      {
+        enabled: user !== undefined,
+      },
+    );
 
   const activitiesWithGPS = useMemo(
     () => getActivitiesWithGPS(activitiesFilteredByYears),
@@ -95,6 +117,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
   useEffect(() => {
     // Once sportTypes is populated, set all as selected
+    if (selectedActivityTypes.length > 0) return;
     setSelectedActivityTypes(sportTypes);
   }, [sportTypes]);
 
@@ -110,50 +133,82 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
   useEffect(() => {
     // Check if selectedYears array is not empty, otherwise -Infinity bug
     if (selectedActivities.length === 0 || selectedYears.length === 0) return;
-    const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
+    const yearText = selectedYears.length === 2 ? selectedYears[1] : "Years";
     const user =
       session?.user?.name === undefined ? "Your" : session?.user?.name;
     const userName = user === "Your" ? user : user?.split(" ")[0] + "'s";
-    setPrimaryText(`${userName} ${yearText} Wrapped`);
-    setSecondaryText(`${selectedActivities.length} Activities`);
-  }, [selectedYears, session?.user?.name, selectedActivities]);
+
+    const primText = `${userName} ${yearText} Wrapped`;
+    const secText = `${selectedActivities.length} Activities`;
+
+    if (loading) return;
+
+    if (!showResetPrimary) {
+      setPrimaryText(primText);
+      setOriginalPrimaryText(primText);
+    }
+
+    if (!showResetSecondary) {
+      setSecondaryText(secText);
+      setOriginalSecondaryText(secText);
+    }
+  }, [
+    selectedYears,
+    session?.user?.name,
+    selectedActivities,
+    loading,
+    showResetSecondary,
+    showResetPrimary,
+  ]);
 
   const handleToggleActivityType = (sportType: string) => {
-    setSelectedActivityTypes((prev) =>
-      prev.includes(sportType)
+    setSelectedActivityTypes((prev) => {
+      return prev.includes(sportType)
         ? prev.filter((type) => type !== sportType)
-        : [...prev, sportType],
-    );
-
-    handleSaveDesignData();
+        : [...prev, sportType];
+    });
   };
 
   const handleYearChange = (year: number) => {
     setSelectedYears((prevYears) => {
       if (prevYears.includes(year)) {
-        // Remove the year if it's already selected
+        // Remove the year if it's already selecte
         return prevYears.filter((y) => y !== year);
       } else {
         // Add the year if it's not already selected
         return [...prevYears, year];
       }
     });
+  };
 
-    handleSaveDesignData();
+  const handleResetPrimaryText = () => {
+    setPrimaryText(originalPrimaryText);
+    setShowResetPrimary(false);
+  };
+
+  const handleResetSecondaryText = () => {
+    setSecondaryText(originalSecondaryText);
+    setShowResetSeconday(false);
   };
 
   const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === originalPrimaryText) {
+      setShowResetPrimary(false);
+    } else {
+      setShowResetPrimary(true);
+    }
     setPrimaryText(e.target.value);
-
-    handleSaveDesignData();
   };
 
   const handleSecondaryTextChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    if (e.target.value === originalSecondaryText) {
+      setShowResetSeconday(false);
+    } else {
+      setShowResetSeconday(true);
+    }
     setSecondaryText(e.target.value);
-
-    handleSaveDesignData();
   };
 
   const handleColorChange = (newColor: string) => {
@@ -167,8 +222,6 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     }
     // Update the background color
     setBackgroundColor(newColor);
-
-    handleSaveDesignData();
   };
 
   const handleClickActivity = (index: number) => {
@@ -194,39 +247,69 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
   const saveDesign = api.design.saveCollage.useMutation();
 
-  const designId = searchParams.get("designId");
-
   const handleSaveDesignData = () => {
     if (!user) return;
+
+    console.log("handleSaveDesignData");
 
     void saveDesign.mutateAsync({
       id: Number(designId) ?? 0,
       activityTypes: selectedActivityTypes.join(","),
+      years: selectedYears.join(","),
       backgroundColor: backgroundColor,
       strokeColor: strokeColor,
       previewSvg: getSVGBase64(svgRef) ?? "",
       primaryText: primaryText,
       secondaryText: secondaryText,
       useText: useText,
-      name: activeDesign?.name ?? "Untitled-1",
+      name: activeDesign.value?.name ?? "Untitled-1",
+    });
+
+    cartSignal.value.map((item) => {
+      if (item.design.id === Number(designId)) {
+        item.design.previewSvg = getSVGBase64(svgRef) ?? "";
+      }
     });
   };
 
-  const { data: fetchedDesign } = api.design.getCollage.useQuery(
-    { id: Number(designId) },
-    {
-      enabled: user !== undefined && !currentDesign,
-    },
-  );
+  const debouncedSaveRef = useRef<DebouncedFunc<typeof handleSaveDesignData>>();
+
+  // Initialize or update the debounced function
+  useEffect(() => {
+    debouncedSaveRef.current = debounce(() => {
+      handleSaveDesignData();
+    }, 500);
+
+    return () => {
+      // Cancel the debounced call on cleanup
+      debouncedSaveRef.current?.cancel();
+    };
+  }, [handleSaveDesignData]);
+
+  // Trigger the debounced function when dependencies change
+  useEffect(() => {
+    console.log("debounce");
+    debouncedSaveRef.current?.();
+  }, [
+    selectedActivities.length,
+    selectedYears.length,
+    secondaryText,
+    primaryText,
+    strokeColor,
+    backgroundColor,
+  ]);
+
+  const handleStrokeColorChange = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setStrokeColor(e.target.value);
+  };
 
   useEffect(() => {
-    handleSaveDesignData();
-  }, []);
+    console.log("fetchedDesign", fetchedDesign);
+    //if (!fetchedDesign || currentDesign) return;
 
-  useEffect(() => {
-    if (!fetchedDesign || currentDesign) return;
-
-    console.log("foundDesign", designId);
+    if (!fetchedDesign) return;
 
     const foundDesign = fetchedDesign.design;
 
@@ -235,25 +318,22 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       setStrokeColor(foundDesign.Design.strokeColor);
       setCurrentCollage(foundDesign);
       setUseText(foundDesign.useText);
-      setActiveDesign({
+      setSelectedYears(foundDesign.Design.years.split(",").map(Number));
+      setSelectedActivityTypes(foundDesign.Design.activityTypes.split(","));
+      setPrimaryText(foundDesign.primaryText);
+      setSecondaryText(foundDesign.secondaryText);
+      activeDesign.value = {
         id: foundDesign.id,
         name: foundDesign.Design.name,
         designId: foundDesign.Design.id,
-      });
+      };
 
       setCurrentDesign(foundDesign.Design);
     } else {
       // Handle the case where the design is not found
       console.error("Design not found");
     }
-  }, [
-    activities,
-    fetchedDesign,
-    currentDesign,
-    designId,
-    user,
-    setActiveDesign,
-  ]);
+  }, [activities, fetchedDesign, currentDesign, designId, user]);
 
   return (
     <div className="m-4 sm:m-6">
@@ -283,18 +363,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
           <div className="flex w-full gap-4 sm:gap-6">
             {/* <SaveButton /> */}
             {/* <PreviewButton onClick={() => setOverlayOpen(true)} /> */}
-            <CheckoutButton
-              design={currentDesign}
-              name={activeDesign?.name ?? "Untitled"}
-              id={Number(designId)}
-              primaryText={primaryText}
-              secondaryText={secondaryText}
-              backgroundColor={backgroundColor}
-              strokeColor={backgroundColor}
-              useText={useText}
-              activityTypes={selectedActivityTypes}
-              previewSvg={getSVGBase64(svgRef) ?? ""}
-            />
+            <CartAddButton design={currentDesign} />
           </div>
         </div>
       )}
@@ -329,7 +398,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
             <StrokeColorSelector
               label="Stroke Color"
               color={strokeColor}
-              onColorChange={(e) => setStrokeColor(e.target.value)}
+              onColorChange={handleStrokeColorChange}
             />
           </div>
 
@@ -339,12 +408,16 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
             label="Primary Text"
             text={primaryText}
             onTextChange={handlePrimaryTextChange}
+            showReset={showResetPrimary}
+            onReset={handleResetPrimaryText}
           />
 
           <TextSelector
             label="Secondary Text"
             text={secondaryText}
             onTextChange={handleSecondaryTextChange}
+            showReset={showResetSecondary}
+            onReset={handleResetSecondaryText}
           />
         </div>
       )}
@@ -354,12 +427,6 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
         activity={selectedActivities[selectedActivityIndex!]!}
         onClose={() => setIsModalVisible(false)}
         onDelete={() => handleDeleteActivity(selectedActivityIndex!)}
-      />
-
-      <Overlay
-        svgDataURL={svgRef.current ? getSVGDataURL(svgRef) : ""}
-        isOpen={isOverlayOpen}
-        onClose={() => setOverlayOpen(false)}
       />
     </div>
   );

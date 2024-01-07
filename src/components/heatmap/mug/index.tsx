@@ -13,7 +13,7 @@ import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
 import { getSVGBase64 } from "~/utils/getSVGBase64";
 import { PreviewButton } from "../../shared/actions/PreviewButton";
-import { CheckoutButton } from "../../shared/actions/CheckoutButton";
+import { CartAddButton } from "../../shared/actions/CartAddButton";
 import { getSVGDataURL } from "~/utils/getSVGDataURL";
 import Overlay from "../../3d/Overlay";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
@@ -53,10 +53,10 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
   }, [activities]);
 
   const [selectedYear, setSelectedYear] = useState<number>(
-      availableYears[0] ?? new Date().getFullYear(),
+    availableYears[0] ?? new Date().getFullYear(),
   );
 
-  console.log("selectedYear", selectedYear)
+  console.log("selectedYear", selectedYear);
 
   const activitiesFilteredByYears = useMemo(
     () =>
@@ -259,7 +259,7 @@ export default function HeatmapMug({ isLoading }: { isLoading: boolean }) {
 
       {!isLoading && (
         <div className="space-y-4">
-          <CheckoutButton
+          <CartAddButton
             design={currentDesign}
             name={activeDesign?.name ?? "Untitled"}
             id={Number(designId)}

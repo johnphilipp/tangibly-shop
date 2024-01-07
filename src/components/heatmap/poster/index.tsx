@@ -13,7 +13,7 @@ import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
 import { getSVGBase64 } from "~/utils/getSVGBase64";
 import { PreviewButton } from "../../shared/actions/PreviewButton";
-import { CheckoutButton } from "../../shared/actions/CheckoutButton";
+import { CartAddButton } from "../../shared/actions/CartAddButton";
 import { getSVGDataURL } from "~/utils/getSVGDataURL";
 import Overlay from "../../3d/Overlay";
 import SizeSelector from "~/components/shared/selectors/SizeSelector";

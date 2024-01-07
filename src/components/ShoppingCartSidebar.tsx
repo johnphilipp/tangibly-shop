@@ -45,7 +45,7 @@ const dasdad = [
 export const cartSignal: Signal<ExtendedCartItem[]> = signal([]);
 
 export default function ShoppingCartSidebar({ open }: { open: boolean }) {
-  const { cartItems, setCartItems } = useData();
+  //const { cartItems, setCartItems } = useData();
   const user = useSession().data?.user;
   const router = useRouter();
 
@@ -55,19 +55,15 @@ export default function ShoppingCartSidebar({ open }: { open: boolean }) {
 
   useEffect(() => {
     if (user !== undefined && cartData?.items) {
-      setCartItems(cartData.items);
       cartSignal.value = cartData.items;
     }
-  }, [cartData, setCartItems, user]);
+  }, [cartData, user]);
 
   const cart = api.cart.delete.useMutation();
   const handleCartDeletion = async (id: number) => {
     await cart.mutateAsync({
       id: id,
     });
-    setCartItems((currentCartItems) =>
-      currentCartItems.filter((cartItem) => cartItem.id !== id),
-    );
 
     cartSignal.value = cartSignal.value.filter(
       (cartItem) => cartItem.id !== id,
@@ -156,7 +152,6 @@ export default function ShoppingCartSidebar({ open }: { open: boolean }) {
                                 <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                   <img
                                     src={`data:image/svg+xml;base64,${cartItem.design.previewSvg}`}
-                                    //src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
                                     className="h-full w-full object-contain object-center"
                                   />
                                 </div>
@@ -186,8 +181,8 @@ export default function ShoppingCartSidebar({ open }: { open: boolean }) {
                                         href={
                                           `${products.find(
                                             (value) =>
-                                              (value.name =
-                                                cartItem.design.productType),
+                                              value.name ===
+                                              cartItem.design.productType,
                                           )?.href}?designId=` + cartItem.id
                                         }
                                         className="mr-2 font-medium text-indigo-600 hover:text-indigo-500"
@@ -218,7 +213,7 @@ export default function ShoppingCartSidebar({ open }: { open: boolean }) {
                         <p>Subtotal</p>
                         <p>
                           {currency}{" "}
-                          {cartItems
+                          {cartSignal.value
                             .map((value) => getPrice(value))
                             .reduce((total, current) => {
                               return (total ?? 0) + (current ?? 0);

@@ -8,6 +8,7 @@ export const designRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         activityTypes: z.string(),
+        years: z.string(),
         backgroundColor: z.string(),
         strokeColor: z.string(),
         primaryText: z.string(),
@@ -43,6 +44,7 @@ export const designRouter = createTRPCRouter({
                 where: { id: collage.designId, userId: ctx.session.user.id },
                 data: {
                   activityTypes: input.activityTypes,
+                  years: input.years,
                   backgroundColor: input.backgroundColor,
                   strokeColor: input.strokeColor,
                   previewSvg: input.previewSvg,
@@ -164,6 +166,7 @@ export const designRouter = createTRPCRouter({
             name: {
               startsWith: "Untitled-",
             },
+            userId: ctx.session.user.id,
           },
           orderBy: {
             name: "desc",
@@ -189,6 +192,7 @@ export const designRouter = createTRPCRouter({
                 create: {
                   productType: input.designType,
                   name: name,
+                  years: "2023",
                   activityTypes: "Run Ride",
                   backgroundColor: "#FFFFFF", // Example: White color
                   strokeColor: "#000000", // Example: Black color

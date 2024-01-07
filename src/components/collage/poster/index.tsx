@@ -17,7 +17,7 @@ import Overlay from "../../3d/Overlay";
 import { getSVGDataURL } from "../../../utils/getSVGDataURL";
 import { getSVGBase64 } from "~/utils/getSVGBase64";
 import { PreviewButton } from "../../shared/actions/PreviewButton";
-import { CheckoutButton } from "../../shared/actions/CheckoutButton";
+import { CartAddButton } from "../../shared/actions/CartAddButton";
 import SizeSelector from "~/components/shared/selectors/SizeSelector";
 import type { AvailableSize } from "~/components/shared/selectors/SizeSelector";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";

@@ -13,10 +13,6 @@ interface DataContextProps {
   setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
   cartItems: ExtendedCartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<ExtendedCartItem[]>>;
-  activeDesign: ActiveDesign | undefined;
-  setActiveDesign: React.Dispatch<
-    React.SetStateAction<ActiveDesign | undefined>
-  >;
 }
 
 interface ActiveDesign {
@@ -34,9 +30,6 @@ const DataContext = createContext<DataContextProps | undefined>(undefined);
 export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [cartItems, setCartItems] = useState<ExtendedCartItem[]>([]);
-  const [activeDesign, setActiveDesign] = useState<ActiveDesign | undefined>(
-    undefined,
-  );
 
   return (
     <DataContext.Provider
@@ -45,8 +38,6 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         setActivities,
         cartItems,
         setCartItems,
-        activeDesign,
-        setActiveDesign,
       }}
     >
       {children}
