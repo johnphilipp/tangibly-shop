@@ -8,6 +8,9 @@ import Layout from "../Layout";
 import Background from "../Background";
 import Image from "next/image";
 import { LoadingSpinner } from "../Loading";
+import NoDesignsField from "~/components/saved/NoDesignsField";
+import {cartSignal} from "~/components/ShoppingCartSidebar";
+import {ExtendedCartItem} from "~/contexts/DataContext";
 
 export default function Saved() {
   const [allDesigns, setAllDesigns] = useState<Design[] | undefined>(undefined);
@@ -47,6 +50,8 @@ export default function Saved() {
 
       if (data.status === "success" && allDesigns) {
         setAllDesigns(allDesigns.filter((item) => item.id !== design.id));
+
+        cartSignal.value = cartSignal.value.filter((item) => item.designId !== design.id);
       }
     } catch (error) {
       console.error("Error deleting design:", error);
@@ -77,9 +82,7 @@ export default function Saved() {
             <div className="mt-12 space-y-16 sm:mt-16">
               <div className="flow-root divide-y divide-gray-200 border-t border-gray-200">
                 {allDesigns?.length === 0 && (
-                  <p className="-mt-6 text-sm text-gray-500">
-                    You have no saved designs.
-                  </p>
+                  <NoDesignsField />
                 )}
 
                 {allDesigns?.map((design) => (

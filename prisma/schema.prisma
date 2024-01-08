@@ -162,6 +162,8 @@ model Design {
   backgroundColor String
   strokeColor     String
   previewSvg      String    @db.MediumText
+  isPrimaryOriginal  Boolean   @default(false)
+  isSecondaryOriginal  Boolean   @default(false)
   CartItem        CartItem?
   Collage         Collage?
   Heatmap         Heatmap?

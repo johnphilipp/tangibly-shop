@@ -6,8 +6,12 @@ import { useRouter } from "next/router";
 import DesignList from "~/components/DesignList";
 import type { Product } from "~/utils/products";
 import { products } from "~/utils/products";
+import {signal} from "@preact/signals-react";
+import NoDesignFoundBanner from "~/components/shop/NoDesignFoundBanner";
 
 type ProductMapping = Record<string, Product[]>;
+
+export const showNoDesignFoundBanner = signal(false)
 
 export default function Shop() {
   const router = useRouter();
@@ -57,6 +61,12 @@ export default function Shop() {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               Shop
             </h1>
+
+            {showNoDesignFoundBanner.value && (
+                <div className="pt-10">
+                <NoDesignFoundBanner />
+                </div>)
+            }
 
             {Object.entries(productMapping).map(([kind, productsOfKind]) => (
               <div key={kind}>

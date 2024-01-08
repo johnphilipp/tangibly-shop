@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 import { activeDesign } from "~/components/shared/utils/data";
 import { cartSignal } from "~/components/ShoppingCartSidebar";
 import { DebouncedFunc, debounce } from "lodash";
+import {showNoDesignFoundBanner} from "~/components/shop";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -61,7 +62,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
   const [currentDesign, setCurrentDesign] = useState<Design>();
 
   const [showResetPrimary, setShowResetPrimary] = useState(false);
-  const [showResetSecondary, setShowResetSeconday] = useState(false);
+  const [showResetSecondary, setShowResetSecondary] = useState(false);
 
   const searchParams = useSearchParams();
   const user = useSession().data?.user;
@@ -117,9 +118,9 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
   useEffect(() => {
     // Once sportTypes is populated, set all as selected
-    if (selectedActivityTypes.length > 0) return;
+    if (selectedActivityTypes[0] !== "" || sportTypes.length === 0 ) return;
     setSelectedActivityTypes(sportTypes);
-  }, [sportTypes]);
+  }, [sportTypes.length, activitiesWithGPS]);
 
   useEffect(() => {
     // Once selectedActivityTypes is populated, filter activitiesWithGPS to get selectedActivities
@@ -188,7 +189,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
   const handleResetSecondaryText = () => {
     setSecondaryText(originalSecondaryText);
-    setShowResetSeconday(false);
+    setShowResetSecondary(false);
   };
 
   const handlePrimaryTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,9 +205,9 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (e.target.value === originalSecondaryText) {
-      setShowResetSeconday(false);
+      setShowResetSecondary(false);
     } else {
-      setShowResetSeconday(true);
+      setShowResetSecondary(true);
     }
     setSecondaryText(e.target.value);
   };
@@ -250,7 +251,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
   const handleSaveDesignData = () => {
     if (!user) return;
 
-    console.log("handleSaveDesignData");
+    console.log("showReset", showResetSecondary)
 
     void saveDesign.mutateAsync({
       id: Number(designId) ?? 0,
@@ -261,6 +262,8 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       previewSvg: getSVGBase64(svgRef) ?? "",
       primaryText: primaryText,
       secondaryText: secondaryText,
+      isPrimaryOriginal: showResetPrimary,
+      isSecondaryOriginal: showResetSecondary,
       useText: useText,
       name: activeDesign.value?.name ?? "Untitled-1",
     });
@@ -288,7 +291,6 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
 
   // Trigger the debounced function when dependencies change
   useEffect(() => {
-    console.log("debounce");
     debouncedSaveRef.current?.();
   }, [
     selectedActivities.length,
@@ -322,6 +324,9 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       setSelectedActivityTypes(foundDesign.Design.activityTypes.split(","));
       setPrimaryText(foundDesign.primaryText);
       setSecondaryText(foundDesign.secondaryText);
+      setShowResetPrimary(foundDesign.Design.isPrimaryOriginal);
+      setShowResetSecondary(foundDesign.Design.isSecondaryOriginal);
+
       activeDesign.value = {
         id: foundDesign.id,
         name: foundDesign.Design.name,
@@ -332,8 +337,11 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     } else {
       // Handle the case where the design is not found
       console.error("Design not found");
+      showNoDesignFoundBanner.value = true;
+      router.push("/shop");
     }
   }, [activities, fetchedDesign, currentDesign, designId, user]);
+
 
   return (
     <div className="m-4 sm:m-6">
