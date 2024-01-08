@@ -42,8 +42,9 @@ export default function DesignName() {
   };
 
   useEffect(() => {
+    if(activeDesign.value?.name === designName) return;
     setDesignName(activeDesign.value?.name ?? "Untitled-1");
-  }, []);
+  }, [activeDesign.value]);
 
   return (
     <input

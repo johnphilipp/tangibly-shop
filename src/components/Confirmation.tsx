@@ -4,7 +4,8 @@ import { signal } from "@preact/signals-react";
 import { api } from "~/utils/api";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import {useEffect, useState} from "react";
+import {Order} from "~/utils/Order";
 
 const products = [
   {
@@ -171,17 +172,21 @@ export default function Confirmation() {
 
   const user = useSession().data?.user;
 
-  const sessionData = api.payment.getCheckoutSession.useQuery(
+  const [checkoutData, setCheckoutData] = useState<Order | undefined>(undefined)
+
+  const { data: sessionData} = api.payment.getCheckoutSession.useQuery(
     {
       sessionId: searchParams.get("session_id") ?? "",
     },
     {
       enabled: !!searchParams.get("session_id") && user !== undefined,
     },
-  );
+  )
 
   useEffect(() => {
     console.log("sessionData", sessionData);
+
+    setCheckoutData(sessionData?.checkoutSession)
   }, [sessionData]);
 
   return (
@@ -200,18 +205,18 @@ export default function Confirmation() {
                 <p className="mt-2 text-base text-gray-500">
                   Order number: #14034056
                 </p>
-
+                {/*
                 <dl className="mt-12 text-sm font-medium">
                   <dt className="text-gray-900">Tracking number</dt>
                   <dd className="mt-2 text-indigo-600">51547878755545848512</dd>
-                </dl>
+                </dl>*/}
               </div>
 
               <div className="mt-10 border-t border-gray-200">
                 <h2 className="sr-only">Your order</h2>
 
                 <h3 className="sr-only">Items</h3>
-                {/* {products.map((product) => (
+                {products.map((product) => (
                   <div
                     key={product.id}
                     className="flex space-x-6 border-b border-gray-200 py-10"
@@ -252,7 +257,7 @@ export default function Confirmation() {
                       </div>
                     </div>
                   </div>
-                ))} */}
+                ))}
 
                 <div className="sm:ml-40 sm:pl-6">
                   <h3 className="sr-only">Your information</h3>
@@ -266,25 +271,24 @@ export default function Confirmation() {
                       <dd className="mt-2 text-gray-700">
                         <address className="not-italic">
                           <span className="block">
-                            {stripe_response.customer_details.name}
+                            {checkoutData?.name}
                           </span>
                           <span className="block">
-                            {stripe_response.shipping_details.address.line1}
+                            {checkoutData?.shipping?.address?.line1}
                           </span>
-                          {stripe_response.shipping_details.address.line2 && (
+                          {checkoutData?.shipping?.address?.line2 && (
                             <span className="block">
-                              {stripe_response.shipping_details.address.line2}
+                              {checkoutData.shipping.address.line2}
                             </span>
                           )}
                           <span className="block">
                             {
-                              stripe_response.shipping_details.address
-                                .postal_code
+                              checkoutData?.shipping?.address?.postal_code
                             }{" "}
-                            {stripe_response.shipping_details.address.city}
+                            {checkoutData?.shipping?.address?.city}
                           </span>
                           <span className="block">
-                            {stripe_response.shipping_details.address.country}
+                            {checkoutData?.shipping?.address?.country}
                           </span>
                         </address>
                       </dd>
@@ -296,25 +300,24 @@ export default function Confirmation() {
                       <dd className="mt-2 text-gray-700">
                         <address className="not-italic">
                           <span className="block">
-                            {stripe_response.customer_details.name}
+                            {checkoutData?.name}
                           </span>
                           <span className="block">
-                            {stripe_response.customer_details.address.line1}
+                            {checkoutData?.shipping?.address?.line1}
                           </span>
-                          {stripe_response.customer_details.address.line2 && (
-                            <span className="block">
-                              {stripe_response.customer_details.address.line2}
+                          {checkoutData?.shipping?.address?.line2 && (
+                              <span className="block">
+                              {checkoutData.shipping.address.line2}
                             </span>
                           )}
                           <span className="block">
                             {
-                              stripe_response.customer_details.address
-                                .postal_code
+                              checkoutData?.shipping?.address?.postal_code
                             }{" "}
-                            {stripe_response.customer_details.address.city}
+                            {checkoutData?.shipping?.address?.city}
                           </span>
                           <span className="block">
-                            {stripe_response.customer_details.address.country}
+                            {checkoutData?.shipping?.address?.country}
                           </span>
                         </address>
                       </dd>

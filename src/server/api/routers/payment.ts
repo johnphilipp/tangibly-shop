@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import * as process from "process";
+import { Order } from "~/utils/Order";
 
 const prices =
   process.env.NODE_ENV === "production"
@@ -131,11 +132,28 @@ export const paymentRouter = createTRPCRouter({
           },
         });
 
-        console.log(checkoutData);
+        const order: Order = {
+            checkoutSessionId: session.id,
+            lineItems: [],
+            status: session.payment_status,
+            shipping: {
+                address: session.shipping_details?.address,
+                name: session.shipping_details?.name,
+            },
+            email: session.customer_email,
+            name: session.customer_details?.name,
+            phone: session.customer_details?.phone,
+            paymentStatus: session.payment_status,
+            currency: session.currency,
+            amountTotal: session.amount_total,
+            };
+
+
+        console.log(order);
 
         return {
           status: "success",
-          checkoutSession: session,
+          checkoutSession: order,
           checkoutData: checkoutData,
         };
       } catch (error) {

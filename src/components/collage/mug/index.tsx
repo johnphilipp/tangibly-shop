@@ -338,7 +338,7 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
       // Handle the case where the design is not found
       console.error("Design not found");
       showNoDesignFoundBanner.value = true;
-      router.push("/shop");
+      void router.push("/shop");
     }
   }, [activities, fetchedDesign, currentDesign, designId, user]);
 

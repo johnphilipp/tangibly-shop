@@ -14,11 +14,18 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         console.log("Adding to cart", input.designId);
-        const creation = await ctx.db.cartItem.create({
-          data: {
+        const creation = await ctx.db.cartItem.upsert({
+          where: {
+              userId: ctx.session.user.id,
+              designId: input.designId,
+          },
+          create: {
             user: { connect: { id: ctx.session.user.id } },
             design: { connect: { id: input.designId } },
             amount: input.amount,
+          },
+          update: {
+            amount: { increment: input.amount },
           },
         });
 
