@@ -14,7 +14,7 @@ interface SVGCanvasProps {
   onClickActivity: (index: number) => void;
 }
 
-const SVGCanvas: React.FC<SVGCanvasProps> = ({
+const SVGCanvasHeatmap: React.FC<SVGCanvasProps> = ({
   activities,
   backgroundColor,
   strokeColor,
@@ -187,4 +187,4 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
   );
 };
 
-export default SVGCanvas;
+export default SVGCanvasHeatmap;

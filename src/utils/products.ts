@@ -13,7 +13,7 @@ export const products: Product[] = [
   {
     id: 1,
     name: "Collage",
-    href: "/collage/mug",
+    href: "/mug/collage",
     kind: "mug",
     imageSrc: "/products/collage/mug.png",
     imageAlt: "Your GPS tracks merged into a collage",
@@ -24,7 +24,7 @@ export const products: Product[] = [
     id: 2,
     name: "Heatmap",
     kind: "mug",
-    href: "/heatmap/mug",
+    href: "/mug/heatmap",
     imageSrc: "/products/heatmap/mug.png",
     imageAlt: "Your activity time plotted as a heatmap",
     price: "€14.99",

@@ -270,7 +270,7 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
         />
       )}
 
-      {/* Sticky SVGCanvas */}
+      {/* Sticky SVGCanvasCollage */}
       <div className="sticky top-0 z-10 my-4 text-center sm:my-6">
         <div className="bg-white shadow-2xl">
           <SVGCanvas

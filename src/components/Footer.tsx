@@ -3,9 +3,9 @@ import { Logo } from "./Logo";
 
 const navigation = {
   shop: [
-    { name: "Collage Mug", href: "/collage/mug" },
+    { name: "Collage Mug", href: "/mug/collage" },
     { name: "Collage Poster", href: "/collage/poster" },
-    { name: "Heatmap Mug", href: "/heatmap/mug" },
+    { name: "Heatmap Mug", href: "/mug/heatmap" },
     { name: "Heatmap Poster", href: "/heatmap/poster" },
   ],
   saved: [],

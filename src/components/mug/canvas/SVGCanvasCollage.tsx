@@ -1,9 +1,9 @@
 import type { Activity } from "@prisma/client";
 import React from "react";
-import { getQuadrantCoordinates } from "../../../shared/utils/getQuadrantCoordinates";
-import { convertToSVGPath } from "../../../shared/utils/convertToSVGPath";
-import { calculateGridDimensions } from "../../../shared/utils/calculateGridDimensions";
-import { getProperties } from "../../../shared/utils/getProperties";
+import { getQuadrantCoordinates } from "~/components/shared/utils/getQuadrantCoordinates";
+import { convertToSVGPath } from "~/components/shared/utils/convertToSVGPath";
+import { calculateGridDimensions } from "~/components/shared/utils/calculateGridDimensions";
+import { getProperties } from "~/components/shared/utils/getProperties";
 
 const SVG_WIDTH = 2000; // 200 mm
 const SVG_HEIGHT = 960; // 96 mm
@@ -30,7 +30,7 @@ interface SVGCanvasProps {
   onClickActivity: (index: number) => void;
 }
 
-const SVGCanvas: React.FC<SVGCanvasProps> = ({
+const SVGCanvasCollage: React.FC<SVGCanvasProps> = ({
   activities,
   backgroundColor,
   strokeColor,
@@ -159,4 +159,4 @@ const SVGCanvas: React.FC<SVGCanvasProps> = ({
   );
 };
 
-export default SVGCanvas;
+export default SVGCanvasCollage;
