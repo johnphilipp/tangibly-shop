@@ -137,9 +137,13 @@ export default function CollageMug({ isLoading }: { isLoading: boolean }) {
     const yearText = selectedYears.length === 2 ? selectedYears[1] : "Years";
     const user =
       session?.user?.name === undefined ? "Your" : session?.user?.name;
-    const userName = user === "Your" ? user : user?.split(" ")[0] + "'s";
 
-    const primText = `${userName} ${yearText} Wrapped`;
+    const userName = user === "Your" ? user : user?.split(" ")[0];
+
+    const userText = userName?.endsWith("s") ? `${userName}'` : `${userName}'s`;
+
+
+    const primText = `${userText} ${yearText} Wrapped`;
     const secText = `${selectedActivities.length} Activities`;
 
     if (loading) return;

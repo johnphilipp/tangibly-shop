@@ -10,6 +10,42 @@ import StravaProvider from "next-auth/providers/strava";
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
 import axios from "axios";
+import { session } from "next-auth/core/routes";
+
+type StravaTokenResponse = {
+  token_type: string;
+  access_token: string;
+  expires_at: number;
+  expires_in: number;
+  refresh_token: string;
+};
+
+const refreshStravaToken = async (
+  refreshToken: string,
+): Promise<StravaTokenResponse> => {
+  const formData = new URLSearchParams();
+  formData.append("client_id", env.STRAVA_CLIENT_ID);
+  formData.append("client_secret", env.STRAVA_CLIENT_SECRET);
+  formData.append("grant_type", "refresh_token");
+  formData.append("refresh_token", refreshToken);
+
+  try {
+    const response = await axios.post(
+      "https://www.strava.com/api/v3/oauth/token",
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      },
+    );
+
+    return response.data as StravaTokenResponse;
+  } catch (error) {
+    // Handle error here
+    throw error;
+  }
+};
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -37,15 +73,6 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
-  },
   adapter: PrismaAdapter(db),
   providers: [
     StravaProvider({
@@ -54,8 +81,8 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         url: "https://www.strava.com/api/v3/oauth/authorize",
         params: {
-          scope: "activity:read_all",
-          approval_prompt: " ",
+          scope: "activity:read_all,read",
+          approval_prompt: "auto",
           response_type: "code",
         },
       },
@@ -72,7 +99,37 @@ export const authOptions: NextAuthOptions = {
             access_token,
           );
 
-          //Refresh the token when it is about to expire
+          if (!expires_at || !refresh_token || !access_token)
+            throw new Error(
+              "The Strava token response did not include an expiry date",
+            );
+
+          const accessTokenExpiresAt = new Date(expires_at * 1000);
+
+          console.log("Exipred Access Token", accessTokenExpiresAt);
+
+          // Check if access-token expired
+          const accessTokenExpired = accessTokenExpiresAt < new Date();
+
+          console.log(accessTokenExpired);
+
+          // Refresh access-token if expired
+          if (accessTokenExpired) {
+            console.log("Refreshing Strava Token");
+            const response = await refreshStravaToken(refresh_token);
+
+            console.log("Refreshed Strava Token", response);
+            console.log("params", params);
+
+            return {
+              tokens: {
+                token_type: response.token_type,
+                expires_at: response.expires_at,
+                refresh_token: response.refresh_token,
+                access_token: response.access_token,
+              },
+            };
+          }
 
           return {
             tokens: { token_type, expires_at, refresh_token, access_token },
@@ -80,16 +137,44 @@ export const authOptions: NextAuthOptions = {
         },
       },
     }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
   ],
+  callbacks: {
+    async session({ session, user }) {
+      const account = await db.account.findFirst({
+        where: { userId: session.user.id },
+      });
+
+      if (!account) {
+        throw new Error("No account found");
+      }
+
+      const accessTokenExpiresAt = new Date(account.expires_at! * 1000);
+
+      console.log("Exipred Access Token", accessTokenExpiresAt);
+
+      // Check if access-token expired
+      const accessTokenExpired = accessTokenExpiresAt < new Date();
+
+      if (accessTokenExpired) {
+        const response = await refreshStravaToken(account.refresh_token!);
+        await db.account.update({
+          where: { id: account.id },
+          data: {
+            access_token: response.access_token,
+            expires_at: response.expires_at,
+            refresh_token: response.refresh_token,
+          },
+        });
+      }
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+        },
+      };
+    },
+  },
 };
 
 /**
@@ -102,39 +187,4 @@ export const getServerAuthSession = (ctx: {
   res: GetServerSidePropsContext["res"];
 }) => {
   return getServerSession(ctx.req, ctx.res, authOptions);
-};
-
-interface StravaTokenResponse {
-  token_type: string;
-  access_token: string;
-  expires_at: number;
-  expires_in: number;
-  refresh_token: string;
-}
-
-const refreshStravaToken = async (
-  refreshToken: string,
-): Promise<StravaTokenResponse> => {
-  const formData = new URLSearchParams();
-  formData.append("client_id", env.STRAVA_CLIENT_ID);
-  formData.append("client_secret", env.STRAVA_CLIENT_SECRET);
-  formData.append("grant_type", "refresh_token");
-  formData.append("refresh_token", refreshToken);
-
-  try {
-    const response = await axios.post(
-      "https://www.strava.com/api/v3/oauth/token",
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      },
-    );
-
-    return response.data as StravaTokenResponse;
-  } catch (error) {
-    // Handle error here
-    throw error;
-  }
 };
