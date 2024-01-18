@@ -183,7 +183,8 @@ export default function ShoppingCartSidebar({ open }: { open: boolean }) {
                                             (value) =>
                                               value.name ===
                                               cartItem.design.productType,
-                                          )?.href}?designId=` + cartItem.id
+                                          )?.href}?designId=` +
+                                          cartItem.designId
                                         }
                                         className="mr-2 font-medium text-indigo-600 hover:text-indigo-500"
                                       >

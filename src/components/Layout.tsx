@@ -4,7 +4,7 @@ import {
   ShoppingCartIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import type { FC, ReactNode } from "react";
 import { Fragment, useState } from "react";
@@ -15,6 +15,7 @@ import { Logo } from "./Logo";
 import Image from "next/image";
 import Footer from "./Footer";
 import { signal } from "@preact/signals-react";
+import Button from "~/components/Button";
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,6 +26,7 @@ const navigation = [
   { name: "Home", href: "/home" },
   { name: "Shop", href: "/shop" },
   { name: "Saved", href: "/saved" },
+  { name: "Orders", href: "/orders" },
   { name: "Gifting", href: "/gifting" },
 ];
 
@@ -112,19 +114,23 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   <div className="flow-root">
                     {status === "authenticated" ? (
-                      <Link
-                        href="/api/auth/signout"
+                      <button
+                        onClick={() => {
+                          void signOut();
+                        }}
                         className="-m-2 block p-2 font-medium text-gray-900"
                       >
                         Sign out
-                      </Link>
+                      </button>
                     ) : (
-                      <Link
-                        href="/api/auth/signin"
+                      <button
+                        onClick={() => {
+                          void signIn("strava");
+                        }}
                         className="-m-2 block p-2 font-medium text-gray-900"
                       >
                         Sign in
-                      </Link>
+                      </button>
                     )}
                   </div>
                 </div>
@@ -134,7 +140,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         </Dialog>
       </Transition.Root>
 
-      <header className="relative z-0">
+      <header className="relative z-10">
         <nav aria-label="Top">
           {/* Secondary navigation */}
           <div className="bg-white">
@@ -144,7 +150,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                   {/* Logo (lg+) */}
                   <div className="hidden lg:flex lg:items-center">
                     <Link href="/">
-                      <span className="sr-only">Your Company</span>
+                      <span className="sr-only">Tangibly</span>
                       <Logo />
                     </Link>
                   </div>
@@ -182,12 +188,6 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                     </button>
                   </div>
 
-                  {/* Logo (lg-) */}
-                  <Link href="/" className="lg:hidden">
-                    <span className="sr-only">Your Company</span>
-                    <Logo />
-                  </Link>
-
                   <div className="flex flex-1 items-center justify-end">
                     <div className="flex items-center lg:ml-8">
                       <div className="flex space-x-8">
@@ -223,22 +223,28 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
                                   leaveFrom="transform opacity-100 scale-100"
                                   leaveTo="transform opacity-0 scale-95"
                                 >
-                                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    {status === "authenticated" ? (
-                                      <Link
-                                        href="/api/auth/signout"
-                                        className="block px-4 py-2 text-sm text-gray-700"
-                                      >
-                                        Sign out
-                                      </Link>
-                                    ) : (
-                                      <Link
-                                        href="/api/auth/signin"
-                                        className="block px-4 py-2 text-sm text-gray-700"
-                                      >
-                                        Sign in
-                                      </Link>
-                                    )}
+                                  <Menu.Items className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="flex items-center justify-center">
+                                      {status === "authenticated" ? (
+                                        <button
+                                          onClick={() => {
+                                            void signOut();
+                                          }}
+                                          className="block px-4 py-2 text-sm font-semibold text-gray-700"
+                                        >
+                                          Sign out
+                                        </button>
+                                      ) : (
+                                        <button
+                                          onClick={() => {
+                                            void signIn("strava");
+                                          }}
+                                          className="block px-4 py-2 text-sm font-semibold text-gray-700"
+                                        >
+                                          Sign in
+                                        </button>
+                                      )}
+                                    </div>
                                   </Menu.Items>
                                 </Transition>
                               </Menu>

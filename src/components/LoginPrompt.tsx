@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Background from "./Background";
 import Layout from "./Layout";
-
+import { signIn } from "next-auth/react";
 export const LoginPrompt = () => {
   return (
     <Layout>
@@ -14,9 +14,14 @@ export const LoginPrompt = () => {
             </h1>
             <p className="mt-12">
               Please{" "}
-              <Link href="/api/auth/signin" className="underline">
+              <button
+                onClick={() => {
+                  void signIn("strava");
+                }}
+                className="underline"
+              >
                 sign in
-              </Link>{" "}
+              </button>{" "}
               to access the shop. Or checkout out our{" "}
               <Link href="/demo" className="underline">
                 interactive demo

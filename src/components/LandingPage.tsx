@@ -4,6 +4,8 @@ import Layout from "~/components/Layout";
 import Image from "next/image";
 import Alert from "./Alert";
 import { useState } from "react";
+import Button from "~/components/Button";
+import { signIn } from "next-auth/react";
 
 export default function LandingPage() {
   const [isAlertVisible, setIsAlertVisible] = useState(false);
@@ -73,15 +75,17 @@ export default function LandingPage() {
                   Visualize all your GPS-based Strava activities with Tangibly.
                 </p>
                 <div className="flex flex-col items-start justify-center">
-                  <div className="lg:mx-w-xl flex w-full flex-col items-center justify-center space-y-6 sm:max-w-md lg:max-w-xl">
+                  <div className="lg:mx-w-xl z-10 flex w-full flex-col items-center justify-center space-y-6 sm:max-w-md lg:max-w-xl">
                     <div className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
-                      <Link
-                        href="/api/auth/signin"
+                      <Button
+                        onClick={() => {
+                          void signIn("strava");
+                        }}
                         className="flex w-full items-center justify-center rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 sm:w-[200px] lg:w-[250px]"
                       >
                         <BsStrava className="mr-2 inline-block h-5 w-5" />
                         Connect to Strava
-                      </Link>
+                      </Button>
                       <button
                         className="flex items-center justify-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:w-[200px] lg:w-[250px]"
                         onClick={handleShowAlert}

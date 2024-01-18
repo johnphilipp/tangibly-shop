@@ -89,6 +89,7 @@ export const paymentRouter = createTRPCRouter({
             quantity: item.amount,
             checkoutId: session.id,
             price: 14.99,
+            userId: ctx.session.user.id,
           };
         });
 
@@ -99,6 +100,30 @@ export const paymentRouter = createTRPCRouter({
         console.log(saveResult);
 
         return { status: "success", clientSecret: session.client_secret };
+      } catch (error) {
+        console.log(error);
+        return {
+          status: "error",
+          message: "Something went wrong. Please try again later",
+        };
+      }
+    }),
+
+  getAllOrders: protectedProcedure
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
+      if (!ctx.stripe) {
+        throw new Error("Payment is not initialized!, Try again later!");
+      }
+      try {
+        const orders = await ctx.db.checkoutProduct.findMany({
+          where: { userId: ctx.session.user.id, state: "paid" },
+        });
+
+        return {
+          status: "success",
+          orders: orders,
+        };
       } catch (error) {
         console.log(error);
         return {
@@ -133,21 +158,33 @@ export const paymentRouter = createTRPCRouter({
         });
 
         const order: Order = {
-            checkoutSessionId: session.id,
-            lineItems: [],
-            status: session.payment_status,
-            shipping: {
-                address: session.shipping_details?.address,
-                name: session.shipping_details?.name,
-            },
-            email: session.customer_email,
-            name: session.customer_details?.name,
-            phone: session.customer_details?.phone,
-            paymentStatus: session.payment_status,
-            currency: session.currency,
-            amountTotal: session.amount_total,
-            };
+          checkoutSessionId: session.id,
+          lineItems: [],
+          status: session.payment_status,
+          shipping: {
+            address: session.shipping_details?.address,
+            name: session.shipping_details?.name,
+          },
+          email: session.customer_email,
+          name: session.customer_details?.name,
+          phone: session.customer_details?.phone,
+          paymentStatus: session.payment_status,
+          currency: session.currency,
+          amountTotal: session.amount_total,
+        };
 
+        if (
+          session.payment_status === "paid" &&
+          checkoutData.length > 0 &&
+          checkoutData?.at(0)?.state != "paid"
+        ) {
+          for (const item of checkoutData) {
+            await ctx.db.checkoutProduct.update({
+              where: { id: item.id },
+              data: { state: "paid" },
+            });
+          }
+        }
 
         console.log(order);
 

@@ -202,6 +202,8 @@ model CheckoutProduct {
   quantity    Int
   checkoutId  String
   price       Float
+  userId      String
+  state       String @default("pending")
 
   @@index([checkoutId])
 }

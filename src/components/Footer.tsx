@@ -89,7 +89,7 @@ export default function Footer() {
         </div>
         <div className="mt-16 flex justify-between border-t border-gray-900/10 pt-4 sm:mt-10 lg:mt-12">
           <p className="text-xs leading-5 text-gray-500">
-            &copy; 2023 Tangibly
+            &copy; 2024 Tangibly
           </p>
           <p className="text-xs leading-5 text-gray-500">
             Made with 💚 in St. Gallen
