@@ -1,13 +1,17 @@
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
-import { LoadingSpinner } from "~/components/Loading";
 import { useData } from "~/contexts/DataContext";
 import { api } from "~/utils/api";
-import { router } from "next/client";
 import { useRouter } from "next/router";
 import CollageMug from "~/components/mug";
+import { MdDirectionsBike } from "react-icons/md";
+import { MdDirectionsRun } from "react-icons/md";
+import { GrSwim } from "react-icons/gr";
+import { MdOutlineSportsHandball } from "react-icons/md";
+import { MdOutlineSportsMartialArts } from "react-icons/md";
+import { GrYoga } from "react-icons/gr";
 
 function getFirstString(
   value: undefined | string[] | string,
@@ -58,16 +62,27 @@ export default function CollageMugPage() {
     }
   }, [activityDataFetched, setActivities]);
 
+  const [currentIcon, setCurrentIcon] = useState(0);
+  const icons = [
+    <MdDirectionsBike key="1" className="h-16 w-16" />,
+    <MdDirectionsRun key="2" className="h-16 w-16" />,
+    <GrSwim key="3" className="h-16 w-16" />,
+    <GrYoga key="4" className="h-16 w-16" />,
+    <MdOutlineSportsHandball key="5" className="h-16 w-16" />,
+    <MdOutlineSportsMartialArts key="6" className="h-16 w-16" />,
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIcon((currentIcon + 1) % icons.length);
+    }, 250);
+    return () => clearInterval(interval);
+  }, [currentIcon]);
+
   return (
     <Layout>
       <div className="relative isolate mx-auto max-w-3xl">
         <Background />
-
-        {user && activityDataLoading && (
-          <div className="mt-4 flex justify-center">
-            <LoadingSpinner size={40} />
-          </div>
-        )}
 
         {user && activityDataError && (
           <div className="mt-4 flex justify-center">
@@ -75,10 +90,24 @@ export default function CollageMugPage() {
           </div>
         )}
 
-        <CollageMug
-          isLoading={activityDataLoading}
-          type={getFirstString(type)}
-        />
+        {user && activityDataLoading ? (
+          <div className="my-4 sm:my-6">
+            <div className="mx-auto flex items-center justify-center">
+              {icons[currentIcon]}
+            </div>
+            <div className="mx-auto mt-4 flex items-center justify-center text-center font-bold">
+              Hang on, {user.name ? user.name : ""}!
+            </div>
+            <div className="mx-auto flex items-center justify-center text-center text-sm">
+              We&apos;re loading your activities. This might take a while.
+            </div>
+          </div>
+        ) : (
+          <CollageMug
+            isLoading={activityDataLoading}
+            type={getFirstString(type)}
+          />
+        )}
       </div>
     </Layout>
   );
