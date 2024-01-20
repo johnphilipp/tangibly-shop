@@ -29,6 +29,8 @@ import { cartSignal } from "~/components/ShoppingCartSidebar";
 import { DebouncedFunc, debounce } from "lodash";
 import { showNoDesignFoundBanner } from "~/components/shop";
 import SVGCanvasHeatmap from "~/components/mug/canvas/SVGCanvasHeatmap";
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import { LoadingSpinner } from "../Loading";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -352,11 +354,32 @@ export default function CollageMug({
     }
   }, [activities, fetchedDesign, currentDesign, designId, user]);
 
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   return (
     <div className="m-4 sm:m-6">
-      <h1 className="mt-4 text-2xl sm:mt-6 sm:text-4xl">
-        Create Your <span className="font-bold">Collage Mug</span>
-      </h1>
+      <div className="mt-4 flex items-center justify-between sm:mt-6">
+        <h1 className="text-2xl sm:text-4xl">
+          Create Your <span className="font-bold">Collage Mug</span>
+        </h1>
+
+        {/* Save status */}
+        <div className="text-sm text-gray-500">
+          {saving && (
+            <div className="flex items-center space-x-2">
+              <p className="text-gray-500">Saving</p>
+              <LoadingSpinner />
+            </div>
+          )}
+          {saved && (
+            <div className="flex items-center">
+              <p className="text-green-500">Saved</p>
+              <CheckCircleIcon className="ml-1 h-4 w-4 text-green-500" />
+            </div>
+          )}
+        </div>
+      </div>
       <DesignName />
 
       {/* Sticky SVGCanvasCollage */}
