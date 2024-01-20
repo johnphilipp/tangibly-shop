@@ -58,7 +58,6 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
     useState(false);
 
   const [currentDesign, setCurrentDesign] = useState<Collage>();
-  const { activeDesign, setActiveDesign } = useData();
 
   const searchParams = useSearchParams();
   const user = useSession().data?.user;
@@ -203,19 +202,6 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
   const handleSaveDesignData = () => {
     console.log("handleSaveDesignData");
     if (!user) return;
-
-    console.log("saveDesign.mutateAsync");
-    void saveDesign.mutateAsync({
-      id: Number(designId) ?? 0,
-      activityTypes: selectedActivityTypes.join(","),
-      backgroundColor: backgroundColor,
-      strokeColor: strokeColor,
-      previewSvg: getSVGBase64(svgRef) ?? "",
-      primaryText: primaryText,
-      secondaryText: secondaryText,
-      useText: useText,
-      name: activeDesign?.name ?? "Untitled-1",
-    });
   };
 
   const { data: fetchedDesign } = api.design.getCollage.useQuery(
@@ -237,23 +223,11 @@ export default function CollagePoster({ isLoading }: { isLoading: boolean }) {
       setStrokeColor(foundDesign.Design.strokeColor);
       setCurrentDesign(foundDesign);
       setUseText(foundDesign.useText);
-      setActiveDesign({
-        id: foundDesign.id,
-        name: foundDesign.Design.name,
-        designId: foundDesign.Design.id,
-      });
     } else {
       // Handle the case where the design is not found
       console.error("Design not found");
     }
-  }, [
-    activities,
-    fetchedDesign,
-    currentDesign,
-    designId,
-    user,
-    setActiveDesign,
-  ]);
+  }, [activities, fetchedDesign, currentDesign, designId, user]);
 
   return (
     <div className="m-4 sm:m-6">

@@ -47,7 +47,6 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
     useState(false);
 
   const [currentDesign, setCurrentDesign] = useState<Collage>();
-  const { activeDesign, setActiveDesign } = useData();
 
   const searchParams = useSearchParams();
   const user = useSession().data?.user;
@@ -92,7 +91,7 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
         selectedActivityTypes.includes(activity.sport_type),
       ),
     );
-  }, [activitiesFilteredByYears, selectedActivityTypes, activeDesign]);
+  }, [activitiesFilteredByYears, selectedActivityTypes]);
 
   useEffect(() => {
     const totalMovingTime = Math.round(
@@ -171,20 +170,8 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
 
   const designId = searchParams.get("designId");
 
-  const handleSaveDesignData = async () => {
+  const handleSaveDesignData = () => {
     if (!user) return;
-
-    await saveDesign.mutateAsync({
-      id: Number(designId) ?? 0,
-      activityTypes: selectedActivityTypes.join(","),
-      backgroundColor: backgroundColor,
-      strokeColor: strokeColor,
-      previewSvg: getSVGBase64(svgRef) ?? "",
-      primaryText: primaryText,
-      secondaryText: secondaryText,
-      useText: useText,
-      name: activeDesign?.name ?? "Untitled-1",
-    });
   };
 
   const { data: fetchedDesign } = api.design.getCollage.useQuery(
@@ -206,23 +193,11 @@ export default function HeatmapPoster({ isLoading }: { isLoading: boolean }) {
       setUseText(foundDesign.useText);
       setPrimaryText(foundDesign.primaryText);
       setSecondaryText(foundDesign.secondaryText);
-
-      setActiveDesign({
-        id: foundDesign.id,
-        name: foundDesign.Design.name,
-        designId: foundDesign.Design.id,
-      });
     } else {
       // Handle the case where the design is not found
       console.error("Design not found");
     }
-  }, [
-    activities,
-    currentDesign,
-    fetchedDesign,
-    setActiveDesign,
-    selectedActivities,
-  ]);
+  }, [activities, currentDesign, fetchedDesign, selectedActivities]);
 
   return (
     <div className="m-4 sm:m-6">

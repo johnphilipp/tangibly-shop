@@ -40,7 +40,7 @@ export default function Confirmation() {
     setCheckoutItems(sessionData?.checkoutData);
 
     if (!sessionData?.checkoutSession) {
-      router.push("/shop");
+      void router.push("/shop");
     }
   }, [sessionData]);
 

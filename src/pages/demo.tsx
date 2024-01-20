@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Background from "~/components/Background";
 import Layout from "~/components/Layout";
-import CollageMugDemo from "~/components/collage/mug/demo";
 import { useData } from "~/contexts/DataContext";
 import { demoData1 } from "~/data/demoData1";
 import { fromStravaActivity } from "~/utils/fromStravaActivity";
@@ -49,8 +48,6 @@ export default function CollageMugPage() {
             </div>
           </div>
         )}
-
-        <CollageMugDemo isLoading={false} />
       </div>
     </Layout>
   );
