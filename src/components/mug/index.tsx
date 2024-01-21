@@ -31,6 +31,9 @@ import { showNoDesignFoundBanner } from "~/components/shop";
 import SVGCanvasHeatmap from "~/components/mug/canvas/SVGCanvasHeatmap";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { LoadingSpinner } from "../Loading";
+import { signal } from "@preact/signals-react";
+import { XCircleIcon } from "@heroicons/react/24/solid";
+import { NotSavedModal } from "~/components/shared/modals/NotSavedModal";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -40,6 +43,15 @@ const getUniqueSportTypes = (activities: Activity[]): string[] =>
     if (!acc.includes(activity.sport_type)) acc.push(activity.sport_type);
     return acc;
   }, []);
+
+enum SaveStatus {
+  "SAVING",
+  "SAVED",
+  "UNSAVED",
+  "ERROR",
+}
+
+export const saveStateSignal = signal(SaveStatus.UNSAVED);
 
 export default function CollageMug({
   isLoading,
@@ -75,6 +87,8 @@ export default function CollageMug({
 
   const searchParams = useSearchParams();
   const user = useSession().data?.user;
+
+  const [hasSavedOnce, setHasSavedOnce] = useState(false);
 
   const router = useRouter();
   const designParameter = router.query.designId;
@@ -265,20 +279,32 @@ export default function CollageMug({
 
     console.log("showReset", showResetSecondary);
 
-    void saveDesign.mutateAsync({
-      id: Number(designId) ?? 0,
-      activityTypes: selectedActivityTypes.join(","),
-      years: selectedYears.join(","),
-      backgroundColor: backgroundColor,
-      strokeColor: strokeColor,
-      previewSvg: getSVGBase64(svgRef) ?? "",
-      primaryText: primaryText,
-      secondaryText: secondaryText,
-      isPrimaryOriginal: showResetPrimary,
-      isSecondaryOriginal: showResetSecondary,
-      useText: useText,
-      name: activeDesign.value?.name ?? "Untitled-1",
-    });
+    saveStateSignal.value = SaveStatus.SAVING;
+
+    void saveDesign
+      .mutateAsync({
+        id: Number(designId) ?? 0,
+        activityTypes: selectedActivityTypes.join(","),
+        years: selectedYears.join(","),
+        backgroundColor: backgroundColor,
+        strokeColor: strokeColor,
+        previewSvg: getSVGBase64(svgRef) ?? "",
+        primaryText: primaryText,
+        secondaryText: secondaryText,
+        isPrimaryOriginal: showResetPrimary,
+        isSecondaryOriginal: showResetSecondary,
+        useText: useText,
+        name: activeDesign.value?.name ?? "Untitled-1",
+      })
+      .then((result) => {
+        if (result.status === "success") {
+          saveStateSignal.value = SaveStatus.SAVED;
+        } else if (result.status === "error") {
+          saveStateSignal.value = SaveStatus.ERROR;
+        }
+
+        //setHasSavedOnce(true);
+      });
 
     cartSignal.value.map((item) => {
       if (item.design.id === Number(designId)) {
@@ -299,7 +325,14 @@ export default function CollageMug({
       // Cancel the debounced call on cleanup
       debouncedSaveRef.current?.cancel();
     };
-  }, [handleSaveDesignData]);
+  }, [
+    selectedActivities.length,
+    selectedYears.length,
+    secondaryText,
+    primaryText,
+    strokeColor,
+    backgroundColor,
+  ]);
 
   // Trigger the debounced function when dependencies change
   useEffect(() => {
@@ -354,28 +387,33 @@ export default function CollageMug({
     }
   }, [activities, fetchedDesign, currentDesign, designId, user]);
 
-  const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
-
   return (
     <div className="m-4 sm:m-6">
       <div className="mt-4 flex items-center justify-between sm:mt-6">
         <h1 className="text-2xl sm:text-4xl">
           Create Your <span className="font-bold">Collage Mug</span>
         </h1>
+        <NotSavedModal shouldConfirmLeave={!hasSavedOnce} />
 
         {/* Save status */}
         <div className="text-sm text-gray-500">
-          {saving && (
+          {saveStateSignal.value === SaveStatus.SAVING && (
             <div className="flex items-center space-x-2">
               <p className="text-gray-500">Saving</p>
               <LoadingSpinner />
             </div>
           )}
-          {saved && (
+          {saveStateSignal.value === SaveStatus.SAVED && (
             <div className="flex items-center">
               <p className="text-green-500">Saved</p>
               <CheckCircleIcon className="ml-1 h-4 w-4 text-green-500" />
+            </div>
+          )}
+
+          {saveStateSignal.value === SaveStatus.ERROR && (
+            <div className="flex items-center">
+              <p className="text-red-500">Error</p>
+              <XCircleIcon className="ml-1 h-4 w-4 text-red-500" />
             </div>
           )}
         </div>

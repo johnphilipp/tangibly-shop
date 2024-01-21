@@ -28,7 +28,7 @@ const TextSelector: React.FC<TextSelectorProps> = ({
             className="absolute right-0 top-1.5 mr-3 cursor-pointer font-medium text-indigo-600 hover:text-indigo-500"
             onClick={onReset}
           >
-            Reset
+            Reset Text
           </button>
         )}
       </div>
