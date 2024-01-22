@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { Order } from "~/utils/Order";
 import { CheckoutProduct } from "@prisma/client";
 import { useRouter } from "next/router";
+import { BiClipboard } from "react-icons/bi";
+import { LoadingSpinner } from "~/components/Loading";
 
 export default function Confirmation() {
   const confirmationSignal = signal(null);
@@ -33,16 +35,26 @@ export default function Confirmation() {
 
   const router = useRouter();
 
+  const [retryCount, setRetryCount] = useState(0);
+
   useEffect(() => {
     console.log("sessionData", sessionData);
 
-    setCheckoutData(sessionData?.checkoutSession);
-    setCheckoutItems(sessionData?.checkoutData);
-
-    if (!sessionData?.checkoutSession) {
-      void router.push("/shop");
+    if (sessionData?.checkoutSession) {
+      setCheckoutData(sessionData.checkoutSession);
+      setCheckoutItems(sessionData.checkoutData);
+    } else {
+      if (retryCount < 3) {
+        // Increment retry count and retry after 1 second
+        setTimeout(() => {
+          setRetryCount(retryCount + 1);
+          // Trigger the query again (depends on how your query is set up)
+        }, 1000);
+      } else {
+        // If all retries failed, navigate to /shop
+      }
     }
-  }, [sessionData]);
+  }, [sessionData, retryCount]);
 
   return (
     <>
@@ -58,7 +70,17 @@ export default function Confirmation() {
                   Your order is on the way!
                 </p>
                 <p className="mt-2 text-base text-gray-500">
-                  Order number: #14034056
+                  Order number:
+                  <button
+                    onClick={() => {
+                      if (!checkoutData?.checkoutSessionId) return;
+                      void navigator.clipboard.writeText(
+                        checkoutData?.checkoutSessionId,
+                      );
+                    }}
+                  >
+                    {checkoutData?.checkoutSessionId}
+                  </button>
                 </p>
                 {/*
                 <dl className="mt-12 text-sm font-medium">
@@ -71,6 +93,7 @@ export default function Confirmation() {
                 <h2 className="sr-only">Your order</h2>
 
                 <h3 className="sr-only">Items</h3>
+                {!checkoutItems && <LoadingSpinner />}
                 {checkoutItems?.map((product) => (
                   <div
                     key={product.id}
@@ -104,7 +127,7 @@ export default function Confirmation() {
                           <div className="flex pl-4 sm:pl-6">
                             <dt className="font-medium text-gray-900">Price</dt>
                             <dd className="ml-2 text-gray-700">
-                              {product.price}
+                              {product.price * product.quantity}
                             </dd>
                           </div>
                         </dl>

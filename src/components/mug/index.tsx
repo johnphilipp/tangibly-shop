@@ -24,10 +24,7 @@ import { CartAddButton } from "~/components/shared/actions/CartAddButton";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 import DesignName from "~/components/DesignName";
 import { useRouter } from "next/router";
-import {
-  activeDesign,
-  ActiveDesignSaved,
-} from "~/components/shared/utils/data";
+import { ActiveDesign, activeDesign } from "~/components/shared/utils/data";
 import { cartSignal } from "~/components/ShoppingCartSidebar";
 import { DebouncedFunc, debounce } from "lodash";
 import { showNoDesignFoundBanner } from "~/components/shop";
@@ -131,10 +128,10 @@ export default function CollageMug({
       },
     );
 
-  const activitiesWithGPS = useMemo(
-    () => getActivitiesWithGPS(activitiesFilteredByYears),
-    [activitiesFilteredByYears],
-  );
+  const activitiesWithGPS = useMemo(() => {
+    if (type === "heatmap") return activitiesFilteredByYears;
+    return getActivitiesWithGPS(activitiesFilteredByYears);
+  }, [activitiesFilteredByYears]);
 
   const sportTypes = useMemo(
     () => getUniqueSportTypes(activitiesWithGPS),
@@ -187,7 +184,7 @@ export default function CollageMug({
   useEffect(() => {
     // Check if selectedYears array is not empty, otherwise -Infinity bug
     if (selectedActivities.length === 0 || selectedYears.length === 0) return;
-    const yearText = selectedYears.length === 2 ? selectedYears[1] : "Years";
+    const yearText = selectedYears.length === 1 ? selectedYears[0] : "Years";
     const user =
       session?.user?.name === undefined ? "Your" : session?.user?.name;
 
@@ -228,8 +225,9 @@ export default function CollageMug({
 
   const handleYearChange = (year: number) => {
     setSelectedYears((prevYears) => {
+      if (type === "heatmap") return [year];
       if (prevYears.includes(year)) {
-        // Remove the year if it's already selecte
+        // Remove the year if it's already selected
         return prevYears.filter((y) => y !== year);
       } else {
         // Add the year if it's not already selected
@@ -403,7 +401,7 @@ export default function CollageMug({
         name: data.name,
         designId: data.designId,
         state: "saved",
-      } as ActiveDesignSaved;
+      } as ActiveDesign;
 
     const path = router.asPath.split("?")[0];
     setHasSavedOnce(true);
@@ -439,7 +437,7 @@ export default function CollageMug({
         name: foundDesign.Design.name,
         designId: foundDesign.Design.id,
         state: "saved",
-      } as ActiveDesignSaved;
+      } as ActiveDesign;
 
       setCurrentDesign(foundDesign.Design);
     } else {
@@ -601,7 +599,7 @@ export default function CollageMug({
             {/* <PreviewButton onClick={() => setOverlayOpen(true)} /> */}
             <CartAddButton
               design={currentDesign}
-              onClick={handleEnableSaving}
+              onClick={hasSavedOnce ? undefined : handleEnableSaving}
             />
           </div>
         </div>

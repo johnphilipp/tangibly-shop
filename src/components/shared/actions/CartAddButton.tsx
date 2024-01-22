@@ -4,34 +4,54 @@ import { api } from "~/utils/api";
 import { cartSignal } from "~/components/ShoppingCartSidebar";
 import { type Design } from "@prisma/client";
 import { sidebarSignal } from "~/components/Layout";
+import { activeDesign } from "~/components/shared/utils/data";
+import { useSearchParams } from "next/navigation";
 
 interface CheckoutButtonProps {
   design: Design | undefined;
   onClick?: () => Promise<void>;
 }
 
-export const CartAddButton = ({ design, onClick }: CheckoutButtonProps) => {
+export const CartAddButton = ({ onClick }: CheckoutButtonProps) => {
   const addProductToCart = api.cart.add.useMutation();
 
   const handleClick = async () => {
     await onClick?.();
 
-    if (!design) return;
+    console.log("design", activeDesign.value);
 
-    const item = addProductToCart.mutateAsync({
-      designId: design.id,
+    // Polling for 'activeDesign' state change
+    while (!activeDesign.value?.designId) {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second before checking again
+      console.log("Waiting for design to be saved...");
+    }
+
+    const item = await addProductToCart.mutateAsync({
+      // Assuming safe assignment here
+      designId: activeDesign.value?.designId,
       amount: 1,
     });
 
-    void item.then((item) => {
-      const items = cartSignal.value.slice();
-      if (!item?.item) return;
+    if (!item?.item) return;
 
-      items.push(item?.item);
-      cartSignal.value = items;
-
+    if (
+      cartSignal.value.find(
+        (cartItem) => cartItem.design.id === item.item?.design.id,
+      )
+    ) {
+      cartSignal.value.map((cartItem) => {
+        if (cartItem.design.id === item.item?.design.id) {
+          cartItem.amount = cartItem.amount + 1;
+        }
+      });
       sidebarSignal.value = true;
-    });
+      return;
+    }
+
+    const items = [...cartSignal.value, item.item];
+    cartSignal.value = items;
+
+    sidebarSignal.value = true;
   };
 
   return (

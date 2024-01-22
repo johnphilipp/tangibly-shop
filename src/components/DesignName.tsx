@@ -35,7 +35,7 @@ export default function DesignName() {
     console.log("activeDesign", activeDesign);
 
     if (!designId) return;
-    if (activeDesign.value?.state === "saved") {
+    if (activeDesign.value?.designId) {
       void saveName.mutateAsync({
         id: activeDesign.value.designId,
         name: designName,
