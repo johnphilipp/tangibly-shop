@@ -4,7 +4,7 @@ import * as process from "process";
 import { Order } from "~/utils/Order";
 
 const prices =
-  process.env.NODE_ENV === "production"
+  process.env.STRIPE_MODE === "prod"
     ? {
         collage_mug: "price_1ONZXYBYeZI73kv1hzk7PDpL",
         collage_heatmap: "price_1ONbfWBYeZI73kv1NA82Xw98",
