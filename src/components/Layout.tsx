@@ -289,7 +289,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl">{children}</main>
+      <main className="mx-auto min-h-screen max-w-7xl">{children}</main>
 
       <Footer />
 
