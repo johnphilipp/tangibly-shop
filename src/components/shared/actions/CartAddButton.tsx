@@ -7,12 +7,15 @@ import { sidebarSignal } from "~/components/Layout";
 
 interface CheckoutButtonProps {
   design: Design | undefined;
+  onClick?: () => Promise<void>;
 }
 
-export const CartAddButton = ({ design }: CheckoutButtonProps) => {
+export const CartAddButton = ({ design, onClick }: CheckoutButtonProps) => {
   const addProductToCart = api.cart.add.useMutation();
 
-  const handleClick = () => {
+  const handleClick = async () => {
+    await onClick?.();
+
     if (!design) return;
 
     const item = addProductToCart.mutateAsync({

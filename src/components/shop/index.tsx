@@ -6,38 +6,16 @@ import { useRouter } from "next/router";
 import DesignList from "~/components/DesignList";
 import type { Product } from "~/utils/products";
 import { products } from "~/utils/products";
-import {signal} from "@preact/signals-react";
+import { signal } from "@preact/signals-react";
 import NoDesignFoundBanner from "~/components/shop/NoDesignFoundBanner";
 
 type ProductMapping = Record<string, Product[]>;
 
-export const showNoDesignFoundBanner = signal(false)
+export const showNoDesignFoundBanner = signal(false);
 
 export default function Shop() {
   const router = useRouter();
   const mutation = api.design.create.useMutation();
-
-  const handleDesignCreation = async (product: Product) => {
-    try {
-      // Trigger the mutation and wait for the result
-      const data = await mutation.mutateAsync({
-        designType: product.name,
-      });
-
-      if (!data) {
-        alert("Error creating design");
-        return;
-      }
-
-      void router.push(`${product.href}?designId=${data.id}`);
-      // Navigate based on product id
-
-      // Set the active design (if design is available)
-    } catch (error) {
-      console.error("Error creating design:", error);
-      // Handle the error appropriately
-    }
-  };
 
   const getProductMapping = (products: Product[]): ProductMapping => {
     return products.reduce<ProductMapping>((acc, product) => {
@@ -63,10 +41,10 @@ export default function Shop() {
             </h1>
 
             {showNoDesignFoundBanner.value && (
-                <div className="pt-10">
+              <div className="pt-10">
                 <NoDesignFoundBanner />
-                </div>)
-            }
+              </div>
+            )}
 
             {Object.entries(productMapping).map(([kind, productsOfKind]) => (
               <div key={kind}>
@@ -89,7 +67,7 @@ export default function Shop() {
                       <div className="mt-4 flex justify-between">
                         <div>
                           <h3 className="text-sm text-gray-700">
-                            <a onClick={() => handleDesignCreation(product)}>
+                            <a href={product.href}>
                               <span
                                 aria-hidden="true"
                                 className="absolute inset-0"

@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useData } from "~/contexts/DataContext";
 import { api } from "~/utils/api";
 import { activeDesign } from "~/components/shared/utils/data";
 import { cartSignal } from "~/components/ShoppingCartSidebar";
-import { getSVGBase64 } from "~/utils/getSVGBase64";
+import { saveStateSignal, SaveStatus } from "~/components/mug";
+import { useSearchParams } from "next/navigation";
 
 export default function DesignName() {
   const [editDesignName, setEditDesignName] = useState<boolean>(false);
 
+  const searchParams = useSearchParams();
+
+  const designId = searchParams.get("designId");
+
   const [designName, setDesignName] = useState<string>(
-    activeDesign.value?.name ?? "Untitled-1",
+    activeDesign.value?.name ?? "Untitled",
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +22,7 @@ export default function DesignName() {
 
   const handleCancel = () => {
     if (!activeDesign) return;
-    setDesignName(activeDesign.value?.name ?? "Untitled-1");
+    setDesignName(activeDesign.value?.name ?? "Untitled");
     setEditDesignName(false);
   };
 
@@ -29,21 +33,25 @@ export default function DesignName() {
     setEditDesignName(false);
 
     console.log("activeDesign", activeDesign);
-    void saveName.mutateAsync({
-      id: activeDesign.value.designId,
-      name: designName,
-    });
 
-    cartSignal.value.map((item) => {
-      if (item.design.id === activeDesign.value?.id) {
-        item.design.name = designName;
-      }
-    });
+    if (!designId) return;
+    if (activeDesign.value?.state === "saved") {
+      void saveName.mutateAsync({
+        id: activeDesign.value.designId,
+        name: designName,
+      });
+
+      cartSignal.value.map((item) => {
+        if (item.design.id === activeDesign.value?.id) {
+          item.design.name = designName;
+        }
+      });
+    }
   };
 
   useEffect(() => {
-    if(activeDesign.value?.name === designName) return;
-    setDesignName(activeDesign.value?.name ?? "Untitled-1");
+    if (activeDesign.value?.name === designName) return;
+    setDesignName(activeDesign.value?.name ?? "Untitled");
   }, [activeDesign.value]);
 
   return (

@@ -160,41 +160,48 @@ export const designRouter = createTRPCRouter({
     .input(
       z.object({
         designType: z.string(),
+        name: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        // Get the highest number for "Untitled-" designs
-        const untitledDesigns = await ctx.db.design.findMany({
-          where: {
-            name: {
-              startsWith: "Untitled-",
+        let name = input.name;
+        if (name.startsWith("Untitled")) {
+          // Get the highest number for "Untitled-" designs
+          const untitledDesigns = await ctx.db.design.findMany({
+            where: {
+              name: {
+                startsWith: "Untitled-",
+              },
+              userId: ctx.session.user.id,
             },
-            userId: ctx.session.user.id,
-          },
-          orderBy: {
-            name: "desc",
-          },
-        });
+            orderBy: {
+              name: "desc",
+            },
+          });
 
-        // Extract the highest number and increment it
-        const highestNumber = untitledDesigns.reduce((max, design) => {
-          const number = parseInt(design.name.replace("Untitled-", ""));
-          return isNaN(number) ? max : Math.max(max, number);
-        }, 0);
+          // Extract the highest number and increment it
+          const highestNumber = untitledDesigns.reduce((max, design) => {
+            const number = parseInt(design.name.replace("Untitled-", ""));
+            return isNaN(number) ? max : Math.max(max, number);
+          }, 0);
 
-        const name = `Untitled-${highestNumber + 1}`;
+          name = `Untitled-${highestNumber + 1}`;
+        }
 
-        if (input.designType === "Collage" || input.designType === "Heatmap") {
+        const designTypeUpper =
+          input.designType.charAt(0).toUpperCase() + input.designType.slice(1);
+
+        if (designTypeUpper === "Collage" || designTypeUpper === "Heatmap") {
           const design = await ctx.db.collage.create({
             data: {
               primaryText: "",
               secondaryText: "",
-              collageType: input.designType,
+              collageType: designTypeUpper,
               useText: true,
               Design: {
                 create: {
-                  productType: input.designType,
+                  productType: designTypeUpper,
                   name: name,
                   years: "2023",
                   activityTypes: "",
@@ -207,7 +214,12 @@ export const designRouter = createTRPCRouter({
             },
           });
 
-          return { status: "success", id: design.id };
+          return {
+            status: "success",
+            id: design.id,
+            name: name,
+            designId: design.designId,
+          };
         }
 
         return { status: "error", message: "Invalid design type" };

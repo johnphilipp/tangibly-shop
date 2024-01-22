@@ -1,9 +1,16 @@
 import { signal } from "@preact/signals-react";
 
-export type ActiveDesign = {
+export type ActiveDesignSaved = {
   id: number;
   name: string;
   designId: number;
+  state: "saved";
+};
+export type ActiveDesignUnsaved = {
+  name: string;
+  state: "unsaved";
 };
 
-export const activeDesign = signal(undefined as ActiveDesign | undefined);
+export type ActiveDesign = ActiveDesignSaved | ActiveDesignUnsaved;
+
+export const activeDesign = signal({ name: "Untitled", state: "unsaved" });

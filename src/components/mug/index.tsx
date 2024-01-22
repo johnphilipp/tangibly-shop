@@ -24,7 +24,10 @@ import { CartAddButton } from "~/components/shared/actions/CartAddButton";
 import { ActivityModal } from "~/components/shared/modals/ActivityModal";
 import DesignName from "~/components/DesignName";
 import { useRouter } from "next/router";
-import { activeDesign } from "~/components/shared/utils/data";
+import {
+  activeDesign,
+  ActiveDesignSaved,
+} from "~/components/shared/utils/data";
 import { cartSignal } from "~/components/ShoppingCartSidebar";
 import { DebouncedFunc, debounce } from "lodash";
 import { showNoDesignFoundBanner } from "~/components/shop";
@@ -34,6 +37,8 @@ import { LoadingSpinner } from "../Loading";
 import { signal } from "@preact/signals-react";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { NotSavedModal } from "~/components/shared/modals/NotSavedModal";
+import Button from "~/components/Button";
+import { BookmarkIcon } from "@heroicons/react/24/outline";
 
 const getActivitiesWithGPS = (activities: Activity[]): Activity[] =>
   activities.filter((activity) => activity.summaryPolyline);
@@ -44,11 +49,12 @@ const getUniqueSportTypes = (activities: Activity[]): string[] =>
     return acc;
   }, []);
 
-enum SaveStatus {
+export enum SaveStatus {
   "SAVING",
   "SAVED",
   "UNSAVED",
   "ERROR",
+  "CREATING",
 }
 
 export const saveStateSignal = signal(SaveStatus.UNSAVED);
@@ -120,7 +126,8 @@ export default function CollageMug({
     api.design.getCollage.useQuery(
       { id: Number(designId) },
       {
-        enabled: user !== undefined,
+        enabled:
+          user !== undefined && saveStateSignal.value !== SaveStatus.UNSAVED,
       },
     );
 
@@ -155,6 +162,22 @@ export default function CollageMug({
   }, [selectedActivityTypes, activitiesWithGPS]);
 
   useEffect(() => {
+    console.log("designId", !designId, "availableYears", availableYears);
+    if (!designId && availableYears.length > 0) {
+      setSelectedYears([Math.max(...availableYears)]);
+
+      setSelectedActivityTypes(sportTypes);
+    }
+  }, [availableYears.length, sportTypes.length]);
+
+  useEffect(() => {
+    if (designId) {
+      saveStateSignal.value = SaveStatus.SAVED;
+      setHasSavedOnce(true);
+    }
+  }, []);
+
+  useEffect(() => {
     // Check if selectedYears array is not empty, otherwise -Infinity bug
     if (selectedActivities.length === 0 || selectedYears.length === 0) return;
     const yearText = selectedYears.length === 2 ? selectedYears[1] : "Years";
@@ -168,7 +191,7 @@ export default function CollageMug({
     const primText = `${userText} ${yearText} Wrapped`;
     const secText = `${selectedActivities.length} Activities`;
 
-    if (loading) return;
+    if (!!designId && loading) return;
 
     if (!showResetPrimary) {
       setPrimaryText(primText);
@@ -277,7 +300,11 @@ export default function CollageMug({
   const handleSaveDesignData = () => {
     if (!user) return;
 
-    console.log("showReset", showResetSecondary);
+    console.log("saveStateSignal.value", saveStateSignal.value);
+    console.log(designId);
+
+    if (saveStateSignal.value === SaveStatus.UNSAVED) return;
+    if (!designId) return;
 
     saveStateSignal.value = SaveStatus.SAVING;
 
@@ -294,7 +321,7 @@ export default function CollageMug({
         isPrimaryOriginal: showResetPrimary,
         isSecondaryOriginal: showResetSecondary,
         useText: useText,
-        name: activeDesign.value?.name ?? "Untitled-1",
+        name: activeDesign.value?.name ?? "Untitled",
       })
       .then((result) => {
         if (result.status === "success") {
@@ -302,8 +329,6 @@ export default function CollageMug({
         } else if (result.status === "error") {
           saveStateSignal.value = SaveStatus.ERROR;
         }
-
-        //setHasSavedOnce(true);
       });
 
     cartSignal.value.map((item) => {
@@ -332,6 +357,7 @@ export default function CollageMug({
     primaryText,
     strokeColor,
     backgroundColor,
+    designId,
   ]);
 
   // Trigger the debounced function when dependencies change
@@ -344,6 +370,8 @@ export default function CollageMug({
     primaryText,
     strokeColor,
     backgroundColor,
+    hasSavedOnce,
+    designId,
   ]);
 
   const handleStrokeColorChange = (e: {
@@ -352,10 +380,37 @@ export default function CollageMug({
     setStrokeColor(e.target.value);
   };
 
-  useEffect(() => {
-    console.log("fetchedDesign", fetchedDesign);
-    //if (!fetchedDesign || currentDesign) return;
+  const mutation = api.design.create.useMutation();
 
+  const handleEnableSaving = async () => {
+    if (!type) return;
+
+    const data = await mutation.mutateAsync({
+      designType: type,
+      name: activeDesign.value.name,
+    });
+
+    if (data.name)
+      activeDesign.value = {
+        id: data.id,
+        name: data.name,
+        designId: data.designId,
+        state: "saved",
+      } as ActiveDesignSaved;
+
+    const path = router.asPath.split("?")[0];
+    setHasSavedOnce(true);
+    saveStateSignal.value = SaveStatus.CREATING;
+
+    await debounce(async () => {
+      await router.push(`${path}?designId=${data.id}`);
+      setOverlayOpen(false);
+    }, 100)();
+  };
+
+  useEffect(() => {
+    //if (!fetchedDesign || currentDesign) return;
+    if (saveStateSignal.value != SaveStatus.SAVED) return;
     if (!fetchedDesign) return;
 
     const foundDesign = fetchedDesign.design;
@@ -376,7 +431,8 @@ export default function CollageMug({
         id: foundDesign.id,
         name: foundDesign.Design.name,
         designId: foundDesign.Design.id,
-      };
+        state: "saved",
+      } as ActiveDesignSaved;
 
       setCurrentDesign(foundDesign.Design);
     } else {
@@ -393,13 +449,22 @@ export default function CollageMug({
         <h1 className="text-2xl sm:text-4xl">
           Create Your <span className="font-bold">Collage Mug</span>
         </h1>
-        <NotSavedModal shouldConfirmLeave={!hasSavedOnce} />
+        <NotSavedModal
+          shouldConfirmLeave={!hasSavedOnce}
+          handleSave={handleEnableSaving}
+        />
 
         {/* Save status */}
         <div className="text-sm text-gray-500">
           {saveStateSignal.value === SaveStatus.SAVING && (
             <div className="flex items-center space-x-2">
               <p className="text-gray-500">Saving</p>
+              <LoadingSpinner />
+            </div>
+          )}
+          {saveStateSignal.value === SaveStatus.CREATING && (
+            <div className="flex items-center space-x-2">
+              <p className="text-gray-500">Creating</p>
               <LoadingSpinner />
             </div>
           )}
@@ -416,8 +481,21 @@ export default function CollageMug({
               <XCircleIcon className="ml-1 h-4 w-4 text-red-500" />
             </div>
           )}
+
+          {saveStateSignal.value === SaveStatus.UNSAVED && (
+            <div className="flex items-center">
+              <Button
+                onClick={handleEnableSaving}
+                className="flex items-center justify-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                <BookmarkIcon className="mr-2 inline-block h-5 w-5" />
+                Enable Saving
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
       <DesignName />
 
       {/* Sticky SVGCanvasCollage */}
@@ -454,15 +532,6 @@ export default function CollageMug({
         </div>
       </div>
 
-      {!isLoading && (
-        <div className="space-y-4">
-          <div className="flex w-full gap-4 sm:gap-6">
-            {/* <SaveButton /> */}
-            {/* <PreviewButton onClick={() => setOverlayOpen(true)} /> */}
-            <CartAddButton design={currentDesign} />
-          </div>
-        </div>
-      )}
       {selectedActivities.length > 200 && (
         <WarningBanner
           title="Warning"
@@ -515,6 +584,19 @@ export default function CollageMug({
             showReset={showResetSecondary}
             onReset={handleResetSecondaryText}
           />
+        </div>
+      )}
+
+      {!isLoading && (
+        <div className="mt-4 space-y-4">
+          <div className="flex w-full gap-4 sm:gap-6">
+            {/* <SaveButton /> */}
+            {/* <PreviewButton onClick={() => setOverlayOpen(true)} /> */}
+            <CartAddButton
+              design={currentDesign}
+              onClick={handleEnableSaving}
+            />
+          </div>
         </div>
       )}
 
