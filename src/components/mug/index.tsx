@@ -162,13 +162,20 @@ export default function CollageMug({
   }, [selectedActivityTypes, activitiesWithGPS]);
 
   useEffect(() => {
-    console.log("designId", !designId, "availableYears", availableYears);
-    if (!designId && availableYears.length > 0) {
+    if (!designId && availableYears.length > 0 && selectedYears.length == 0) {
       setSelectedYears([Math.max(...availableYears)]);
+    }
+  }, [availableYears.length]);
 
+  useEffect(() => {
+    if (
+      !designId &&
+      availableYears.length > 0 &&
+      selectedActivityTypes.length == 0
+    ) {
       setSelectedActivityTypes(sportTypes);
     }
-  }, [availableYears.length, sportTypes.length]);
+  }, [sportTypes.length]);
 
   useEffect(() => {
     if (designId) {
